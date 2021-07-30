@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["unsubscribers"]
+  "cSpell.words": ["unsubscribers"],
+  "eslint.workingDirectories": ["hosting"]
 }

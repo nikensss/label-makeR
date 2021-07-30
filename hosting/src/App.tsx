@@ -7,7 +7,7 @@ interface Label {
   location?: string;
 }
 
-function App() {
+function App(): JSX.Element {
   const [firstLabel, setFirstLabel] = useState<Label>({});
   const unsubscribers: (() => void)[] = [];
 
@@ -16,37 +16,21 @@ function App() {
       const unsubscribe = db
         .collection('labels')
         .doc('first')
-        .onSnapshot((snapshot) => {
+        .onSnapshot(snapshot => {
           console.log({ snapshot });
           setFirstLabel(snapshot.data() as Label);
         });
-      // const firstLabel = await db.collection('labels').doc('first').get();
-      // console.log({ firstLabel: firstLabel.data() });
-      // setFirstLabel(firstLabel.data() as Label);
       unsubscribers.push(unsubscribe);
     };
-    getFirstLabel();
+    getFirstLabel().catch(ex => console.error(ex));
 
-    return () => unsubscribers.forEach((u) => u());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => unsubscribers.forEach(u => u());
   }, []);
 
-  console.log('this is a react app developed in typescript!');
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <img src={logo} className='App-logo' alt='logo' />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className='App-link'
-          href='https://reactjs.org'
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          Learn React
-        </a>
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
         <p>
           {firstLabel?.location && `First label is at: ${firstLabel.location}`}
         </p>
