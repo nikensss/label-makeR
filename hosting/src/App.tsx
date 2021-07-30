@@ -9,14 +9,26 @@ interface Label {
 
 function App() {
   const [firstLabel, setFirstLabel] = useState<Label>({});
+  const unsubscribers: (() => void)[] = [];
 
   useEffect(() => {
     const getFirstLabel = async () => {
-      const firstLabel = await db.collection('labels').doc('first').get();
-      console.log({ firstLabel: firstLabel.data() });
-      setFirstLabel(firstLabel.data() as Label);
+      const unsubscribe = db
+        .collection('labels')
+        .doc('first')
+        .onSnapshot((snapshot) => {
+          console.log({ snapshot });
+          setFirstLabel(snapshot.data() as Label);
+        });
+      // const firstLabel = await db.collection('labels').doc('first').get();
+      // console.log({ firstLabel: firstLabel.data() });
+      // setFirstLabel(firstLabel.data() as Label);
+      unsubscribers.push(unsubscribe);
     };
     getFirstLabel();
+
+    return () => unsubscribers.forEach((u) => u());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   console.log('this is a react app developed in typescript!');
