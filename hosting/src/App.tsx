@@ -1,41 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-import { db } from './firebase/firebase';
-import logo from './logo.svg';
+import { deepPurple, purple } from '@material-ui/core/colors';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import createTheme from '@material-ui/core/styles/createTheme';
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import './App.scss';
+import { Navbar } from './components/navbar/Navbar';
+import { Home } from './pages/home/Home';
 
-interface Label {
-  location?: string;
-}
+const theme = createTheme({
+  palette: {
+    primary: deepPurple,
+    secondary: purple
+  }
+});
 
 function App(): JSX.Element {
-  const [firstLabel, setFirstLabel] = useState<Label>({});
-  const unsubscribers: (() => void)[] = [];
-
-  useEffect(() => {
-    const getFirstLabel = async () => {
-      const unsubscribe = db
-        .collection('labels')
-        .doc('first')
-        .onSnapshot(snapshot => {
-          console.log({ snapshot });
-          setFirstLabel(snapshot.data() as Label);
-        });
-      unsubscribers.push(unsubscribe);
-    };
-    getFirstLabel().catch(ex => console.error(ex));
-
-    return () => unsubscribers.forEach(u => u());
-  }, []);
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          {firstLabel?.location && `First label is at: ${firstLabel.location}`}
-        </p>
-      </header>
-    </div>
+    <MuiThemeProvider theme={theme}>
+      <div className="App">
+        <Router>
+          <Navbar />
+          <div className="container">
+            <Switch>
+              <Route exact path="/" component={Home}></Route>
+            </Switch>
+          </div>
+        </Router>
+      </div>
+    </MuiThemeProvider>
   );
 }
 
