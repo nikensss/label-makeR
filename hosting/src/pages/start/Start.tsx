@@ -1,12 +1,11 @@
-import { Theme } from '@material-ui/core';
+import { createStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import { Link } from 'react-router-dom';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const styles: Styles<Theme, {}, string> = () => ({
+const styles = createStyles({
   start: {
     display: 'flex',
     height: '100vh',

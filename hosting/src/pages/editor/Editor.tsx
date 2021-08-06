@@ -1,9 +1,8 @@
-import { Theme } from '@material-ui/core';
+import { createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const styles: Styles<Theme, {}, string> = () => ({
+const styles = createStyles({
   editor: {
     display: 'flex',
     height: '100vh',
