@@ -1,4 +1,3 @@
-import { deepPurple, purple } from '@material-ui/core/colors';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import createTheme from '@material-ui/core/styles/createTheme';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
@@ -8,8 +7,12 @@ import { Start } from './pages/start/Start';
 
 const theme = createTheme({
   palette: {
-    primary: deepPurple,
-    secondary: purple
+    primary: {
+      main: '#1f2430'
+    },
+    secondary: {
+      main: '#FAFAFA'
+    }
   }
 });
 
