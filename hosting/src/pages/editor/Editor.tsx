@@ -2,9 +2,7 @@ import { Radio, RadioGroup } from '@blueprintjs/core';
 import { Button, createStyles, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Radio, RadioGroup } from '@blueprintjs/core';
-import React, { useState } from 'react';
-import { settings } from 'cluster';
+import { FormEvent, useState } from 'react';
 
 const styles = ({ palette }: Theme) =>
   createStyles({
@@ -40,7 +38,7 @@ const styles = ({ palette }: Theme) =>
 type EditorInput = { classes: ClassNameMap<string> };
 export const Editor = withStyles(styles)(
   ({ classes }: EditorInput): JSX.Element => {
-    const [selection, setSelectedValue] = useState(0);
+    const [selection, setSelectedValue] = useState('');
     const radioButtons = [
       {
         label: 'Brazil',
@@ -59,13 +57,14 @@ export const Editor = withStyles(styles)(
         value: 'indonesia'
       }
     ];
+
     const label = (
       <div className={classes.radioLabel}> Select coffee origin</div>
     );
 
-    function handleChange(event: React.ChangeEvent<any>) {
-      setSelectedValue(event.target.value);
-    }
+    const handleChange = (event: FormEvent<HTMLInputElement>) => {
+      setSelectedValue(event.currentTarget.value);
+    };
 
     return (
       <div className={classes.editor}>
