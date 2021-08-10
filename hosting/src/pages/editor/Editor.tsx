@@ -59,7 +59,7 @@ export const Editor = withStyles(styles)(
     ];
 
     const label = (
-      <div className={classes.radioLabel}> Select coffee origin</div>
+      <div className={classes.radioLabel}>Select coffee origin</div>
     );
 
     const handleChange = (event: FormEvent<HTMLInputElement>) => {
@@ -76,26 +76,16 @@ export const Editor = withStyles(styles)(
             onChange={handleChange}
             selectedValue={selection}
           >
-            <Radio
-              className={classes.radioButton}
-              label="Brazil"
-              value="brazil"
-            />
-            <Radio
-              className={classes.radioButton}
-              label="Ethiopia"
-              value="ethiopia"
-            />
-            <Radio
-              className={classes.radioButton}
-              label="Colombia"
-              value="colombia"
-            />
-            <Radio
-              className={classes.radioButton}
-              label="Indonesia"
-              value="indonesia"
-            />
+            {radioButtons.map((radioButton, index) => {
+              return (
+                <Radio
+                  key={index}
+                  className={classes.radioButton}
+                  label={radioButton.label}
+                  value={radioButton.value}
+                />
+              );
+            })}
           </RadioGroup>
           <div>
             <Button className={classes.nextButton}> Next</Button>
@@ -103,6 +93,5 @@ export const Editor = withStyles(styles)(
         </div>
       </div>
     );
-    //return <div className={classes.editor}>EDITOR works!</div>;
   }
 );
