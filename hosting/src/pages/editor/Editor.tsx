@@ -1,39 +1,41 @@
-import { Button, createStyles } from '@material-ui/core';
+import { Radio, RadioGroup } from '@blueprintjs/core';
+import { Button, createStyles, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Radio, RadioGroup } from '@blueprintjs/core';
 import React, { useState } from 'react';
 import { settings } from 'cluster';
 
-const styles = createStyles({
-  editor: {
-    display: 'flex',
-    height: '100vh',
-    width: '100vw',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FAFAFA',
-    color: '#1f2430'
-  },
-  container: {
-    display: 'block'
-  },
-  radioLabel: {
-    display: 'block',
-    marginBottom: '15px',
-    marginTop: 0
-  },
-  radioButton: {
-    display: 'block',
-    marginBottom: '10px',
-    marginTop: 0,
-    alignItems: 'center'
-  },
-  nextButton: {
-    display: 'block',
-    marginTop: '15px'
-  }
-});
+const styles = ({ palette }: Theme) =>
+  createStyles({
+    editor: {
+      display: 'flex',
+      height: '100vh',
+      width: '100vw',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: palette.secondary.main,
+      color: palette.primary.main
+    },
+    container: {
+      display: 'block'
+    },
+    radioLabel: {
+      display: 'block',
+      marginBottom: '15px',
+      marginTop: 0
+    },
+    radioButton: {
+      display: 'block',
+      marginBottom: '10px',
+      marginTop: 0,
+      alignItems: 'center'
+    },
+    nextButton: {
+      display: 'block',
+      marginTop: '15px'
+    }
+  });
 
 type EditorInput = { classes: ClassNameMap<string> };
 export const Editor = withStyles(styles)(
