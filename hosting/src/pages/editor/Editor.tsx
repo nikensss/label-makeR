@@ -7,31 +7,27 @@ import { FormEvent, useState } from 'react';
 const styles = ({ palette }: Theme) =>
   createStyles({
     editor: {
-      display: 'flex',
+      backgroundColor: palette.secondary.main,
+      color: palette.primary.main,
       height: '100vh',
       width: '100vw',
+      display: 'flex',
+      flexDirection: 'column',
       justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: palette.secondary.main,
-      color: palette.primary.main
-    },
-    container: {
-      display: 'block'
+      alignItems: 'center'
     },
     radioLabel: {
-      display: 'block',
       marginBottom: '15px',
       marginTop: 0
     },
     radioButton: {
       display: 'block',
-      marginBottom: '10px',
-      marginTop: 0,
-      alignItems: 'center'
-    },
-    nextButton: {
-      display: 'block',
-      marginTop: '15px'
+      margin: '10px 0',
+      cursor: 'pointer',
+      border: '1px transparent solid',
+      borderRadius: '9999px',
+      transition: 'all 0.15s ease-in',
+      '&:hover': { borderColor: palette.primary.main }
     }
   });
 
@@ -70,29 +66,32 @@ export const Editor = withStyles(styles)(
 
     return (
       <div className={classes.editor}>
-        <div className={classes.container}>
-          <RadioGroup
-            inline={false}
-            label={label}
-            name="group"
-            onChange={handleChange}
-            selectedValue={selection}
-          >
-            {radioButtons.map((radioButton, index) => {
-              return (
-                <Radio
-                  key={index}
-                  className={classes.radioButton}
-                  label={radioButton.label}
-                  value={radioButton.value}
-                />
-              );
-            })}
-          </RadioGroup>
-          <div>
-            <Button className={classes.nextButton}> Next</Button>
-          </div>
-        </div>
+        <RadioGroup
+          inline={false}
+          label={label}
+          name="group"
+          onChange={handleChange}
+          selectedValue={selection}
+        >
+          {radioButtons.map((radioButton, index) => {
+            return (
+              <Radio
+                key={index}
+                className={classes.radioButton}
+                label={radioButton.label}
+                value={radioButton.value}
+              />
+            );
+          })}
+        </RadioGroup>
+        <Button
+          color="primary"
+          variant="contained"
+          className={classes.nextButton}
+          disabled={!selection}
+        >
+          Next
+        </Button>
       </div>
     );
   }
