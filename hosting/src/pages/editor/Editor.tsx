@@ -1,5 +1,5 @@
 import { Radio, RadioGroup } from '@blueprintjs/core';
-import { Button, createStyles, Theme } from '@material-ui/core';
+import { Button, createStyles, Theme, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { FormEvent, useState } from 'react';
@@ -59,7 +59,9 @@ export const Editor = withStyles(styles)(
     ];
 
     const label = (
-      <div className={classes.radioLabel}>Select coffee origin</div>
+      <Typography variant="h5" className={classes.radioLabel}>
+        Select coffee origin
+      </Typography>
     );
 
     const handleChange = (event: FormEvent<HTMLInputElement>) => {
