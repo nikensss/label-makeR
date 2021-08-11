@@ -11,7 +11,10 @@ const app = firebase.initializeApp({
   measurementId: 'G-FK9K9PL6CH'
 });
 
-console.log({ app });
 const db = app.firestore();
 
 export { app, db };
+
+export interface FirestoreDocument {
+  toFirestore: () => firebase.firestore.DocumentData;
+}

@@ -2,7 +2,9 @@ import { Radio, RadioGroup } from '@blueprintjs/core';
 import { Button, createStyles, Theme, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
+import { FirestoreCoffee } from '../../firebase/general/coffee/Coffee';
+import { getCoffee } from '../../firebase/general/General';
 
 const styles = ({ palette }: Theme) =>
   createStyles({
@@ -35,24 +37,20 @@ type CoffeeFormInput = { classes: ClassNameMap<string> };
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
     const [selection, setSelectedValue] = useState('');
-    const radioButtons = [
-      {
-        label: 'Brazil',
-        value: 'brazil'
-      },
-      {
-        label: 'Colombia',
-        value: 'colombia'
-      },
-      {
-        label: 'Ethiopia',
-        value: 'ethiopia'
-      },
-      {
-        label: 'Indonesia',
-        value: 'indonesia'
-      }
-    ];
+    const [radioButtons, setRadioButtons] = useState<
+      FirestoreCoffee['origins']
+    >([]);
+
+    useEffect(() => {
+      const getCoffeeOrigins = async (): Promise<void> => {
+        const coffee = await getCoffee();
+        if (!coffee) return;
+
+        setRadioButtons(coffee.getOrigins());
+      };
+
+      getCoffeeOrigins().catch(ex => console.error(ex));
+    }, []);
 
     const label = (
       <Typography variant="h5" className={classes.radioLabel}>
