@@ -6,7 +6,7 @@ import { FormEvent, useState } from 'react';
 
 const styles = ({ palette }: Theme) =>
   createStyles({
-    editor: {
+    main: {
       backgroundColor: palette.secondary.main,
       color: palette.primary.main,
       height: '100vh',
@@ -31,9 +31,9 @@ const styles = ({ palette }: Theme) =>
     }
   });
 
-type EditorInput = { classes: ClassNameMap<string> };
-export const Editor = withStyles(styles)(
-  ({ classes }: EditorInput): JSX.Element => {
+type CoffeeFormInput = { classes: ClassNameMap<string> };
+export const CoffeeForm = withStyles(styles)(
+  ({ classes }: CoffeeFormInput): JSX.Element => {
     const [selection, setSelectedValue] = useState('');
     const radioButtons = [
       {
@@ -65,7 +65,7 @@ export const Editor = withStyles(styles)(
     };
 
     return (
-      <div className={classes.editor}>
+      <div className={classes.main}>
         <RadioGroup
           inline={false}
           label={label}
