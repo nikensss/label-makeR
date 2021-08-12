@@ -31,7 +31,7 @@ const isFirestoreCoffee = (data: unknown): data is FirestoreCoffee => {
   const d = data as FirestoreCoffee;
   if (!Array.isArray(d.origins)) return false;
   // make sure at least one has the proper format
-  if (d.origins.some(isCoffeeOrigin)) return false;
+  if (!d.origins.some(isCoffeeOrigin)) return false;
 
   return true;
 };
@@ -41,13 +41,14 @@ export class Coffee implements FirestoreDocument {
 
   constructor(snapshot: firebase.firestore.QueryDocumentSnapshot) {
     const data = snapshot.data();
+    console.log({ data });
     if (!isFirestoreCoffee(data)) throw new Error('Invalid data provided');
     console.log(`Received snapshot of ${snapshot.id}`);
     this.data = data;
   }
 
   getOrigins(): FirestoreCoffee['origins'] {
-    return clone(this.data.origins);
+    return clone(this.data.origins.filter(isCoffeeOrigin));
   }
 
   toFirestore(): FirestoreCoffee {
