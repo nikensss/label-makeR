@@ -1,10 +1,14 @@
-import { Button, createStyles, Theme, Typography } from '@material-ui/core';
-import { DataGrid } from '@material-ui/data-grid';
+import { Button, createStyles, Theme } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { FormEvent, useEffect, useState } from 'react';
-import { getCoffee } from '../../firebase/general/General';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import { useEffect, useState } from 'react';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
+import { getCoffee } from '../../firebase/general/General';
 
 const styles = ({ palette }: Theme) =>
   createStyles({
@@ -19,30 +23,18 @@ const styles = ({ palette }: Theme) =>
       alignItems: 'center'
     },
     table: {
-      display: 'flex',
-      flexGrow: 1,
-      height: '400px',
       width: '65%'
     },
-    radioLabel: {
-      marginBottom: '15px',
-      marginTop: 0
-    },
-    radioButton: {
-      display: 'block',
-      margin: '10px 0',
-      cursor: 'pointer',
-      border: '1px transparent solid',
-      borderRadius: '9999px',
-      transition: 'all 0.15s ease-in',
-      '&:hover': { borderColor: palette.primary.main }
+    nextButton: {
+      marginTop: '1rem'
     }
   });
 
 type CoffeeFormInput = { classes: ClassNameMap<string> };
+
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
-    const [selection, setSelectedValue] = useState('');
+    const [selection, setSelection] = useState('');
     const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
       new CoffeeOrigins([])
     );
@@ -58,26 +50,21 @@ export const CoffeeForm = withStyles(styles)(
       getCoffeeOrigins().catch(ex => console.error(ex));
     }, []);
 
-    // const label = (
-    //   <Typography variant="h5" className={classes.radioLabel}>
-    //     Select coffee origin
-    //   </Typography>
-    // );
-
-    // const handleChange = (event: FormEvent<HTMLInputElement>) => {
-    //   setSelectedValue(event.currentTarget.value);
-    // };
+    const handleClick = (event: React.MouseEvent<unknown>, value: string) => {
+      console.log({ event, value });
+      setSelection(selection === value ? '' : value);
+    };
 
     return (
       <div className={classes.main}>
-        <DataGrid
-          className={classes.table}
-          rows={coffeeOrigins.getRows()}
-          columns={coffeeOrigins.getColumns()}
-          pageSize={5}
-          checkboxSelection
-          disableSelectionOnClick
-        />
+        <TableContainer className={classes.table} component={Paper}>
+          <Table>
+            <TableHead> {coffeeOrigins.getColumns()} </TableHead>
+            <TableBody>
+              {coffeeOrigins.getRows(selection, handleClick)}
+            </TableBody>
+          </Table>
+        </TableContainer>
         <Button
           color="primary"
           variant="contained"

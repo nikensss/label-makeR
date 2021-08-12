@@ -2,7 +2,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import createTheme from '@material-ui/core/styles/createTheme';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.scss';
-import { CoffeeForm } from './pages/coffeeForm/CoffeForm';
+import { CoffeeForm } from './pages/coffeeForm/CoffeeForm';
 import { Start } from './pages/start/Start';
 
 const theme = createTheme({

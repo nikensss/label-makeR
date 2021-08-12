@@ -1,4 +1,3 @@
-import clone from 'clone';
 import firebase from 'firebase';
 import { FirestoreDocument } from '../../firebase';
 import { CoffeeOrigins } from './CoffeeOrigins';
