@@ -13,7 +13,7 @@ export class CoffeeOrigins {
     return (
       <TableRow>
         {coffeeOrigin && (
-          <TableCell padding="checkbox">
+          <TableCell padding='checkbox'>
             <Checkbox disabled={true} style={{ opacity: '0' }} />
           </TableCell>
         )}
@@ -39,14 +39,13 @@ export class CoffeeOrigins {
       return (
         <TableRow
           hover
-          role="checkbox"
+          role='checkbox'
           key={id}
           onClick={event => handleClick(event, value)}
-          style={{ cursor: 'pointer' }}
-        >
-          <TableCell padding="checkbox">
+          style={{ cursor: 'pointer' }}>
+          <TableCell padding='checkbox'>
             <Checkbox
-              color="primary"
+              color='primary'
               checked={selection === value}
               inputProps={{ 'aria-labelledby': label }}
             />

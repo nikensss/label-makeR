@@ -19,12 +19,12 @@ const theme = createTheme({
 function App(): JSX.Element {
   return (
     <MuiThemeProvider theme={theme}>
-      <div className="App">
+      <div className='App'>
         <Router>
-          <div className="container">
+          <div className='container'>
             <Switch>
-              <Route exact path="/" component={Start} />
-              <Route exact path="/coffee" component={CoffeeForm} />
+              <Route exact path='/' component={Start} />
+              <Route exact path='/coffee' component={CoffeeForm} />
             </Switch>
           </div>
         </Router>

@@ -66,11 +66,10 @@ export const CoffeeForm = withStyles(styles)(
           </Table>
         </TableContainer>
         <Button
-          color="primary"
-          variant="contained"
+          color='primary'
+          variant='contained'
           className={classes.nextButton}
-          disabled={!selection}
-        >
+          disabled={!selection}>
           Next
         </Button>
       </div>
