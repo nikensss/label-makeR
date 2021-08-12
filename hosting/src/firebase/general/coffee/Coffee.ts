@@ -1,12 +1,13 @@
 import clone from 'clone';
 import firebase from 'firebase';
 import { FirestoreDocument } from '../../firebase';
+import { CoffeeOrigins } from './CoffeeOrigins';
 
 export interface FirestoreCoffee {
   origins: CoffeeOrigin[];
 }
 
-interface CoffeeOrigin {
+export interface CoffeeOrigin {
   label: string;
   value: string;
 }
@@ -47,8 +48,8 @@ export class Coffee implements FirestoreDocument {
     this.data = data;
   }
 
-  getOrigins(): FirestoreCoffee['origins'] {
-    return clone(this.data.origins.filter(isCoffeeOrigin));
+  getOrigins(): CoffeeOrigins {
+    return new CoffeeOrigins(this.data.origins);
   }
 
   toFirestore(): FirestoreCoffee {

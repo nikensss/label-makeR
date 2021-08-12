@@ -1,10 +1,10 @@
-import { Radio, RadioGroup } from '@blueprintjs/core';
 import { Button, createStyles, Theme, Typography } from '@material-ui/core';
+import { DataGrid } from '@material-ui/data-grid';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { FormEvent, useEffect, useState } from 'react';
-import { FirestoreCoffee } from '../../firebase/general/coffee/Coffee';
 import { getCoffee } from '../../firebase/general/General';
+import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 
 const styles = ({ palette }: Theme) =>
   createStyles({
@@ -17,6 +17,12 @@ const styles = ({ palette }: Theme) =>
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center'
+    },
+    table: {
+      display: 'flex',
+      flexGrow: 1,
+      height: '400px',
+      width: '65%'
     },
     radioLabel: {
       marginBottom: '15px',
@@ -37,51 +43,41 @@ type CoffeeFormInput = { classes: ClassNameMap<string> };
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
     const [selection, setSelectedValue] = useState('');
-    const [radioButtons, setRadioButtons] = useState<
-      FirestoreCoffee['origins']
-    >([]);
+    const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
+      new CoffeeOrigins([])
+    );
 
     useEffect(() => {
       const getCoffeeOrigins = async (): Promise<void> => {
         const coffee = await getCoffee();
         if (!coffee) return;
 
-        setRadioButtons(coffee.getOrigins());
+        setCoffeeOrigins(coffee.getOrigins());
       };
 
       getCoffeeOrigins().catch(ex => console.error(ex));
     }, []);
 
-    const label = (
-      <Typography variant="h5" className={classes.radioLabel}>
-        Select coffee origin
-      </Typography>
-    );
+    // const label = (
+    //   <Typography variant="h5" className={classes.radioLabel}>
+    //     Select coffee origin
+    //   </Typography>
+    // );
 
-    const handleChange = (event: FormEvent<HTMLInputElement>) => {
-      setSelectedValue(event.currentTarget.value);
-    };
+    // const handleChange = (event: FormEvent<HTMLInputElement>) => {
+    //   setSelectedValue(event.currentTarget.value);
+    // };
 
     return (
       <div className={classes.main}>
-        <RadioGroup
-          inline={false}
-          label={label}
-          name="group"
-          onChange={handleChange}
-          selectedValue={selection}
-        >
-          {radioButtons.map((radioButton, index) => {
-            return (
-              <Radio
-                key={index}
-                className={classes.radioButton}
-                label={radioButton.label}
-                value={radioButton.value}
-              />
-            );
-          })}
-        </RadioGroup>
+        <DataGrid
+          className={classes.table}
+          rows={coffeeOrigins.getRows()}
+          columns={coffeeOrigins.getColumns()}
+          pageSize={5}
+          checkboxSelection
+          disableSelectionOnClick
+        />
         <Button
           color="primary"
           variant="contained"
