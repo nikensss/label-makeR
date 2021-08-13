@@ -1,5 +1,8 @@
 import Checkbox from '@material-ui/core/Checkbox';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { CoffeeOrigin } from './Coffee';
@@ -7,7 +10,19 @@ import { CoffeeOrigin } from './Coffee';
 export class CoffeeOrigins {
   constructor(private coffeeOrigins: CoffeeOrigin[]) {}
 
-  getColumns(): JSX.Element {
+  getTable(
+    selection: string,
+    handleClick: (event: React.MouseEvent<unknown>, value: string) => void
+  ): JSX.Element {
+    return (
+      <Table>
+        <TableHead> {this.getColumns()} </TableHead>
+        <TableBody> {this.getRows(selection, handleClick)} </TableBody>
+      </Table>
+    );
+  }
+
+  private getColumns(): JSX.Element {
     const coffeeOrigin = this.coffeeOrigins[0];
 
     return (
@@ -31,7 +46,7 @@ export class CoffeeOrigins {
     );
   }
 
-  getRows(
+  private getRows(
     selection: string,
     handleClick: (event: React.MouseEvent<unknown>, value: string) => void
   ): JSX.Element[] {

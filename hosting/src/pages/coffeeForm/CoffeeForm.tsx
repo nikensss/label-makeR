@@ -2,10 +2,7 @@ import { Button, createStyles, Theme } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
 import { useEffect, useState } from 'react';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
@@ -58,12 +55,7 @@ export const CoffeeForm = withStyles(styles)(
     return (
       <div className={classes.main}>
         <TableContainer className={classes.table} component={Paper}>
-          <Table>
-            <TableHead> {coffeeOrigins.getColumns()} </TableHead>
-            <TableBody>
-              {coffeeOrigins.getRows(selection, handleClick)}
-            </TableBody>
-          </Table>
+          {coffeeOrigins.getTable(selection, handleClick)}
         </TableContainer>
         <Button
           color='primary'
