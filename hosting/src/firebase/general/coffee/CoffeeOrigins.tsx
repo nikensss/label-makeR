@@ -1,24 +1,31 @@
 import Checkbox from '@material-ui/core/Checkbox';
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { CoffeeOrigin } from './Coffee';
 
+export interface GetTableInput {
+  selection: string;
+  handleClick: (event: React.MouseEvent<unknown>, value: string) => void;
+  tableClass: string;
+}
+
 export class CoffeeOrigins {
   constructor(private coffeeOrigins: CoffeeOrigin[]) {}
 
-  getTable(
-    selection: string,
-    handleClick: (event: React.MouseEvent<unknown>, value: string) => void
-  ): JSX.Element {
+  getTable({ selection, handleClick, tableClass }: GetTableInput): JSX.Element {
     return (
-      <Table>
-        <TableHead> {this.getColumns()} </TableHead>
-        <TableBody> {this.getRows(selection, handleClick)} </TableBody>
-      </Table>
+      <TableContainer className={tableClass} component={Paper}>
+        <Table>
+          <TableHead> {this.getColumns()} </TableHead>
+          <TableBody> {this.getRows(selection, handleClick)} </TableBody>
+        </Table>
+      </TableContainer>
     );
   }
 

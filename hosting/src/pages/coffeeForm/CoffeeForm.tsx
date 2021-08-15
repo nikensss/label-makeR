@@ -1,8 +1,6 @@
 import { Button, createStyles, Theme } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import TableContainer from '@material-ui/core/TableContainer';
 import { useEffect, useState } from 'react';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
@@ -39,9 +37,7 @@ export const CoffeeForm = withStyles(styles)(
     useEffect(() => {
       const getCoffeeOrigins = async (): Promise<void> => {
         const coffee = await getCoffee();
-        if (!coffee) return;
-
-        setCoffeeOrigins(coffee.getOrigins());
+        setCoffeeOrigins(coffee?.getOrigins() || coffeeOrigins);
       };
 
       getCoffeeOrigins().catch(ex => console.error(ex));
@@ -54,9 +50,11 @@ export const CoffeeForm = withStyles(styles)(
 
     return (
       <div className={classes.main}>
-        <TableContainer className={classes.table} component={Paper}>
-          {coffeeOrigins.getTable(selection, handleClick)}
-        </TableContainer>
+        {coffeeOrigins.getTable({
+          selection,
+          handleClick,
+          tableClass: classes.table
+        })}
         <Button
           color='primary'
           variant='contained'
