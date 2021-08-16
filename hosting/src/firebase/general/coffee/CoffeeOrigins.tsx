@@ -9,21 +9,24 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { CoffeeOrigin } from './Coffee';
 
-export interface GetTableInput {
+interface GetRowsInput {
   selection: string;
-  handleClick: (event: React.MouseEvent<unknown>, value: string) => void;
+  onSelection: (value: string) => void;
+}
+
+export interface GetTableInput extends GetRowsInput {
   tableClass: string;
 }
 
 export class CoffeeOrigins {
   constructor(private coffeeOrigins: CoffeeOrigin[]) {}
 
-  getTable({ selection, handleClick, tableClass }: GetTableInput): JSX.Element {
+  getTable({ selection, onSelection, tableClass }: GetTableInput): JSX.Element {
     return (
       <TableContainer className={tableClass} component={Paper}>
         <Table>
           <TableHead> {this.getColumns()} </TableHead>
-          <TableBody> {this.getRows(selection, handleClick)} </TableBody>
+          <TableBody> {this.getRows({ selection, onSelection })} </TableBody>
         </Table>
       </TableContainer>
     );
@@ -53,17 +56,14 @@ export class CoffeeOrigins {
     );
   }
 
-  private getRows(
-    selection: string,
-    handleClick: (event: React.MouseEvent<unknown>, value: string) => void
-  ): JSX.Element[] {
+  private getRows({ selection, onSelection }: GetRowsInput): JSX.Element[] {
     return this.coffeeOrigins.map(({ label, value }, id) => {
       return (
         <TableRow
           hover
           role='checkbox'
           key={id}
-          onClick={event => handleClick(event, value)}
+          onClick={() => onSelection(value)}
           style={{ cursor: 'pointer' }}>
           <TableCell padding='checkbox'>
             <Checkbox

@@ -1,4 +1,4 @@
-import { Button, createStyles, Theme } from '@material-ui/core';
+import { Button, createStyles, FormControl, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useState } from 'react';
@@ -29,6 +29,7 @@ type CoffeeFormInput = { classes: ClassNameMap<string> };
 
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
+    const [step, setStep] = useState(0);
     const [selection, setSelection] = useState('');
     const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
       new CoffeeOrigins([])
@@ -43,26 +44,47 @@ export const CoffeeForm = withStyles(styles)(
       getCoffeeOrigins().catch(ex => console.error(ex));
     }, []);
 
-    const handleClick = (event: React.MouseEvent<unknown>, value: string) => {
-      console.log({ event, value });
+    const onSelection = (value: string) => {
       setSelection(selection === value ? '' : value);
     };
 
+    const onNext = () => setStep(step + 1);
+    const onBack = () => setStep(step === 0 ? step : step - 1);
+
     return (
-      <div className={classes.main}>
-        {coffeeOrigins.getTable({
-          selection,
-          handleClick,
-          tableClass: classes.table
-        })}
+      <FormControl className={classes.main} component='fieldset'>
+        {(() => {
+          switch (step) {
+            case 0:
+              return coffeeOrigins.getTable({
+                selection,
+                onSelection,
+                tableClass: classes.table
+              });
+            case 1:
+              return <div>{selection}</div>;
+            // TODO: show summary
+            default:
+              return setStep(0);
+          }
+        })()}
         <Button
           color='primary'
           variant='contained'
           className={classes.nextButton}
+          onClick={onBack}
+          disabled={step === 0}>
+          Back
+        </Button>
+        <Button
+          color='primary'
+          variant='contained'
+          className={classes.nextButton}
+          onClick={onNext}
           disabled={!selection}>
           Next
         </Button>
-      </div>
+      </FormControl>
     );
   }
 );
