@@ -26,12 +26,11 @@ export const Start = withStyles(styles)(
       <div className={classes.start}>
         <Button
           className={classes.startButton}
-          variant="contained"
-          color="primary"
+          variant='contained'
+          color='primary'
           component={Link}
-          to={`/coffee`}
-        >
-          <Typography variant="h1">START</Typography>
+          to={`/coffee`}>
+          <Typography variant='h1'>START</Typography>
         </Button>
       </div>
     );
