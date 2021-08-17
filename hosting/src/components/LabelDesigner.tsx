@@ -41,9 +41,10 @@ type LabelDesignerInput = { classes: ClassNameMap<string> };
 
 export const LabelDesigner = withStyles(styles)(
   ({ classes }: LabelDesignerInput) => {
-    const labelDimensions = { x: 380, y: 532 } as const;
+    const labelDimensions = { width: 380, height: 532 } as const;
     const canvasContainer = createRef<HTMLDivElement>();
     const [canvas, setCanvas] = useState<P5 | null>(null);
+    const [labelPixels, setLabelPixels] = useState(new ImageData(1, 1));
 
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
@@ -73,7 +74,8 @@ export const LabelDesigner = withStyles(styles)(
 
     const sketch = (p5: P5) => {
       p5.setup = () => {
-        p5.createCanvas(labelDimensions.x, labelDimensions.y);
+        p5.createCanvas(labelDimensions.width, labelDimensions.height);
+        p5.pixelDensity(10);
         p5.background(120, 120, 140);
       };
 
@@ -92,11 +94,22 @@ export const LabelDesigner = withStyles(styles)(
       };
     };
 
+    const getCanvasPixels = (canvas: P5 | null) => {
+      return canvas?.drawingContext.canvas
+        .getContext('2d')
+        ?.getImageData(0, 0, labelDimensions.width, labelDimensions.height);
+    };
+
     useEffect(() => {
       if (!canvasContainer.current) return;
+
       canvas?.remove();
       setCanvas(new P5(sketch, canvasContainer.current));
-    }, [canvasContainer.current, x, y, scale, labelText]);
+
+      const imageData = getCanvasPixels(canvas);
+      if (imageData) setLabelPixels(imageData);
+      console.log({ labelPixels: labelPixels.data.length });
+    }, [x, y, scale, labelText]);
 
     return (
       <div className={classes.container}>
@@ -105,7 +118,7 @@ export const LabelDesigner = withStyles(styles)(
           <Slider
             value={x}
             min={0}
-            max={canvas?.width || labelDimensions.x}
+            max={canvas?.width || labelDimensions.width}
             onChange={onChangeX}
             aria-labelledby='continuous-slider'
           />
@@ -113,7 +126,7 @@ export const LabelDesigner = withStyles(styles)(
           <Slider
             value={y}
             min={0}
-            max={canvas?.height || labelDimensions.y}
+            max={canvas?.height || labelDimensions.height}
             onChange={onChangeY}
             aria-labelledby='continuous-slider'
           />
@@ -136,7 +149,7 @@ export const LabelDesigner = withStyles(styles)(
           />
           <Button
             className={classes.button}
-            onClick={() => canvas?.save('label.png')}
+            onClick={() => canvas?.save('coffee_label.png')}
             color='primary'
             startIcon={<SaveIcon />}
             size='large'
