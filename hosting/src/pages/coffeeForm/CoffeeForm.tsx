@@ -2,6 +2,7 @@ import { Button, createStyles, FormControl, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useState } from 'react';
+import { LabelDesigner } from '../../components/LabelDesigner';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
@@ -62,7 +63,7 @@ export const CoffeeForm = withStyles(styles)(
                 tableClass: classes.table
               });
             case 1:
-              return <div>{selection}</div>;
+              return <LabelDesigner />;
             // TODO: show summary
             default:
               return setStep(0);
