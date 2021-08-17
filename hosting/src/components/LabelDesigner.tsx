@@ -4,6 +4,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { createRef, useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
+import TextField from '@material-ui/core/TextField';
 
 const styles = createStyles({
   container: {
@@ -40,6 +41,7 @@ export const LabelDesigner = withStyles(styles)(
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
     const [scale, setScale] = useState(20);
+    const [labelText, setLabelText] = useState('Freshly roasted coffee');
 
     const onChangeX = (...args: unknown[]) => {
       const [, value] = args;
@@ -58,16 +60,25 @@ export const LabelDesigner = withStyles(styles)(
       setScale(value);
     };
 
+    const onChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setLabelText(event.target.value);
+    };
+
     const sketch = (p5: P5) => {
       p5.setup = () => {
-        p5.createCanvas(200, 200);
-        p5.background('white');
+        p5.createCanvas(380, 532);
+        p5.background(120, 120, 140);
       };
 
       p5.draw = () => {
         p5.noStroke();
-        p5.fill('orange');
-        p5.ellipse(50 + x, 50 + y, 50 * p5.map(scale, 0, 100, 0, 5));
+        p5.fill('white');
+        p5.rect(0, 400, p5.width, p5.height - 400);
+        p5.fill('black');
+        p5.textSize(25);
+        p5.textFont('helvetica');
+        p5.textAlign(p5.CENTER);
+        p5.text(labelText, p5.width / 2, 450);
         p5.noLoop();
       };
     };
@@ -76,7 +87,7 @@ export const LabelDesigner = withStyles(styles)(
       if (!canvasContainer.current) return;
       canvas?.remove();
       setCanvas(new P5(sketch, canvasContainer.current));
-    }, [canvasContainer.current, x, y, scale]);
+    }, [canvasContainer.current, x, y, scale, labelText]);
 
     return (
       <div className={classes.container}>
@@ -98,6 +109,14 @@ export const LabelDesigner = withStyles(styles)(
             value={scale}
             onChange={onChangeScale}
             aria-labelledby='continuous-slider'
+          />
+          <TextField
+            fullWidth
+            onChange={onChangeText}
+            id='outlined-basic'
+            label='Label text'
+            variant='outlined'
+            defaultValue={labelText}
           />
         </div>
         <div className={classes.label} ref={canvasContainer}></div>
