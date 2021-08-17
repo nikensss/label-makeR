@@ -1,46 +1,53 @@
 import P5 from 'p5';
-import { createStyles, withStyles } from '@material-ui/core';
+import { createStyles, Theme, withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { createRef, useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import SaveIcon from '@material-ui/icons/Save';
 
-const styles = createStyles({
-  container: {
-    width: '65%',
-    height: '70%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  controls: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column'
-  },
-  label: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    container: {
+      width: '65%',
+      height: '70%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    controls: {
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'column'
+    },
+    button: {
+      margin: theme.spacing(1)
+    },
+    label: {
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }
+  });
 
 type LabelDesignerInput = { classes: ClassNameMap<string> };
 
 export const LabelDesigner = withStyles(styles)(
   ({ classes }: LabelDesignerInput) => {
+    const labelDimensions = { x: 380, y: 532 } as const;
     const canvasContainer = createRef<HTMLDivElement>();
     const [canvas, setCanvas] = useState<P5 | null>(null);
 
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
-    const [scale, setScale] = useState(20);
+    const [scale, setScale] = useState(1);
     const [labelText, setLabelText] = useState('Freshly roasted coffee');
 
     const onChangeX = (...args: unknown[]) => {
@@ -66,12 +73,14 @@ export const LabelDesigner = withStyles(styles)(
 
     const sketch = (p5: P5) => {
       p5.setup = () => {
-        p5.createCanvas(380, 532);
+        p5.createCanvas(labelDimensions.x, labelDimensions.y);
         p5.background(120, 120, 140);
       };
 
       p5.draw = () => {
         p5.noStroke();
+        p5.fill('orange');
+        p5.ellipse(x, y, 50 * scale);
         p5.fill('white');
         p5.rect(0, 400, p5.width, p5.height - 400);
         p5.fill('black');
@@ -95,18 +104,25 @@ export const LabelDesigner = withStyles(styles)(
           <Typography>Horizontal position</Typography>
           <Slider
             value={x}
+            min={0}
+            max={canvas?.width || labelDimensions.x}
             onChange={onChangeX}
             aria-labelledby='continuous-slider'
           />
           <Typography>Vertical position</Typography>
           <Slider
             value={y}
+            min={0}
+            max={canvas?.height || labelDimensions.y}
             onChange={onChangeY}
             aria-labelledby='continuous-slider'
           />
           <Typography>Scale</Typography>
           <Slider
             value={scale}
+            min={0}
+            max={10}
+            step={0.01}
             onChange={onChangeScale}
             aria-labelledby='continuous-slider'
           />
@@ -118,6 +134,15 @@ export const LabelDesigner = withStyles(styles)(
             variant='outlined'
             defaultValue={labelText}
           />
+          <Button
+            className={classes.button}
+            onClick={() => canvas?.save('label.png')}
+            color='primary'
+            startIcon={<SaveIcon />}
+            size='large'
+            variant='outlined'>
+            Save label
+          </Button>
         </div>
         <div className={classes.label} ref={canvasContainer}></div>
       </div>
