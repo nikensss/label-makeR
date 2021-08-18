@@ -18,15 +18,20 @@ const styles = (theme: Theme) =>
       alignItems: 'center'
     },
     controls: {
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      flexDirection: 'column'
-    },
-    button: {
-      margin: theme.spacing(1)
+      'width': '100%',
+      'height': '100%',
+      'display': 'flex',
+      'justifyContent': 'center',
+      'alignItems': 'center',
+      'flexDirection': 'column',
+      'borderColor': theme.palette.primary.main,
+      'borderRadius': theme.spacing(1),
+      'borderWidth': '1px',
+      'borderStyle': 'solid',
+      'padding': theme.spacing(2),
+      '& > *': {
+        margin: theme.spacing(1)
+      }
     },
     label: {
       width: '100%',
@@ -34,6 +39,9 @@ const styles = (theme: Theme) =>
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center'
+    },
+    input: {
+      display: 'none'
     }
   });
 
@@ -44,45 +52,61 @@ export const LabelDesigner = withStyles(styles)(
     const labelDimensions = { width: 380, height: 532 } as const;
     const canvasContainer = createRef<HTMLDivElement>();
     const [canvas, setCanvas] = useState<P5 | null>(null);
-    const [labelPixels, setLabelPixels] = useState(new ImageData(1, 1));
 
+    const [logo, setLogo] = useState('');
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
     const [scale, setScale] = useState(1);
     const [labelText, setLabelText] = useState('Freshly roasted coffee');
 
-    const onChangeX = (...args: unknown[]) => {
-      const [, value] = args;
-      if (typeof value !== 'number') return;
-      setX(value);
+    type SetState = React.Dispatch<React.SetStateAction<number>>;
+
+    const onChange = (change: SetState) => {
+      return (...args: unknown[]) => {
+        const [, value] = args;
+        if (typeof value !== 'number') return;
+        change(value);
+      };
     };
 
-    const onChangeY = (...args: unknown[]) => {
-      const [, value] = args;
-      if (typeof value !== 'number') return;
-      setY(value);
-    };
-    const onChangeScale = (...args: unknown[]) => {
-      const [, value] = args;
-      if (typeof value !== 'number') return;
-      setScale(value);
-    };
+    const onChangeX = onChange(setX);
+    const onChangeY = onChange(setY);
+    const onChangeScale = onChange(setScale);
 
     const onChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
       setLabelText(event.target.value);
     };
 
+    const onFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const result = e.target?.result;
+        if (typeof result !== 'string') return setLogo('');
+        setLogo(result);
+      };
+      reader.readAsDataURL(file);
+    };
+
     const sketch = (p5: P5) => {
+      let img: P5.Element | null = null;
+
       p5.setup = () => {
         p5.createCanvas(labelDimensions.width, labelDimensions.height);
         p5.pixelDensity(10);
         p5.background(120, 120, 140);
+        img = p5.createImg(logo, '');
+        img.hide();
       };
 
       p5.draw = () => {
         p5.noStroke();
-        p5.fill('orange');
-        p5.ellipse(x, y, 50 * scale);
+        if (img) {
+          const { width, height } = img.elt;
+          p5.image(img, x, y, width * scale, height * scale);
+        }
         p5.fill('white');
         p5.rect(0, 400, p5.width, p5.height - 400);
         p5.fill('black');
@@ -94,26 +118,37 @@ export const LabelDesigner = withStyles(styles)(
       };
     };
 
-    const getCanvasPixels = (canvas: P5 | null) => {
-      return canvas?.drawingContext.canvas
-        .getContext('2d')
-        ?.getImageData(0, 0, labelDimensions.width, labelDimensions.height);
-    };
+    // const getCanvasPixels = (canvas: P5 | null) => {
+    //   return canvas?.drawingContext.canvas
+    //     .getContext('2d')
+    //     ?.getImageData(0, 0, labelDimensions.width, labelDimensions.height);
+    // };
 
     useEffect(() => {
       if (!canvasContainer.current) return;
 
       canvas?.remove();
       setCanvas(new P5(sketch, canvasContainer.current));
-
-      const imageData = getCanvasPixels(canvas);
-      if (imageData) setLabelPixels(imageData);
-      console.log({ labelPixels: labelPixels.data.length });
-    }, [x, y, scale, labelText]);
+    }, [logo, x, y, scale, labelText]);
 
     return (
       <div className={classes.container}>
         <div className={classes.controls}>
+          <div>
+            <input
+              accept='image/*'
+              className={classes.input}
+              id='contained-button-file'
+              multiple
+              type='file'
+              onChange={onFile}
+            />
+            <label htmlFor='contained-button-file'>
+              <Button variant='contained' color='primary' component='span'>
+                Upload logo
+              </Button>
+            </label>
+          </div>
           <Typography>Horizontal position</Typography>
           <Slider
             value={x}
