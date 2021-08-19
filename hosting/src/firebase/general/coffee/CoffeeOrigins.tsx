@@ -19,9 +19,15 @@ export interface GetTableInput extends GetRowsInput {
 }
 
 export class CoffeeOrigins {
-  constructor(private coffeeOrigins: CoffeeOrigin[]) {}
+  constructor(private readonly coffeeOrigins: CoffeeOrigin[]) {}
 
-  getTable({ selection, onSelection, tableClass }: GetTableInput): JSX.Element {
+  getTable({
+    selection,
+    onSelection,
+    tableClass
+  }: GetTableInput): JSX.Element | null {
+    if (!this.isReady()) return null;
+
     return (
       <TableContainer className={tableClass} component={Paper}>
         <Table>
@@ -30,6 +36,10 @@ export class CoffeeOrigins {
         </Table>
       </TableContainer>
     );
+  }
+
+  private isReady(): boolean {
+    return typeof this.coffeeOrigins[0] !== 'undefined';
   }
 
   private getColumns(): JSX.Element {

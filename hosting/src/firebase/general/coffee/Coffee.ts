@@ -41,9 +41,7 @@ export class Coffee implements FirestoreDocument {
 
   constructor(snapshot: firebase.firestore.QueryDocumentSnapshot) {
     const data = snapshot.data();
-    console.log({ data });
     if (!isFirestoreCoffee(data)) throw new Error('Invalid data provided');
-    console.log(`Received snapshot of ${snapshot.id}`);
     this.data = data;
   }
 
