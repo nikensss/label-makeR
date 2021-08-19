@@ -1,7 +1,7 @@
 import P5 from 'p5';
 import { createStyles, Theme, withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { createRef, useEffect, useState } from 'react';
+import { createRef, useEffect, useRef, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
@@ -54,10 +54,24 @@ export const LabelDesigner = withStyles(styles)(
     const [canvas, setCanvas] = useState<P5 | null>(null);
 
     const [logo, setLogo] = useState('');
+    const logoRef = useRef(logo);
+    logoRef.current = logo;
+
     const [x, setX] = useState(0);
+    const xRef = useRef(x);
+    xRef.current = x;
+
     const [y, setY] = useState(0);
-    const [scale, setScale] = useState(1);
+    const yRef = useRef(y);
+    yRef.current = y;
+
+    const [scale, setScale] = useState(0.25);
+    const scaleRef = useRef(scale);
+    scaleRef.current = scale;
+
     const [labelText, setLabelText] = useState('Freshly roasted coffee');
+    const labelTextRef = useRef(labelText);
+    labelTextRef.current = labelText;
 
     type SetState = React.Dispatch<React.SetStateAction<number>>;
 
@@ -96,15 +110,16 @@ export const LabelDesigner = withStyles(styles)(
       p5.setup = () => {
         p5.createCanvas(labelDimensions.width, labelDimensions.height);
         p5.pixelDensity(10);
-        p5.background(120, 120, 140);
-        img = p5.createImg(logo, '');
+        img = p5.createImg(logoRef.current, '');
         img.hide();
       };
 
       p5.draw = () => {
+        p5.background(120, 120, 140);
         p5.noStroke();
         if (img) {
           const { width, height } = img.elt;
+          const [x, y, scale] = [xRef.current, yRef.current, scaleRef.current];
           p5.image(img, x, y, width * scale, height * scale);
         }
         p5.fill('white');
@@ -113,23 +128,18 @@ export const LabelDesigner = withStyles(styles)(
         p5.textSize(25);
         p5.textFont('helvetica');
         p5.textAlign(p5.CENTER);
-        p5.text(labelText, p5.width / 2, 450);
+        p5.text(labelTextRef.current, p5.width / 2, 450);
         p5.noLoop();
       };
     };
 
-    // const getCanvasPixels = (canvas: P5 | null) => {
-    //   return canvas?.drawingContext.canvas
-    //     .getContext('2d')
-    //     ?.getImageData(0, 0, labelDimensions.width, labelDimensions.height);
-    // };
-
     useEffect(() => {
       if (!canvasContainer.current) return;
-
       canvas?.remove();
       setCanvas(new P5(sketch, canvasContainer.current));
-    }, [logo, x, y, scale, labelText]);
+    }, [canvasContainer.current, logo]);
+
+    useEffect(() => canvas?.loop(), [x, y, scale, labelText]);
 
     return (
       <div className={classes.container}>
