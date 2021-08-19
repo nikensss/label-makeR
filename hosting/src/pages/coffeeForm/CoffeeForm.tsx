@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
-const styles = ({ palette }: Theme) =>
+const styles = ({ palette, spacing }: Theme) =>
   createStyles({
     main: {
       backgroundColor: palette.secondary.main,
@@ -21,7 +21,15 @@ const styles = ({ palette }: Theme) =>
       width: '65%'
     },
     nextButton: {
-      marginTop: '1rem'
+      marginTop: spacing(3)
+    },
+    buttons: {
+      'display': 'flex',
+      'justifyContent': 'space-between',
+      'alignItems': 'center',
+      '& > *': {
+        marginRight: spacing(3)
+      }
     }
   });
 
@@ -68,22 +76,24 @@ export const CoffeeForm = withStyles(styles)(
               return setStep(0);
           }
         })()}
-        <Button
-          color='primary'
-          variant='contained'
-          className={classes.nextButton}
-          onClick={onBack}
-          disabled={step === 0}>
-          Back
-        </Button>
-        <Button
-          color='primary'
-          variant='contained'
-          className={classes.nextButton}
-          onClick={onNext}
-          disabled={!selection}>
-          Next
-        </Button>
+        <div className={classes.buttons}>
+          <Button
+            color='primary'
+            variant='contained'
+            className={classes.nextButton}
+            onClick={onBack}
+            disabled={step === 0}>
+            Back
+          </Button>
+          <Button
+            color='primary'
+            variant='contained'
+            className={classes.nextButton}
+            onClick={onNext}
+            disabled={!selection}>
+            Next
+          </Button>
+        </div>
       </FormControl>
     );
   }
