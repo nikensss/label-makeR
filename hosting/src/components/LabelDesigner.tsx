@@ -7,6 +7,8 @@ import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
+import Grid from '@material-ui/core/Grid';
+import Input from '@material-ui/core/Input';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -87,6 +89,15 @@ export const LabelDesigner = withStyles(styles)(
     const onChangeY = onChange(setY);
     const onChangeScale = onChange(setScale);
 
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setScale(event.target.value === '' ? 0.25 : Number(event.target.value));
+    };
+
+    const handleBlur = () => {
+      if (scale < 0) setScale(0);
+      if (scale > 5) setScale(5);
+    };
+
     const onChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
       setLabelText(event.target.value);
     };
@@ -129,7 +140,6 @@ export const LabelDesigner = withStyles(styles)(
         p5.textFont('helvetica');
         p5.textAlign(p5.CENTER);
         p5.text(labelTextRef.current, p5.width / 2, 450);
-        p5.noLoop();
       };
     };
 
@@ -138,8 +148,6 @@ export const LabelDesigner = withStyles(styles)(
       canvas?.remove();
       setCanvas(new P5(sketch, canvasContainer.current));
     }, [canvasContainer.current, logo]);
-
-    useEffect(() => canvas?.loop(), [x, y, scale, labelText]);
 
     return (
       <div className={classes.container}>
@@ -176,14 +184,33 @@ export const LabelDesigner = withStyles(styles)(
             aria-labelledby='continuous-slider'
           />
           <Typography>Scale</Typography>
-          <Slider
-            value={scale}
-            min={0}
-            max={10}
-            step={0.01}
-            onChange={onChangeScale}
-            aria-labelledby='continuous-slider'
-          />
+          <Grid container spacing={2} alignItems='center'>
+            <Grid item xs>
+              <Slider
+                value={scale}
+                min={0}
+                max={5}
+                step={0.01}
+                onChange={onChangeScale}
+                aria-labelledby='continuous-slider'
+              />
+            </Grid>
+            <Grid item>
+              <Input
+                value={scale}
+                margin='dense'
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                inputProps={{
+                  'step': 0.01,
+                  'min': 0,
+                  'max': 5,
+                  'type': 'number',
+                  'aria-labelledby': 'input-slider'
+                }}
+              />
+            </Grid>
+          </Grid>
           <TextField
             fullWidth
             onChange={onChangeText}
