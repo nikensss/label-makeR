@@ -29,7 +29,7 @@ const styles = ({ palette, spacing }: Theme) =>
       'justifyContent': 'space-between',
       'alignItems': 'center',
       '& > *': {
-        marginRight: spacing(3)
+        margin: spacing(3)
       }
     }
   });

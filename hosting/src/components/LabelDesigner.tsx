@@ -27,7 +27,13 @@ const styles = (theme: Theme) =>
       height: '70%',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'stretch',
+      [theme.breakpoints.down('md')]: {
+        width: '80%'
+      },
+      [theme.breakpoints.down('sm')]: {
+        width: '95%'
+      }
     },
     controls: {
       'width': '100%',
