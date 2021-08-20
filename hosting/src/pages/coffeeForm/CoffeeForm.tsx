@@ -1,8 +1,8 @@
 import { Button, createStyles, FormControl, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { useEffect, useState } from 'react';
-import { LabelDesigner } from '../../components/LabelDesigner';
+import { useEffect, useRef, useState } from 'react';
+import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
@@ -44,6 +44,17 @@ export const CoffeeForm = withStyles(styles)(
       new CoffeeOrigins([])
     );
 
+    const [labelDesign, setLabelDesign] = useState<LabelDesign>({
+      backgroundColor: '#473D54',
+      logo: '',
+      scale: 0.25,
+      text: 'Freshly roasted coffee',
+      x: 0,
+      y: 0
+    });
+    const labelDesignRef = useRef(labelDesign);
+    labelDesignRef.current = labelDesign;
+
     useEffect(() => {
       const getCoffeeOrigins = async (): Promise<void> => {
         const coffee = await getCoffee();
@@ -71,7 +82,13 @@ export const CoffeeForm = withStyles(styles)(
                 tableClass: classes.table
               });
             case 1:
-              return <LabelDesigner />;
+              return (
+                <LabelDesigner
+                  labelDesignRef={labelDesignRef}
+                  labelDesign={labelDesign}
+                  setLabelDesign={setLabelDesign}
+                />
+              );
             // TODO: show summary
             default:
               return setStep(0);

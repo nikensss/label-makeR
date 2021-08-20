@@ -2,7 +2,7 @@ import ImageIcon from '@material-ui/icons/Image';
 import P5 from 'p5';
 import { createStyles, Theme, withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { createRef, useEffect, useRef, useState } from 'react';
+import { createRef, MutableRefObject, useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
@@ -10,6 +10,15 @@ import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import Grid from '@material-ui/core/Grid';
 import Input from '@material-ui/core/Input';
+
+export interface LabelDesign {
+  backgroundColor: string;
+  logo: string;
+  scale: number;
+  text: string;
+  x: number;
+  y: number;
+}
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -48,72 +57,54 @@ const styles = (theme: Theme) =>
     }
   });
 
-type LabelDesignerInput = { classes: ClassNameMap<string> };
+type LabelDesignerInput = {
+  labelDesignRef: MutableRefObject<LabelDesign>;
+  labelDesign: LabelDesign;
+  setLabelDesign: React.Dispatch<React.SetStateAction<LabelDesign>>;
+  classes: ClassNameMap<string>;
+};
 
 export const LabelDesigner = withStyles(styles)(
-  ({ classes }: LabelDesignerInput) => {
+  ({
+    labelDesignRef,
+    labelDesign,
+    setLabelDesign,
+    classes
+  }: LabelDesignerInput) => {
     const labelDimensions = { width: 380, height: 532 } as const;
     const canvasContainer = createRef<HTMLDivElement>();
     const [canvas, setCanvas] = useState<P5 | null>(null);
 
-    const [logo, setLogo] = useState('');
-    const logoRef = useRef(logo);
-    logoRef.current = logo;
-
-    const [x, setX] = useState(0);
-    const xRef = useRef(x);
-    xRef.current = x;
-
-    const [y, setY] = useState(0);
-    const yRef = useRef(y);
-    yRef.current = y;
-
-    const [scale, setScale] = useState(0.25);
-    const scaleRef = useRef(scale);
-    scaleRef.current = scale;
-
-    const defaultBackgroundColor = '#473D54';
-    const [backgroundColor, setBackgroundColor] = useState(
-      defaultBackgroundColor
-    );
-    const backgroundColorRef = useRef(backgroundColor);
-    backgroundColorRef.current = backgroundColor;
-
-    const [labelText, setLabelText] = useState('Freshly roasted coffee');
-    const labelTextRef = useRef(labelText);
-    labelTextRef.current = labelText;
-
-    type SetState = React.Dispatch<React.SetStateAction<number>>;
-
-    const onChange = (change: SetState) => {
+    const onChange = (key: keyof Pick<LabelDesign, 'x' | 'y' | 'scale'>) => {
       return (...args: unknown[]) => {
         const [, value] = args;
         if (typeof value !== 'number') return;
-        change(value);
+        setLabelDesign({ ...labelDesign, [key]: value });
       };
     };
 
-    const onChangeX = onChange(setX);
-    const onChangeY = onChange(setY);
-    const onChangeScale = onChange(setScale);
+    const onChangeX = onChange('x');
+    const onChangeY = onChange('y');
+    const onChangeScale = onChange('scale');
     const onBackgroundColorChange = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
       const backgroundColor = event.target.value;
-      setBackgroundColor(backgroundColor || defaultBackgroundColor);
+      setLabelDesign({ ...labelDesign, backgroundColor });
     };
 
     const handleScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setScale(event.target.value === '' ? 0.25 : Number(event.target.value));
+      const scale = !event.target.value ? 0.25 : parseFloat(event.target.value);
+      setLabelDesign({ ...labelDesign, scale });
     };
 
     const handleBlur = () => {
-      if (scale < 0) setScale(0);
-      if (scale > 5) setScale(5);
+      if (labelDesign.scale < 0) setLabelDesign({ ...labelDesign, scale: 0 });
+      if (labelDesign.scale > 5) setLabelDesign({ ...labelDesign, scale: 5 });
     };
 
     const onChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setLabelText(event.target.value);
+      setLabelDesign({ ...labelDesign, text: event.target.value });
     };
 
     const onFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,9 +113,11 @@ export const LabelDesigner = withStyles(styles)(
 
       const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
-        const result = e.target?.result;
-        if (typeof result !== 'string') return setLogo('');
-        setLogo(result);
+        const logo = e.target?.result;
+        if (typeof logo !== 'string') {
+          return setLabelDesign({ ...labelDesign, logo: '' });
+        }
+        setLabelDesign({ ...labelDesign, logo });
       };
       reader.readAsDataURL(file);
     };
@@ -135,16 +128,16 @@ export const LabelDesigner = withStyles(styles)(
       p5.setup = () => {
         p5.createCanvas(labelDimensions.width, labelDimensions.height);
         p5.pixelDensity(10);
-        img = p5.createImg(logoRef.current, '');
+        img = p5.createImg(labelDesignRef.current.logo, '');
         img.hide();
       };
 
       p5.draw = () => {
-        p5.background(backgroundColorRef.current);
+        p5.background(labelDesignRef.current.backgroundColor);
         p5.noStroke();
         if (img) {
           const { width, height } = img.elt;
-          const [x, y, scale] = [xRef.current, yRef.current, scaleRef.current];
+          const { x, y, scale } = labelDesignRef.current;
           p5.image(img, x, y, width * scale, height * scale);
         }
         p5.fill('white');
@@ -153,7 +146,7 @@ export const LabelDesigner = withStyles(styles)(
         p5.textSize(25);
         p5.textFont('helvetica');
         p5.textAlign(p5.CENTER);
-        p5.text(labelTextRef.current, p5.width / 2, 450);
+        p5.text(labelDesignRef.current.text, p5.width / 2, 450);
       };
     };
 
@@ -161,7 +154,7 @@ export const LabelDesigner = withStyles(styles)(
       if (!canvasContainer.current) return;
       canvas?.remove();
       setCanvas(new P5(sketch, canvasContainer.current));
-    }, [canvasContainer.current, logo]);
+    }, [canvasContainer.current, labelDesign.logo]);
 
     return (
       <div className={classes.container}>
@@ -187,7 +180,7 @@ export const LabelDesigner = withStyles(styles)(
           </div>
           <Typography>Horizontal position</Typography>
           <Slider
-            value={x}
+            value={labelDesign.x}
             min={0}
             max={canvas?.width || labelDimensions.width}
             onChange={onChangeX}
@@ -195,7 +188,7 @@ export const LabelDesigner = withStyles(styles)(
           />
           <Typography>Vertical position</Typography>
           <Slider
-            value={y}
+            value={labelDesign.y}
             min={0}
             max={canvas?.height || labelDimensions.height}
             onChange={onChangeY}
@@ -205,7 +198,7 @@ export const LabelDesigner = withStyles(styles)(
           <Grid container spacing={2} alignItems='center'>
             <Grid item xs>
               <Slider
-                value={scale}
+                value={labelDesign.scale}
                 min={0}
                 max={5}
                 step={0.01}
@@ -215,7 +208,7 @@ export const LabelDesigner = withStyles(styles)(
             </Grid>
             <Grid item>
               <Input
-                value={scale}
+                value={labelDesign.scale}
                 margin='dense'
                 onChange={handleScaleChange}
                 onBlur={handleBlur}
@@ -235,7 +228,7 @@ export const LabelDesigner = withStyles(styles)(
             id='outlined-basic'
             label='Label text'
             variant='outlined'
-            defaultValue={labelText}
+            defaultValue={labelDesign.text}
           />
           <Grid container spacing={2} alignItems='center'>
             <Grid item>
@@ -248,7 +241,7 @@ export const LabelDesigner = withStyles(styles)(
             <Grid item xs>
               <input
                 id='background-color-input'
-                value={backgroundColor}
+                value={labelDesign.backgroundColor}
                 onChange={onBackgroundColorChange}
                 type={'color'}
               />
