@@ -1,3 +1,4 @@
+import ImageIcon from '@material-ui/icons/Image';
 import P5 from 'p5';
 import { createStyles, Theme, withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
@@ -71,6 +72,13 @@ export const LabelDesigner = withStyles(styles)(
     const scaleRef = useRef(scale);
     scaleRef.current = scale;
 
+    const defaultBackgroundColor = '#473D54';
+    const [backgroundColor, setBackgroundColor] = useState(
+      defaultBackgroundColor
+    );
+    const backgroundColorRef = useRef(backgroundColor);
+    backgroundColorRef.current = backgroundColor;
+
     const [labelText, setLabelText] = useState('Freshly roasted coffee');
     const labelTextRef = useRef(labelText);
     labelTextRef.current = labelText;
@@ -88,8 +96,14 @@ export const LabelDesigner = withStyles(styles)(
     const onChangeX = onChange(setX);
     const onChangeY = onChange(setY);
     const onChangeScale = onChange(setScale);
+    const onBackgroundColorChange = (
+      event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      const backgroundColor = event.target.value;
+      setBackgroundColor(backgroundColor || defaultBackgroundColor);
+    };
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setScale(event.target.value === '' ? 0.25 : Number(event.target.value));
     };
 
@@ -126,7 +140,7 @@ export const LabelDesigner = withStyles(styles)(
       };
 
       p5.draw = () => {
-        p5.background(120, 120, 140);
+        p5.background(backgroundColorRef.current);
         p5.noStroke();
         if (img) {
           const { width, height } = img.elt;
@@ -162,8 +176,12 @@ export const LabelDesigner = withStyles(styles)(
               onChange={onFile}
             />
             <label htmlFor='contained-button-file'>
-              <Button variant='contained' color='primary' component='span'>
-                Upload logo
+              <Button
+                startIcon={<ImageIcon />}
+                variant='contained'
+                color='primary'
+                component='span'>
+                <Typography>Upload logo</Typography>
               </Button>
             </label>
           </div>
@@ -199,7 +217,7 @@ export const LabelDesigner = withStyles(styles)(
               <Input
                 value={scale}
                 margin='dense'
-                onChange={handleInputChange}
+                onChange={handleScaleChange}
                 onBlur={handleBlur}
                 inputProps={{
                   'step': 0.01,
@@ -219,6 +237,23 @@ export const LabelDesigner = withStyles(styles)(
             variant='outlined'
             defaultValue={labelText}
           />
+          <Grid container spacing={2} alignItems='center'>
+            <Grid item>
+              <label
+                style={{ cursor: 'pointer' }}
+                htmlFor='background-color-input'>
+                <Typography>Background color</Typography>
+              </label>
+            </Grid>
+            <Grid item xs>
+              <input
+                id='background-color-input'
+                value={backgroundColor}
+                onChange={onBackgroundColorChange}
+                type={'color'}
+              />
+            </Grid>
+          </Grid>
           <Button
             className={classes.button}
             onClick={() => canvas?.save('coffee_label.png')}
