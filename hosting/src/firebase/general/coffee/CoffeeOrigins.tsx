@@ -26,20 +26,14 @@ export class CoffeeOrigins {
     onSelection,
     tableClass
   }: GetTableInput): JSX.Element | null {
-    if (!this.isReady()) return null;
-
     return (
       <TableContainer className={tableClass} component={Paper}>
         <Table>
-          <TableHead> {this.getColumns()} </TableHead>
-          <TableBody> {this.getRows({ selection, onSelection })} </TableBody>
+          <TableHead>{this.getColumns()}</TableHead>
+          <TableBody>{this.getRows({ selection, onSelection })}</TableBody>
         </Table>
       </TableContainer>
     );
-  }
-
-  private isReady(): boolean {
-    return typeof this.coffeeOrigins[0] !== 'undefined';
   }
 
   private getColumns(): JSX.Element {
