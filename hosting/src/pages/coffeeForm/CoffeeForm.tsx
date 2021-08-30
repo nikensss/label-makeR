@@ -19,7 +19,8 @@ const styles = ({ palette, spacing }: Theme) =>
       alignItems: 'center'
     },
     table: {
-      width: '65%'
+      width: '65%',
+      height: '70%'
     },
     nextButton: {
       marginTop: spacing(3)

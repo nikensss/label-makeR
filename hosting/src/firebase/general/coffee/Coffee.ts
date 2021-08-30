@@ -9,6 +9,18 @@ export interface FirestoreCoffee {
 export interface CoffeeOrigin {
   label: string;
   value: string;
+  weight: Weight;
+  price: Price;
+}
+
+export interface Weight {
+  amount: number;
+  unit: string;
+}
+
+export interface Price {
+  amount: number;
+  unit: string;
 }
 
 const isCoffeeOrigin = (data: unknown): data is CoffeeOrigin => {
@@ -19,6 +31,22 @@ const isCoffeeOrigin = (data: unknown): data is CoffeeOrigin => {
   const d = data as CoffeeOrigin;
   if (!d.label || typeof d.label !== 'string') return false;
   if (!d.value || typeof d.value !== 'string') return false;
+
+  if (
+    !d.weight ||
+    typeof d.weight.amount !== 'number' ||
+    typeof d.weight.unit !== 'string'
+  ) {
+    return false;
+  }
+
+  if (
+    !d.price ||
+    typeof d.price.amount !== 'number' ||
+    typeof d.price.unit !== 'string'
+  ) {
+    return false;
+  }
 
   return true;
 };
