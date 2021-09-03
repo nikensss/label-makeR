@@ -2,7 +2,9 @@ import { Button, createStyles, FormControl, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useRef, useState } from 'react';
+import { CoffeeSelectionSummary } from '../../components/CoffeeSelectionSummary';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
+import { CoffeeOrigin } from '../../firebase/general/coffee/Coffee';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
@@ -40,7 +42,7 @@ type CoffeeFormInput = { classes: ClassNameMap<string> };
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
     const [step, setStep] = useState(0);
-    const [selection, setSelection] = useState('');
+    const [selection, setSelection] = useState<CoffeeOrigin | null>(null);
     const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
       new CoffeeOrigins([])
     );
@@ -56,6 +58,10 @@ export const CoffeeForm = withStyles(styles)(
     const labelDesignRef = useRef(labelDesign);
     labelDesignRef.current = labelDesign;
 
+    const [label, setLabel] = useState('');
+    const labelRef = useRef(label);
+    labelRef.current = label;
+
     useEffect(() => {
       const getCoffeeOrigins = async (): Promise<void> => {
         const coffee = await getCoffee();
@@ -66,7 +72,7 @@ export const CoffeeForm = withStyles(styles)(
     }, []);
 
     const onSelection = (value: string) => {
-      setSelection(selection === value ? '' : value);
+      setSelection(coffeeOrigins.find(value));
     };
 
     const onNext = () => setStep(step + 1);
@@ -88,9 +94,16 @@ export const CoffeeForm = withStyles(styles)(
                   labelDesignRef={labelDesignRef}
                   labelDesign={labelDesign}
                   setLabelDesign={setLabelDesign}
+                  setLabel={setLabel}
                 />
               );
-            // TODO: show summary
+            case 2:
+              return (
+                <CoffeeSelectionSummary
+                  label={label}
+                  coffeeOrigin={selection}
+                />
+              );
             default:
               return setStep(0);
           }
@@ -109,7 +122,7 @@ export const CoffeeForm = withStyles(styles)(
             variant='contained'
             className={classes.nextButton}
             onClick={onNext}
-            disabled={!selection}>
+            disabled={!selection || step >= 2}>
             Next
           </Button>
         </div>

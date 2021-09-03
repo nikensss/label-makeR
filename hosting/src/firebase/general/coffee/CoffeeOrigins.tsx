@@ -11,7 +11,7 @@ import capitalize from '@material-ui/core/utils/capitalize';
 import { CoffeeOrigin } from './Coffee';
 
 interface GetRowsInput {
-  selection: string;
+  selection: CoffeeOrigin | null;
   onSelection: (value: string) => void;
 }
 
@@ -21,6 +21,10 @@ export interface GetTableInput extends GetRowsInput {
 
 export class CoffeeOrigins {
   constructor(private readonly coffeeOrigins: CoffeeOrigin[]) {}
+
+  find(value: string): CoffeeOrigin | null {
+    return this.coffeeOrigins.find(co => co.value === value) || null;
+  }
 
   getTable({
     selection,
@@ -88,7 +92,7 @@ export class CoffeeOrigins {
           <TableCell padding='checkbox'>
             <Checkbox
               color='primary'
-              checked={selection === value}
+              checked={selection !== null && selection.value === value}
               inputProps={{ 'aria-labelledby': label }}
             />
           </TableCell>
