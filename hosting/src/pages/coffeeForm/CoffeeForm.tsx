@@ -4,7 +4,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useRef, useState } from 'react';
 import { CoffeeSelectionSummary } from '../../components/CoffeeSelectionSummary';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
-import { CoffeeOrigin } from '../../firebase/general/coffee/Coffee';
+import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 

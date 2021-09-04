@@ -1,24 +1,52 @@
-import { CoffeeOrigin } from '../firebase/general/coffee/Coffee';
+import { Theme } from '@material-ui/core/styles/createTheme';
+import withStyles, { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import Typography from '@material-ui/core/Typography';
+import createStyles from '@material-ui/styles/createStyles';
+import {
+  CoffeeOrigin,
+  coffeeOriginAsCard
+} from '../firebase/general/coffee/CoffeeOrigin';
 
 type CoffeeSelectionSummaryProps = {
   coffeeOrigin: CoffeeOrigin | null;
   label: string;
+  classes: ClassNameMap<string>;
 };
 
-export const CoffeeSelectionSummary = ({
-  coffeeOrigin,
-  label
-}: CoffeeSelectionSummaryProps): JSX.Element => {
-  console.log({ coffeeOrigin });
-  if (!coffeeOrigin) throw new Error('We should not be here');
+const styles = (theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    selectionAndLabel: {
+      'display': 'flex',
+      'justifyContent': 'center',
+      'alignItems': 'center',
+      '& > *': {
+        margin: theme.spacing(1)
+      }
+    }
+  });
 
-  return (
-    <>
-      <div>Summary</div>
-      <div>
-        {coffeeOrigin.label}, {coffeeOrigin.weight.amount}
+export const CoffeeSelectionSummary = withStyles(styles)(
+  ({
+    coffeeOrigin,
+    label,
+    classes
+  }: CoffeeSelectionSummaryProps): JSX.Element => {
+    if (!coffeeOrigin) throw new Error('We should not be here');
+
+    return (
+      <div className={classes.root}>
+        <Typography variant='h3'>Your order</Typography>
+        <div className={classes.selectionAndLabel}>
+          <div>{coffeeOriginAsCard(coffeeOrigin)}</div>
+          <img style={{ width: '380px', height: '532px' }} src={label} />
+        </div>
       </div>
-      <img style={{ width: '380px', height: '532px' }} src={label} />
-    </>
-  );
-};
+    );
+  }
+);
