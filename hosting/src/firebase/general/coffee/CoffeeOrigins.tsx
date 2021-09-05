@@ -9,29 +9,24 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
 import { CoffeeOrigin } from './Coffee';
+import { CoffeeCounter } from './CoffeeCounter';
 
 interface GetRowsInput {
-  selection: string;
-  onSelection: (value: string) => void;
+  onSelection: (id: string, amount: number) => void;
 }
 
 export interface GetTableInput extends GetRowsInput {
   tableClass: string;
 }
-
 export class CoffeeOrigins {
   constructor(private readonly coffeeOrigins: CoffeeOrigin[]) {}
 
-  getTable({
-    selection,
-    onSelection,
-    tableClass
-  }: GetTableInput): JSX.Element | null {
+  getTable({ onSelection, tableClass }: GetTableInput): JSX.Element | null {
     return (
       <TableContainer className={tableClass} component={Paper}>
         <Table stickyHeader>
           <TableHead>{this.getColumns()}</TableHead>
-          <TableBody>{this.getRows({ selection, onSelection })}</TableBody>
+          <TableBody>{this.getRows({ onSelection })}</TableBody>
         </Table>
       </TableContainer>
     );
@@ -71,26 +66,17 @@ export class CoffeeOrigins {
     );
   }
 
-  private getRows({ selection, onSelection }: GetRowsInput): JSX.Element[] {
+  private getRows({ onSelection }: GetRowsInput): JSX.Element[] {
     const keys = this.getKeys();
     const isReady = this.isReady();
 
     return this.coffeeOrigins.map((coffeeOrigin, id) => {
-      const { value, label } = coffeeOrigin;
+      const { value } = coffeeOrigin;
 
       return (
-        <TableRow
-          hover
-          role='checkbox'
-          key={id}
-          onClick={() => onSelection(value)}
-          style={{ cursor: 'pointer' }}>
+        <TableRow hover role='checkbox' key={id} style={{ cursor: 'pointer' }}>
           <TableCell padding='checkbox'>
-            <Checkbox
-              color='primary'
-              checked={selection === value}
-              inputProps={{ 'aria-labelledby': label }}
-            />
+            <CoffeeCounter onCoffeeAmountChange={onSelection} id={value} />
           </TableCell>
           {isReady &&
             keys.map((k, i) => {

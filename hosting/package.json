@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@blueprintjs/core": "^3.47.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/react-fontawesome": "^0.1.15",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "firebase": "^8.8.0",
@@ -34,11 +36,24 @@
     "prepare": "cd .. && husky install hosting/.husky"
   },
   "eslintConfig": {
-    "extends": ["react-app", "react-app/jest"]
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
-    "production": [">0.3%", "not ie 11", "not dead", "not op_mini all"],
-    "development": [">0.3%", "not ie 11", "not dead", "not op_mini all"]
+    "production": [
+      ">0.3%",
+      "not ie 11",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      ">0.3%",
+      "not ie 11",
+      "not dead",
+      "not op_mini all"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^13.1.0",

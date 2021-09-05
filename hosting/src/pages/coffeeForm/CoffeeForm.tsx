@@ -37,10 +37,12 @@ const styles = ({ palette, spacing }: Theme) =>
 
 type CoffeeFormInput = { classes: ClassNameMap<string> };
 
+export type CoffeeSelections = Record<string, number | undefined>;
+
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
     const [step, setStep] = useState(0);
-    const [selection, setSelection] = useState('');
+    const [selections, setSelections] = useState<CoffeeSelections>({});
     const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
       new CoffeeOrigins([])
     );
@@ -65,8 +67,8 @@ export const CoffeeForm = withStyles(styles)(
       getCoffeeOrigins().catch(ex => console.error(ex));
     }, []);
 
-    const onSelection = (value: string) => {
-      setSelection(selection === value ? '' : value);
+    const onSelection = (id: string, amount: number) => {
+      setSelections({ ...selections, [id]: amount });
     };
 
     const onNext = () => setStep(step + 1);
@@ -78,7 +80,6 @@ export const CoffeeForm = withStyles(styles)(
           switch (step) {
             case 0:
               return coffeeOrigins.getTable({
-                selection,
                 onSelection,
                 tableClass: classes.table
               });
@@ -109,7 +110,7 @@ export const CoffeeForm = withStyles(styles)(
             variant='contained'
             className={classes.nextButton}
             onClick={onNext}
-            disabled={!selection}>
+            disabled={!selections}>
             Next
           </Button>
         </div>
