@@ -2,6 +2,7 @@ import { Button, createStyles, FormControl, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { CoffeeSelectionSummary } from '../../components/CoffeeSelectionSummary';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
 import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
@@ -42,6 +43,7 @@ type CoffeeFormInput = { classes: ClassNameMap<string> };
 
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
+    const history = useHistory();
     const [step, setStep] = useState(0);
     // TODO: we should probably use a 'Order' class to keep track of the
     // selected coffees and the amounts. This class could also easily create
@@ -77,12 +79,26 @@ export const CoffeeForm = withStyles(styles)(
     }, []);
 
     const onSelection = (value: string) => {
-      setSelection(coffeeOrigins.find(value));
+      // if there is no selection, select the clicked one
+      if (!selection) return setSelection(coffeeOrigins.find(value));
+
+      // if a differen coffe is select, change selection
+      if (selection.value !== value) {
+        return setSelection(coffeeOrigins.find(value));
+      }
+
+      // if the same coffee is clicked, deselect it
+      if (selection.value === value) return setSelection(null);
     };
 
     const LAST_STEP = 2;
     const onNext = () => setStep(step === LAST_STEP ? step : step + 1);
     const onBack = () => setStep(step === 0 ? step : step - 1);
+    const onPay = () => {
+      console.log('Paid!');
+      history.push('/thankyou');
+    };
+    const handleNextClick = () => (step === LAST_STEP ? onPay() : onNext());
 
     return (
       <FormControl className={classes.main} component='fieldset'>
@@ -127,8 +143,8 @@ export const CoffeeForm = withStyles(styles)(
             color='primary'
             variant='contained'
             className={classes.nextButton}
-            onClick={onNext}
-            disabled={!selection || step >= LAST_STEP}>
+            onClick={handleNextClick}
+            disabled={!selection}>
             {step >= LAST_STEP ? 'Pay' : 'Next'}
           </Button>
         </div>
