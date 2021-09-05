@@ -7,6 +7,9 @@ import { Start } from './pages/start/Start';
 import { ThankYou } from './pages/thankYou/ThankYou';
 
 const theme = createTheme({
+  typography: {
+    fontFamily: ['Montserrat', 'Courier New', 'monospace'].join(',')
+  },
   palette: {
     primary: {
       main: '#1f2430'
