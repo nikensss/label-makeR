@@ -8,8 +8,8 @@ import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
-const styles = ({ palette, spacing }: Theme) =>
-  createStyles({
+const styles = ({ palette, spacing }: Theme) => {
+  return createStyles({
     main: {
       backgroundColor: palette.secondary.main,
       color: palette.primary.main,
@@ -36,12 +36,17 @@ const styles = ({ palette, spacing }: Theme) =>
       }
     }
   });
+};
 
 type CoffeeFormInput = { classes: ClassNameMap<string> };
 
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
     const [step, setStep] = useState(0);
+    // TODO: we should probably use a 'Order' class to keep track of the
+    // selected coffees and the amounts. This class could also easily create
+    // the markup for the summary, return the total amount to be paid, keep the
+    // label the use designed (maybe, not sure about this one, though...)
     const [selection, setSelection] = useState<CoffeeOrigin | null>(null);
     const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
       new CoffeeOrigins([])
@@ -75,7 +80,8 @@ export const CoffeeForm = withStyles(styles)(
       setSelection(coffeeOrigins.find(value));
     };
 
-    const onNext = () => setStep(step + 1);
+    const LAST_STEP = 2;
+    const onNext = () => setStep(step === LAST_STEP ? step : step + 1);
     const onBack = () => setStep(step === 0 ? step : step - 1);
 
     return (
@@ -122,8 +128,8 @@ export const CoffeeForm = withStyles(styles)(
             variant='contained'
             className={classes.nextButton}
             onClick={onNext}
-            disabled={!selection || step >= 2}>
-            Next
+            disabled={!selection || step >= LAST_STEP}>
+            {step >= LAST_STEP ? 'Pay' : 'Next'}
           </Button>
         </div>
       </FormControl>
