@@ -8,6 +8,7 @@
     "@fortawesome/react-fontawesome": "^0.1.15",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
+    "currency-symbol-map": "^5.0.1",
     "firebase": "^8.8.0",
     "global": "^4.4.0",
     "p5": "^1.4.0",

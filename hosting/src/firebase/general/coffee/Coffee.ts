@@ -1,26 +1,10 @@
 import firebase from 'firebase';
 import { FirestoreDocument } from '../../firebase';
+import { CoffeeOrigin } from './CoffeeOrigin';
 import { CoffeeOrigins } from './CoffeeOrigins';
 
 export interface FirestoreCoffee {
   origins: CoffeeOrigin[];
-}
-
-export interface CoffeeOrigin {
-  label: string;
-  value: string;
-  weight: Weight;
-  price: Price;
-}
-
-export interface Weight {
-  amount: number;
-  unit: string;
-}
-
-export interface Price {
-  amount: number;
-  unit: string;
 }
 
 const isCoffeeOrigin = (data: unknown): data is CoffeeOrigin => {

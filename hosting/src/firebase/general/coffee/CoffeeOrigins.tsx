@@ -8,8 +8,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
-import { CoffeeOrigin } from './Coffee';
 import { CoffeeCounter } from './CoffeeCounter';
+import { CoffeeOrigin } from './CoffeeOrigin';
 
 interface GetRowsInput {
   onSelection: (id: string, amount: number) => void;
@@ -20,6 +20,10 @@ export interface GetTableInput extends GetRowsInput {
 }
 export class CoffeeOrigins {
   constructor(private readonly coffeeOrigins: CoffeeOrigin[]) {}
+
+  find(value: string): CoffeeOrigin | null {
+    return this.coffeeOrigins.find(co => co.value === value) || null;
+  }
 
   getTable({ onSelection, tableClass }: GetTableInput): JSX.Element | null {
     return (

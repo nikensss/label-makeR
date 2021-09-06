@@ -2,12 +2,14 @@ import { Button, createStyles, FormControl, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { CoffeeSelectionSummary } from '../../components/CoffeeSelectionSummary';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
-const styles = ({ palette, spacing }: Theme) =>
-  createStyles({
+const styles = ({ palette, spacing }: Theme) => {
+  return createStyles({
     main: {
       backgroundColor: palette.secondary.main,
       color: palette.primary.main,
@@ -34,6 +36,7 @@ const styles = ({ palette, spacing }: Theme) =>
       }
     }
   });
+};
 
 type CoffeeFormInput = { classes: ClassNameMap<string> };
 
@@ -41,6 +44,7 @@ export type CoffeeSelections = Record<string, number | undefined>;
 
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
+    const history = useHistory();
     const [step, setStep] = useState(0);
     const [selections, setSelections] = useState<CoffeeSelections>({});
     const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
@@ -58,6 +62,10 @@ export const CoffeeForm = withStyles(styles)(
     const labelDesignRef = useRef(labelDesign);
     labelDesignRef.current = labelDesign;
 
+    const [label, setLabel] = useState('');
+    const labelRef = useRef(label);
+    labelRef.current = label;
+
     useEffect(() => {
       const getCoffeeOrigins = async (): Promise<void> => {
         const coffee = await getCoffee();
@@ -71,8 +79,14 @@ export const CoffeeForm = withStyles(styles)(
       setSelections({ ...selections, [id]: amount });
     };
 
-    const onNext = () => setStep(step + 1);
-    const onBack = () => setStep(step === 0 ? step : step - 1);
+    const LAST_STEP = 2;
+    const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
+    const onBack = () => setStep(step <= 0 ? 0 : step - 1);
+    const onPay = () => {
+      console.log('Paid!');
+      history.push('/thankyou');
+    };
+    const handleNextClick = () => (step === LAST_STEP ? onPay() : onNext());
 
     return (
       <FormControl className={classes.main} component='fieldset'>
@@ -89,9 +103,16 @@ export const CoffeeForm = withStyles(styles)(
                   labelDesignRef={labelDesignRef}
                   labelDesign={labelDesign}
                   setLabelDesign={setLabelDesign}
+                  setLabel={setLabel}
                 />
               );
-            // TODO: show summary
+            case 2:
+              return (
+                <CoffeeSelectionSummary
+                  label={label}
+                  coffeeSelections={selections}
+                />
+              );
             default:
               return setStep(0);
           }
@@ -109,9 +130,9 @@ export const CoffeeForm = withStyles(styles)(
             color='primary'
             variant='contained'
             className={classes.nextButton}
-            onClick={onNext}
+            onClick={handleNextClick}
             disabled={!selections}>
-            Next
+            {step >= LAST_STEP ? 'Pay' : 'Next'}
           </Button>
         </div>
       </FormControl>
