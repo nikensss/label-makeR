@@ -92,8 +92,8 @@ export const CoffeeForm = withStyles(styles)(
     };
 
     const LAST_STEP = 2;
-    const onNext = () => setStep(step === LAST_STEP ? step : step + 1);
-    const onBack = () => setStep(step === 0 ? step : step - 1);
+    const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
+    const onBack = () => setStep(step <= 0 ? 0 : step - 1);
     const onPay = () => {
       console.log('Paid!');
       history.push('/thankyou');
