@@ -6,6 +6,7 @@
     "@blueprintjs/core": "^3.47.0",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
+    "currency-symbol-map": "^5.0.1",
     "firebase": "^8.8.0",
     "global": "^4.4.0",
     "p5": "^1.4.0",
@@ -34,11 +35,24 @@
     "prepare": "cd .. && husky install hosting/.husky"
   },
   "eslintConfig": {
-    "extends": ["react-app", "react-app/jest"]
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
-    "production": [">0.3%", "not ie 11", "not dead", "not op_mini all"],
-    "development": [">0.3%", "not ie 11", "not dead", "not op_mini all"]
+    "production": [
+      ">0.3%",
+      "not ie 11",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      ">0.3%",
+      "not ie 11",
+      "not dead",
+      "not op_mini all"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^13.1.0",

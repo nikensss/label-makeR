@@ -67,6 +67,7 @@ type LabelDesignerInput = {
   labelDesignRef: MutableRefObject<LabelDesign>;
   labelDesign: LabelDesign;
   setLabelDesign: React.Dispatch<React.SetStateAction<LabelDesign>>;
+  setLabel: React.Dispatch<React.SetStateAction<string>>;
   classes: ClassNameMap<string>;
 };
 
@@ -75,6 +76,7 @@ export const LabelDesigner = withStyles(styles)(
     labelDesignRef,
     labelDesign,
     setLabelDesign,
+    setLabel,
     classes
   }: LabelDesignerInput) => {
     const labelDimensions = { width: 380, height: 532 } as const;
@@ -141,11 +143,13 @@ export const LabelDesigner = withStyles(styles)(
       p5.draw = () => {
         p5.background(labelDesignRef.current.backgroundColor);
         p5.noStroke();
+
         if (img) {
           const { width, height } = img.elt;
           const { x, y, scale } = labelDesignRef.current;
           p5.image(img, x, y, width * scale, height * scale);
         }
+
         p5.fill('white');
         p5.rect(0, 400, p5.width, p5.height - 400);
         p5.fill('black');
@@ -153,6 +157,11 @@ export const LabelDesigner = withStyles(styles)(
         p5.textFont('helvetica');
         p5.textAlign(p5.CENTER);
         p5.text(labelDesignRef.current.text, p5.width / 2, 450);
+
+        const { canvas } = p5.get() as unknown as {
+          canvas: HTMLCanvasElement;
+        };
+        setLabel(canvas.toDataURL());
       };
     };
 

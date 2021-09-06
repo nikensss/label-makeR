@@ -1,14 +1,10 @@
 import firebase from 'firebase';
 import { FirestoreDocument } from '../../firebase';
+import { CoffeeOrigin } from './CoffeeOrigin';
 import { CoffeeOrigins } from './CoffeeOrigins';
 
 export interface FirestoreCoffee {
   origins: CoffeeOrigin[];
-}
-
-export interface CoffeeOrigin {
-  label: string;
-  value: string;
 }
 
 const isCoffeeOrigin = (data: unknown): data is CoffeeOrigin => {
@@ -19,6 +15,22 @@ const isCoffeeOrigin = (data: unknown): data is CoffeeOrigin => {
   const d = data as CoffeeOrigin;
   if (!d.label || typeof d.label !== 'string') return false;
   if (!d.value || typeof d.value !== 'string') return false;
+
+  if (
+    !d.weight ||
+    typeof d.weight.amount !== 'number' ||
+    typeof d.weight.unit !== 'string'
+  ) {
+    return false;
+  }
+
+  if (
+    !d.price ||
+    typeof d.price.amount !== 'number' ||
+    typeof d.price.unit !== 'string'
+  ) {
+    return false;
+  }
 
   return true;
 };

@@ -4,8 +4,12 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.scss';
 import { CoffeeForm } from './pages/coffeeForm/CoffeeForm';
 import { Start } from './pages/start/Start';
+import { ThankYou } from './pages/thankYou/ThankYou';
 
 const theme = createTheme({
+  typography: {
+    fontFamily: ['Montserrat', 'Courier New', 'monospace'].join(',')
+  },
   palette: {
     primary: {
       main: '#1f2430'
@@ -25,6 +29,7 @@ function App(): JSX.Element {
             <Switch>
               <Route exact path='/' component={Start} />
               <Route exact path='/coffee' component={CoffeeForm} />
+              <Route exact path='/thankyou' component={ThankYou} />
             </Switch>
           </div>
         </Router>

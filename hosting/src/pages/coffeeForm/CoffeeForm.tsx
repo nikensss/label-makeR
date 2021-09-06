@@ -2,12 +2,15 @@ import { Button, createStyles, FormControl, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { CoffeeSelectionSummary } from '../../components/CoffeeSelectionSummary';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
+import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
-const styles = ({ palette, spacing }: Theme) =>
-  createStyles({
+const styles = ({ palette, spacing }: Theme) => {
+  return createStyles({
     main: {
       backgroundColor: palette.secondary.main,
       color: palette.primary.main,
@@ -19,7 +22,8 @@ const styles = ({ palette, spacing }: Theme) =>
       alignItems: 'center'
     },
     table: {
-      width: '65%'
+      width: '65%',
+      height: '70%'
     },
     nextButton: {
       marginTop: spacing(3)
@@ -33,13 +37,19 @@ const styles = ({ palette, spacing }: Theme) =>
       }
     }
   });
+};
 
 type CoffeeFormInput = { classes: ClassNameMap<string> };
 
 export const CoffeeForm = withStyles(styles)(
   ({ classes }: CoffeeFormInput): JSX.Element => {
+    const history = useHistory();
     const [step, setStep] = useState(0);
-    const [selection, setSelection] = useState('');
+    // TODO: we should probably use a 'Order' class to keep track of the
+    // selected coffees and the amounts. This class could also easily create
+    // the markup for the summary, return the total amount to be paid, keep the
+    // label the use designed (maybe, not sure about this one, though...)
+    const [selection, setSelection] = useState<CoffeeOrigin | null>(null);
     const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
       new CoffeeOrigins([])
     );
@@ -55,6 +65,10 @@ export const CoffeeForm = withStyles(styles)(
     const labelDesignRef = useRef(labelDesign);
     labelDesignRef.current = labelDesign;
 
+    const [label, setLabel] = useState('');
+    const labelRef = useRef(label);
+    labelRef.current = label;
+
     useEffect(() => {
       const getCoffeeOrigins = async (): Promise<void> => {
         const coffee = await getCoffee();
@@ -65,11 +79,26 @@ export const CoffeeForm = withStyles(styles)(
     }, []);
 
     const onSelection = (value: string) => {
-      setSelection(selection === value ? '' : value);
+      // if there is no selection, select the clicked one
+      if (!selection) return setSelection(coffeeOrigins.find(value));
+
+      // if a differen coffe is select, change selection
+      if (selection.value !== value) {
+        return setSelection(coffeeOrigins.find(value));
+      }
+
+      // if the same coffee is clicked, deselect it
+      if (selection.value === value) return setSelection(null);
     };
 
-    const onNext = () => setStep(step + 1);
-    const onBack = () => setStep(step === 0 ? step : step - 1);
+    const LAST_STEP = 2;
+    const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
+    const onBack = () => setStep(step <= 0 ? 0 : step - 1);
+    const onPay = () => {
+      console.log('Paid!');
+      history.push('/thankyou');
+    };
+    const handleNextClick = () => (step === LAST_STEP ? onPay() : onNext());
 
     return (
       <FormControl className={classes.main} component='fieldset'>
@@ -87,9 +116,16 @@ export const CoffeeForm = withStyles(styles)(
                   labelDesignRef={labelDesignRef}
                   labelDesign={labelDesign}
                   setLabelDesign={setLabelDesign}
+                  setLabel={setLabel}
                 />
               );
-            // TODO: show summary
+            case 2:
+              return (
+                <CoffeeSelectionSummary
+                  label={label}
+                  coffeeOrigin={selection}
+                />
+              );
             default:
               return setStep(0);
           }
@@ -107,9 +143,9 @@ export const CoffeeForm = withStyles(styles)(
             color='primary'
             variant='contained'
             className={classes.nextButton}
-            onClick={onNext}
+            onClick={handleNextClick}
             disabled={!selection}>
-            Next
+            {step >= LAST_STEP ? 'Pay' : 'Next'}
           </Button>
         </div>
       </FormControl>
