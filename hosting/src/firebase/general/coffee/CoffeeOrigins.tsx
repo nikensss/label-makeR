@@ -21,8 +21,8 @@ export interface GetTableInput extends GetRowsInput {
 export class CoffeeOrigins {
   constructor(private readonly coffeeOrigins: CoffeeOrigin[]) {}
 
-  find(value: string): CoffeeOrigin | null {
-    return this.coffeeOrigins.find(co => co.value === value) || null;
+  find(id: string): CoffeeOrigin | null {
+    return this.coffeeOrigins.find(co => co.id === id) || null;
   }
 
   getTable({ onSelection, tableClass }: GetTableInput): JSX.Element | null {
@@ -46,7 +46,7 @@ export class CoffeeOrigins {
     const [coffeeOrigin] = this.coffeeOrigins;
     return Object.keys(coffeeOrigin)
       .sort()
-      .filter(l => l !== 'value') as (keyof CoffeeOrigin)[];
+      .filter(l => !['value', 'id'].includes(l)) as (keyof CoffeeOrigin)[];
   }
 
   private getColumns(): JSX.Element {
@@ -74,13 +74,13 @@ export class CoffeeOrigins {
     const keys = this.getKeys();
     const isReady = this.isReady();
 
-    return this.coffeeOrigins.map((coffeeOrigin, id) => {
-      const { value } = coffeeOrigin;
+    return this.coffeeOrigins.map((coffeeOrigin, i) => {
+      const { id } = coffeeOrigin;
 
       return (
-        <TableRow hover role='checkbox' key={id} style={{ cursor: 'pointer' }}>
+        <TableRow hover role='checkbox' key={i} style={{ cursor: 'pointer' }}>
           <TableCell padding='checkbox'>
-            <CoffeeCounter onCoffeeAmountChange={onSelection} id={value} />
+            <CoffeeCounter onCoffeeAmountChange={onSelection} id={id} />
           </TableCell>
           {isReady &&
             keys.map((k, i) => {

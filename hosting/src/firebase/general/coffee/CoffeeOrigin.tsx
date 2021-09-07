@@ -10,7 +10,7 @@ import getSymbolFromCurrency from 'currency-symbol-map';
 
 export interface CoffeeOrigin {
   label: string;
-  value: string;
+  id: string;
   weight: Weight;
   price: Price;
 }

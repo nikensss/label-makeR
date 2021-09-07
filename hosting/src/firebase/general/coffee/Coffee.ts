@@ -14,7 +14,7 @@ const isCoffeeOrigin = (data: unknown): data is CoffeeOrigin => {
 
   const d = data as CoffeeOrigin;
   if (!d.label || typeof d.label !== 'string') return false;
-  if (!d.value || typeof d.value !== 'string') return false;
+  if (!d.id || typeof d.id !== 'string') return false;
 
   if (
     !d.weight ||
