@@ -16,7 +16,8 @@ const styles = (theme: Theme) =>
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      height: '70%'
     },
     selectionAndLabel: {
       'display': 'flex',
