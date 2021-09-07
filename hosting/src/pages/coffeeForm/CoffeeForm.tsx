@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Order } from '../../classes/Order';
 import { CoffeeSelectionSummary } from '../../components/CoffeeSelectionSummary';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
@@ -50,6 +51,7 @@ export const CoffeeForm = withStyles(styles)(
     const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
       new CoffeeOrigins([])
     );
+    const [order, setOrder] = useState(new Order());
 
     const [labelDesign, setLabelDesign] = useState<LabelDesign>({
       backgroundColor: '#473D54',
@@ -79,6 +81,11 @@ export const CoffeeForm = withStyles(styles)(
       setSelections({ ...selections, [id]: amount });
     };
 
+    useEffect(() => {
+      order.setCoffeeSelections(selections);
+      setOrder(order);
+    }, [selections]);
+
     const LAST_STEP = 2;
     const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
     const onBack = () => setStep(step <= 0 ? 0 : step - 1);
@@ -107,12 +114,7 @@ export const CoffeeForm = withStyles(styles)(
                 />
               );
             case 2:
-              return (
-                <CoffeeSelectionSummary
-                  label={label}
-                  coffeeSelections={selections}
-                />
-              );
+              return <CoffeeSelectionSummary label={label} order={order} />;
             default:
               return setStep(0);
           }

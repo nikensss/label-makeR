@@ -2,10 +2,10 @@ import { Theme } from '@material-ui/core/styles/createTheme';
 import withStyles, { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import createStyles from '@material-ui/styles/createStyles';
-import { CoffeeSelections } from '../pages/coffeeForm/CoffeeForm';
+import { Order } from '../classes/Order';
 
 type CoffeeSelectionSummaryProps = {
-  coffeeSelections: CoffeeSelections;
+  order: Order;
   label: string;
   classes: ClassNameMap<string>;
 };
@@ -29,18 +29,14 @@ const styles = (theme: Theme) =>
   });
 
 export const CoffeeSelectionSummary = withStyles(styles)(
-  ({
-    coffeeSelections,
-    label,
-    classes
-  }: CoffeeSelectionSummaryProps): JSX.Element => {
-    if (!coffeeSelections) throw new Error('We should not be here');
+  ({ order, label, classes }: CoffeeSelectionSummaryProps): JSX.Element => {
+    if (!order) throw new Error('We should not be here');
 
     return (
       <div className={classes.root}>
         <Typography variant='h3'>Your order</Typography>
         <div className={classes.selectionAndLabel}>
-          <div>{JSON.stringify(coffeeSelections, null, 2)}</div>
+          <div>{order.toReactComponent()}</div>
           <img style={{ width: '380px', height: '532px' }} src={label} />
         </div>
       </div>
