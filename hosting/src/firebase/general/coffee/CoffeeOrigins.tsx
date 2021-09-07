@@ -1,4 +1,3 @@
-import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -53,16 +52,14 @@ export class CoffeeOrigins {
     const isReady = this.isReady();
     return (
       <TableRow>
-        {isReady && (
-          <TableCell padding='checkbox'>
-            <Checkbox disabled={true} style={{ opacity: '0' }} />
-          </TableCell>
-        )}
+        {isReady && <TableCell padding='checkbox'></TableCell>}
         {isReady &&
           this.getKeys().map((c, i) => {
             return (
               <TableCell key={i}>
-                <Typography>{capitalize(c)}</Typography>
+                <Typography style={{ fontWeight: 'bold' }}>
+                  {capitalize(c)}
+                </Typography>
               </TableCell>
             );
           })}

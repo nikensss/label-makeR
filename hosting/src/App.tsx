@@ -8,7 +8,7 @@ import { ThankYou } from './pages/thankYou/ThankYou';
 
 const theme = createTheme({
   typography: {
-    fontFamily: ['Montserrat', 'Courier New', 'monospace'].join(',')
+    fontFamily: ['Source Code Pro', 'Courier New', 'monospace'].join(',')
   },
   palette: {
     primary: {

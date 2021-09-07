@@ -135,7 +135,7 @@ export const LabelDesigner = withStyles(styles)(
 
       p5.setup = () => {
         p5.createCanvas(labelDimensions.width, labelDimensions.height);
-        p5.pixelDensity(10);
+        p5.pixelDensity(2);
         img = p5.createImg(labelDesignRef.current.logo, '');
         img.hide();
       };
