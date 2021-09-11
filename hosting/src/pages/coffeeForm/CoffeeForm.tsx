@@ -83,7 +83,7 @@ export const CoffeeForm = withStyles(styles)(
 
     useEffect(() => {
       order.setCoffeeSelections(selections);
-      setOrder(order);
+      setOrder(Order.fromOrder(order));
     }, [selections]);
 
     const LAST_STEP = 2;
@@ -133,7 +133,7 @@ export const CoffeeForm = withStyles(styles)(
             variant='contained'
             className={classes.nextButton}
             onClick={handleNextClick}
-            disabled={!selections}>
+            disabled={!order.hasItems()}>
             {step >= LAST_STEP ? 'Pay' : 'Next'}
           </Button>
         </div>
