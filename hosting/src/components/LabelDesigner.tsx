@@ -188,7 +188,8 @@ export const LabelDesigner = withStyles(styles)(
                 startIcon={<ImageIcon />}
                 variant='contained'
                 color='primary'
-                component='span'>
+                component='span'
+              >
                 <Typography>Upload logo</Typography>
               </Button>
             </label>
@@ -249,7 +250,8 @@ export const LabelDesigner = withStyles(styles)(
             <Grid item>
               <label
                 style={{ cursor: 'pointer' }}
-                htmlFor='background-color-input'>
+                htmlFor='background-color-input'
+              >
                 <Typography>Background color</Typography>
               </label>
             </Grid>
@@ -268,7 +270,8 @@ export const LabelDesigner = withStyles(styles)(
             color='primary'
             startIcon={<SaveIcon />}
             size='large'
-            variant='outlined'>
+            variant='outlined'
+          >
             Save label
           </Button>
         </div>

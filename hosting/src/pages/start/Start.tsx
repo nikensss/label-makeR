@@ -29,7 +29,8 @@ export const Start = withStyles(styles)(
           variant='contained'
           color='primary'
           component={Link}
-          to={`/coffee`}>
+          to={`/coffee`}
+        >
           <Typography variant='h1'>START</Typography>
         </Button>
       </div>

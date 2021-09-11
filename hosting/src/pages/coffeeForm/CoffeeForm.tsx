@@ -125,7 +125,8 @@ export const CoffeeForm = withStyles(styles)(
             variant='contained'
             className={classes.nextButton}
             onClick={onBack}
-            disabled={step === 0}>
+            disabled={step === 0}
+          >
             Back
           </Button>
           <Button
@@ -133,7 +134,8 @@ export const CoffeeForm = withStyles(styles)(
             variant='contained'
             className={classes.nextButton}
             onClick={handleNextClick}
-            disabled={!order.hasItems()}>
+            disabled={!order.hasItems()}
+          >
             {step >= LAST_STEP ? 'Pay' : 'Next'}
           </Button>
         </div>
