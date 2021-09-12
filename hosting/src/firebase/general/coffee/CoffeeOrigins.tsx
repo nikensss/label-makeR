@@ -7,6 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
+import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
 import {
   CoffeeOrigin,
@@ -15,6 +16,7 @@ import {
 } from './CoffeeOrigin';
 
 interface GetRowsInput {
+  selections: CoffeeSelections;
   onSelection: (id: string) => (amount: number) => void;
 }
 
@@ -28,14 +30,18 @@ export class CoffeeOrigins {
     return this.coffeeOrigins.find(co => co.id === id) || null;
   }
 
-  getTable({ onSelection, tableClass }: GetTableInput): JSX.Element | null {
+  getTable({
+    selections,
+    onSelection,
+    tableClass
+  }: GetTableInput): JSX.Element | null {
     if (!this.isReady()) return null;
 
     return (
       <TableContainer className={tableClass} component={Paper}>
         <Table stickyHeader>
           <TableHead>{this.getColumns()}</TableHead>
-          <TableBody>{this.getRows({ onSelection })}</TableBody>
+          <TableBody>{this.getRows({ selections, onSelection })}</TableBody>
         </Table>
       </TableContainer>
     );
@@ -75,7 +81,10 @@ export class CoffeeOrigins {
     );
   }
 
-  private getRows({ onSelection }: GetRowsInput): JSX.Element[] | null {
+  private getRows({
+    selections,
+    onSelection
+  }: GetRowsInput): JSX.Element[] | null {
     if (!this.isReady()) return null;
 
     const keys = this.getKeys();
@@ -87,7 +96,10 @@ export class CoffeeOrigins {
       return (
         <TableRow hover key={i} style={{ cursor: 'pointer' }}>
           <TableCell padding='checkbox'>
-            <CoffeeCounter onCoffeeAmountChange={onSelection(id)} />
+            <CoffeeCounter
+              quantity={selections[id]}
+              onCoffeeAmountChange={onSelection(id)}
+            />
           </TableCell>
           {keys.map((k, i) => {
             return (

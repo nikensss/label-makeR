@@ -105,6 +105,7 @@ export const CoffeeForm = withStyles(styles)(
           switch (step) {
             case 0:
               return coffeeOrigins.getTable({
+                selections,
                 onSelection,
                 tableClass: classes.table
               });

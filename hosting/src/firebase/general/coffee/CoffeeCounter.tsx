@@ -23,12 +23,13 @@ const styles = ({ spacing }: Theme) => {
 
 type CoffeeCounterProps = {
   classes: ClassNameMap<string>;
-  onCoffeeAmountChange: (amount: number) => void;
+  onCoffeeAmountChange: (quantity: number) => void;
+  quantity?: number;
 };
 
 export const CoffeeCounter = withStyles(styles)(
-  ({ classes, onCoffeeAmountChange }: CoffeeCounterProps) => {
-    const [units, setUnits] = useState(0);
+  ({ classes, onCoffeeAmountChange, quantity = 0 }: CoffeeCounterProps) => {
+    const [qty, setQty] = useState(quantity);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
       const isNumber = /^[0-9\b]+$/;
@@ -36,14 +37,14 @@ export const CoffeeCounter = withStyles(styles)(
       if (value === '' || !isNumber.test(value)) return;
 
       const amount = parseInt(value, 10);
-      setUnits(amount < 0 ? 0 : amount);
-      setUnits(amount > 999 ? 999 : amount);
+      setQty(amount < 0 ? 0 : amount);
+      setQty(amount > 999 ? 999 : amount);
     };
 
-    const onSubtractUnit = () => setUnits(units <= 0 ? 0 : units - 1);
-    const onAddUnit = () => setUnits(units + 1);
+    const onSubtractUnit = () => setQty(qty <= 0 ? 0 : qty - 1);
+    const onAddUnit = () => setQty(qty + 1);
 
-    useEffect(() => onCoffeeAmountChange(units), [units]);
+    useEffect(() => onCoffeeAmountChange(qty), [qty]);
 
     return (
       <div className={classes.container}>
@@ -53,7 +54,7 @@ export const CoffeeCounter = withStyles(styles)(
         <TextField
           type='tel'
           className={classes.numberInput}
-          value={units}
+          value={qty}
           onChange={onChange}
           variant='outlined'
           size='small'
