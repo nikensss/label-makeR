@@ -23,12 +23,11 @@ const styles = ({ spacing }: Theme) => {
 
 type CoffeeCounterProps = {
   classes: ClassNameMap<string>;
-  onCoffeeAmountChange: (id: string, amount: number) => void;
-  id: string;
+  onCoffeeAmountChange: (amount: number) => void;
 };
 
 export const CoffeeCounter = withStyles(styles)(
-  ({ classes, onCoffeeAmountChange, id }: CoffeeCounterProps) => {
+  ({ classes, onCoffeeAmountChange }: CoffeeCounterProps) => {
     const [units, setUnits] = useState(0);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +42,7 @@ export const CoffeeCounter = withStyles(styles)(
     const onSubtractUnit = () => setUnits(units <= 0 ? 0 : units - 1);
     const onAddUnit = () => setUnits(units + 1);
 
-    useEffect(() => onCoffeeAmountChange(id, units), [units]);
+    useEffect(() => onCoffeeAmountChange(units), [units]);
 
     return (
       <div className={classes.container}>

@@ -11,7 +11,7 @@ import { CoffeeCounter } from './CoffeeCounter';
 import { CoffeeOrigin } from './CoffeeOrigin';
 
 interface GetRowsInput {
-  onSelection: (id: string, amount: number) => void;
+  onSelection: (id: string) => (amount: number) => void;
 }
 
 export interface GetTableInput extends GetRowsInput {
@@ -77,7 +77,7 @@ export class CoffeeOrigins {
       return (
         <TableRow hover role='checkbox' key={i} style={{ cursor: 'pointer' }}>
           <TableCell padding='checkbox'>
-            <CoffeeCounter onCoffeeAmountChange={onSelection} id={id} />
+            <CoffeeCounter onCoffeeAmountChange={onSelection(id)} />
           </TableCell>
           {isReady &&
             keys.map((k, i) => {

@@ -77,8 +77,10 @@ export const CoffeeForm = withStyles(styles)(
       getCoffeeOrigins().catch(ex => console.error(ex));
     }, []);
 
-    const onSelection = (id: string, amount: number) => {
-      setSelections({ ...selections, [id]: amount });
+    const onSelection = (id: string) => {
+      return (amount: number) => {
+        setSelections({ ...selections, [id]: amount });
+      };
     };
 
     useEffect(() => {
