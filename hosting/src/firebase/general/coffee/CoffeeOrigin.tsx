@@ -25,6 +25,29 @@ export interface Price {
   unit: string;
 }
 
+export class CoffeeOriginRenderer {
+  constructor(private coffeeOrigin: CoffeeOrigin) {}
+
+  get label(): string {
+    return this.coffeeOrigin.label;
+  }
+
+  get weight(): string {
+    const { weight } = this.coffeeOrigin;
+    return `${weight.amount} ${weight.unit}`;
+  }
+
+  get price(): string {
+    const { price } = this.coffeeOrigin;
+    return `${price.amount} ${price.unit}`;
+  }
+
+  getTotalPrice(quantity: number): string {
+    const { price } = this.coffeeOrigin;
+    return `${price.amount * quantity} ${price.unit}`;
+  }
+}
+
 const useStyles = makeStyles({
   root: {
     width: '380px',

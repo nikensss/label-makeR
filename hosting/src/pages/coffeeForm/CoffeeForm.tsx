@@ -83,10 +83,12 @@ export const CoffeeForm = withStyles(styles)(
       };
     };
 
+    // update order when either selections or coffeeOrigins change
     useEffect(() => {
       order.setCoffeeSelections(selections);
+      order.setCoffeeOrigins(coffeeOrigins);
       setOrder(Order.fromOrder(order));
-    }, [selections]);
+    }, [selections, coffeeOrigins]);
 
     const LAST_STEP = 2;
     const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
