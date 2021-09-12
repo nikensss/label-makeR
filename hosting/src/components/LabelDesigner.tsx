@@ -154,7 +154,7 @@ export const LabelDesigner = withStyles(styles)(
         p5.rect(0, 400, p5.width, p5.height - 400);
         p5.fill('black');
         p5.textSize(25);
-        p5.textFont('helvetica');
+        p5.textFont('Source Code Pro');
         p5.textAlign(p5.CENTER);
         p5.text(labelDesignRef.current.text, p5.width / 2, 450);
 
