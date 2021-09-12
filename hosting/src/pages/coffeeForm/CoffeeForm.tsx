@@ -57,7 +57,7 @@ export const CoffeeForm = withStyles(styles)(
       backgroundColor: '#473D54',
       logo: '',
       scale: 0.25,
-      text: 'Freshly roasted coffee',
+      text: 'Italian light roast',
       x: 0,
       y: 0
     });
