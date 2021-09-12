@@ -8,7 +8,11 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
 import { CoffeeCounter } from './CoffeeCounter';
-import { CoffeeOrigin } from './CoffeeOrigin';
+import {
+  CoffeeOrigin,
+  CoffeeOriginRenderer,
+  DisplayableCoffeeOriginKeys
+} from './CoffeeOrigin';
 
 interface GetRowsInput {
   onSelection: (id: string) => (amount: number) => void;
@@ -25,6 +29,8 @@ export class CoffeeOrigins {
   }
 
   getTable({ onSelection, tableClass }: GetTableInput): JSX.Element | null {
+    if (!this.isReady()) return null;
+
     return (
       <TableContainer className={tableClass} component={Paper}>
         <Table stickyHeader>
@@ -39,65 +45,57 @@ export class CoffeeOrigins {
     return typeof this.coffeeOrigins[0] !== 'undefined';
   }
 
-  private getKeys(): (keyof CoffeeOrigin)[] {
+  private getKeys(): DisplayableCoffeeOriginKeys[] {
     if (!this.isReady()) return [];
 
     const [coffeeOrigin] = this.coffeeOrigins;
     return Object.keys(coffeeOrigin)
       .sort()
-      .filter(l => !['value', 'id'].includes(l)) as (keyof CoffeeOrigin)[];
+      .filter(
+        l => !['value', 'id'].includes(l)
+      ) as DisplayableCoffeeOriginKeys[];
   }
 
-  private getColumns(): JSX.Element {
-    const isReady = this.isReady();
+  private getColumns(): JSX.Element | null {
+    if (!this.isReady()) return null;
+
     return (
       <TableRow>
-        {isReady && <TableCell padding='checkbox'></TableCell>}
-        {isReady &&
-          this.getKeys().map((c, i) => {
-            return (
-              <TableCell key={i}>
-                <Typography style={{ fontWeight: 'bold' }}>
-                  {capitalize(c)}
-                </Typography>
-              </TableCell>
-            );
-          })}
+        <TableCell padding='checkbox'></TableCell>
+        {this.getKeys().map((c, i) => {
+          return (
+            <TableCell key={i}>
+              <Typography style={{ fontWeight: 'bold' }}>
+                {capitalize(c)}
+              </Typography>
+            </TableCell>
+          );
+        })}
       </TableRow>
     );
   }
 
-  private getRows({ onSelection }: GetRowsInput): JSX.Element[] {
+  private getRows({ onSelection }: GetRowsInput): JSX.Element[] | null {
+    if (!this.isReady()) return null;
+
     const keys = this.getKeys();
-    const isReady = this.isReady();
 
     return this.coffeeOrigins.map((coffeeOrigin, i) => {
       const { id } = coffeeOrigin;
+      const renderer = new CoffeeOriginRenderer(coffeeOrigin);
 
       return (
-        <TableRow hover role='checkbox' key={i} style={{ cursor: 'pointer' }}>
+        <TableRow hover key={i} style={{ cursor: 'pointer' }}>
           <TableCell padding='checkbox'>
             <CoffeeCounter onCoffeeAmountChange={onSelection(id)} />
           </TableCell>
-          {isReady &&
-            keys.map((k, i) => {
-              const value = coffeeOrigin[k as keyof CoffeeOrigin];
-              if (typeof value === 'string') {
-                return (
-                  <TableCell key={i}>
-                    <Typography>{value}</Typography>
-                  </TableCell>
-                );
-              }
-
-              return (
-                <TableCell key={i}>
-                  <Typography>
-                    {value.amount}&nbsp;{value.unit}
-                  </Typography>
-                </TableCell>
-              );
-            })}
+          {keys.map((k, i) => {
+            return (
+              <TableCell key={i}>
+                <Typography>{renderer[k] ?? ''}</Typography>
+              </TableCell>
+            );
+          })}
         </TableRow>
       );
     });

@@ -25,6 +25,8 @@ export interface Price {
   unit: string;
 }
 
+export type DisplayableCoffeeOriginKeys = Exclude<keyof CoffeeOrigin, 'id'>;
+
 export class CoffeeOriginRenderer {
   constructor(private coffeeOrigin: CoffeeOrigin) {}
 
