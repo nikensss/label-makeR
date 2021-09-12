@@ -5,7 +5,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 const styles = ({ spacing }: Theme) => {
   return createStyles({
     numberInput: {
-      'width': '4ch',
+      'width': '7ch',
       '& *': {
         textAlign: 'center'
       }
@@ -37,6 +37,7 @@ export const CoffeeCounter = withStyles(styles)(
 
       const amount = parseInt(value, 10);
       setUnits(amount < 0 ? 0 : amount);
+      setUnits(amount > 999 ? 999 : amount);
     };
 
     const onSubtractUnit = () => setUnits(units <= 0 ? 0 : units - 1);
@@ -54,6 +55,8 @@ export const CoffeeCounter = withStyles(styles)(
           className={classes.numberInput}
           value={units}
           onChange={onChange}
+          variant='outlined'
+          size='small'
         />
         <Button className={classes.button} onClick={onAddUnit}>
           +
