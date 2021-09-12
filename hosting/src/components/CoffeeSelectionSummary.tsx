@@ -1,3 +1,4 @@
+import { Paper } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles/createTheme';
 import withStyles, { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
@@ -38,7 +39,9 @@ export const CoffeeSelectionSummary = withStyles(styles)(
         <Typography variant='h3'>Your order</Typography>
         <div className={classes.selectionAndLabel}>
           <div>{order.toReactComponent()}</div>
-          <img style={{ width: '380px', height: '532px' }} src={label} />
+          <Paper elevation={13}>
+            <img style={{ width: '380px', height: '532px' }} src={label} />
+          </Paper>
         </div>
       </div>
     );
