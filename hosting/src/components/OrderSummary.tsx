@@ -38,7 +38,7 @@ export const OrderSummary = withStyles(styles)(
       <div className={classes.root}>
         <Typography variant='h3'>Your order</Typography>
         <div className={classes.selectionAndLabel}>
-          <div>{order.toReactComponent()}</div>
+          <div>{order.toTable()}</div>
           <Paper elevation={13}>
             <img
               alt={'Designed label'}

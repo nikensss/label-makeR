@@ -25,6 +25,10 @@ export interface Price {
   unit: string;
 }
 
+export const priceDisplay = ({ amount, unit }: Price): string => {
+  return `${amount.toFixed(2)} ${getSymbolFromCurrency(unit)}`;
+};
+
 export type DisplayableCoffeeOriginKeys = Exclude<keyof CoffeeOrigin, 'id'>;
 
 export class CoffeeOriginRenderer {
