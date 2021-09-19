@@ -2,6 +2,7 @@
   "env": {
     "es2021": true
   },
+  "ignorePatterns": ["*.d.ts"],
   "extends": [
     "react-app",
     "react-app/jest",

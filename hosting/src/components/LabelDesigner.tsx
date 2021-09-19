@@ -96,9 +96,7 @@ export const LabelDesigner = withStyles(styles)(
     const onChangeX = onChange('x');
     const onChangeY = onChange('y');
     const onChangeScale = onChange('scale');
-    const onBackgroundColorChange = (
-      event: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const onBackgroundColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const backgroundColor = event.target.value;
       setLabelDesign({ ...labelDesign, backgroundColor });
     };
@@ -249,10 +247,7 @@ export const LabelDesigner = withStyles(styles)(
           />
           <Grid container spacing={2} alignItems='center'>
             <Grid item>
-              <label
-                style={{ cursor: 'pointer' }}
-                htmlFor='background-color-input'
-              >
+              <label style={{ cursor: 'pointer' }} htmlFor='background-color-input'>
                 <Typography>Background color</Typography>
               </label>
             </Grid>

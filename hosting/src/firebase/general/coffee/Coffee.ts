@@ -16,19 +16,11 @@ const isCoffeeOrigin = (data: unknown): data is CoffeeOrigin => {
   if (!d.label || typeof d.label !== 'string') return false;
   if (!d.id || typeof d.id !== 'string') return false;
 
-  if (
-    !d.weight ||
-    typeof d.weight.amount !== 'number' ||
-    typeof d.weight.unit !== 'string'
-  ) {
+  if (!d.weight || typeof d.weight.amount !== 'number' || typeof d.weight.unit !== 'string') {
     return false;
   }
 
-  if (
-    !d.price ||
-    typeof d.price.amount !== 'number' ||
-    typeof d.price.unit !== 'string'
-  ) {
+  if (!d.price || typeof d.price.amount !== 'number' || typeof d.price.unit !== 'string') {
     return false;
   }
 

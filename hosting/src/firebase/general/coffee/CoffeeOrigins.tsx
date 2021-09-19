@@ -9,11 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
 import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
-import {
-  CoffeeOrigin,
-  CoffeeOriginRenderer,
-  DisplayableCoffeeOriginKeys
-} from './CoffeeOrigin';
+import { CoffeeOrigin, CoffeeOriginRenderer, DisplayableCoffeeOriginKeys } from './CoffeeOrigin';
 
 interface GetRowsInput {
   selections: CoffeeSelections;
@@ -30,11 +26,7 @@ export class CoffeeOrigins {
     return this.coffeeOrigins.find(co => co.id === id) || null;
   }
 
-  getTable({
-    selections,
-    onSelection,
-    tableClass
-  }: GetTableInput): JSX.Element | null {
+  getTable({ selections, onSelection, tableClass }: GetTableInput): JSX.Element | null {
     if (!this.isReady()) return null;
 
     return (
@@ -57,9 +49,7 @@ export class CoffeeOrigins {
     const [coffeeOrigin] = this.coffeeOrigins;
     return Object.keys(coffeeOrigin)
       .sort()
-      .filter(
-        l => !['value', 'id'].includes(l)
-      ) as DisplayableCoffeeOriginKeys[];
+      .filter(l => !['value', 'id'].includes(l)) as DisplayableCoffeeOriginKeys[];
   }
 
   private getColumns(): JSX.Element | null {
@@ -71,9 +61,7 @@ export class CoffeeOrigins {
         {this.getKeys().map((c, i) => {
           return (
             <TableCell key={i}>
-              <Typography style={{ fontWeight: 'bold' }}>
-                {capitalize(c)}
-              </Typography>
+              <Typography style={{ fontWeight: 'bold' }}>{capitalize(c)}</Typography>
             </TableCell>
           );
         })}
@@ -81,10 +69,7 @@ export class CoffeeOrigins {
     );
   }
 
-  private getRows({
-    selections,
-    onSelection
-  }: GetRowsInput): JSX.Element[] | null {
+  private getRows({ selections, onSelection }: GetRowsInput): JSX.Element[] | null {
     if (!this.isReady()) return null;
 
     const keys = this.getKeys();
@@ -96,10 +81,7 @@ export class CoffeeOrigins {
       return (
         <TableRow hover key={i} style={{ cursor: 'pointer' }}>
           <TableCell padding='checkbox'>
-            <CoffeeCounter
-              quantity={selections[id]}
-              onCoffeeAmountChange={onSelection(id)}
-            />
+            <CoffeeCounter quantity={selections[id]} onCoffeeAmountChange={onSelection(id)} />
           </TableCell>
           {keys.map((k, i) => {
             return (

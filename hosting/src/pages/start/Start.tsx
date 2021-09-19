@@ -20,20 +20,18 @@ const styles = createStyles({
 });
 
 type StartInput = { classes: ClassNameMap<string> };
-export const Start = withStyles(styles)(
-  ({ classes }: StartInput): JSX.Element => {
-    return (
-      <div className={classes.start}>
-        <Button
-          className={classes.startButton}
-          variant='contained'
-          color='primary'
-          component={Link}
-          to={`/coffee`}
-        >
-          <Typography variant='h1'>START</Typography>
-        </Button>
-      </div>
-    );
-  }
-);
+export const Start = withStyles(styles)(({ classes }: StartInput): JSX.Element => {
+  return (
+    <div className={classes.start}>
+      <Button
+        className={classes.startButton}
+        variant='contained'
+        color='primary'
+        component={Link}
+        to={`/coffee`}
+      >
+        <Typography variant='h1'>START</Typography>
+      </Button>
+    </div>
+  );
+});

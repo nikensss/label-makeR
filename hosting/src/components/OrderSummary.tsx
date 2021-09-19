@@ -40,11 +40,7 @@ export const OrderSummary = withStyles(styles)(
         <div className={classes.selectionAndLabel}>
           <div>{order.toTable()}</div>
           <Paper elevation={13}>
-            <img
-              alt={'Designed label'}
-              style={{ width: '380px', height: '532px' }}
-              src={label}
-            />
+            <img alt={'Designed label'} style={{ width: '380px', height: '532px' }} src={label} />
           </Paper>
         </div>
       </div>

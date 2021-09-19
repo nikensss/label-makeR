@@ -43,109 +43,105 @@ type CoffeeFormInput = { classes: ClassNameMap<string> };
 
 export type CoffeeSelections = Record<string, number | undefined>;
 
-export const CoffeeForm = withStyles(styles)(
-  ({ classes }: CoffeeFormInput): JSX.Element => {
-    const history = useHistory();
-    const [step, setStep] = useState(0);
-    const [selections, setSelections] = useState<CoffeeSelections>({});
-    const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(
-      new CoffeeOrigins([])
-    );
-    const [order, setOrder] = useState(new Order());
+export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormInput): JSX.Element => {
+  const history = useHistory();
+  const [step, setStep] = useState(0);
+  const [selections, setSelections] = useState<CoffeeSelections>({});
+  const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(new CoffeeOrigins([]));
+  const [order, setOrder] = useState(new Order());
 
-    const [labelDesign, setLabelDesign] = useState<LabelDesign>({
-      backgroundColor: '#473D54',
-      logo: '',
-      scale: 0.25,
-      text: 'Italian light roast',
-      x: 0,
-      y: 0
-    });
-    const labelDesignRef = useRef(labelDesign);
-    labelDesignRef.current = labelDesign;
+  const [labelDesign, setLabelDesign] = useState<LabelDesign>({
+    backgroundColor: '#473D54',
+    logo: '',
+    scale: 0.25,
+    text: 'Italian light roast',
+    x: 0,
+    y: 0
+  });
+  const labelDesignRef = useRef(labelDesign);
+  labelDesignRef.current = labelDesign;
 
-    const [label, setLabel] = useState('');
-    const labelRef = useRef(label);
-    labelRef.current = label;
+  const [label, setLabel] = useState('');
+  const labelRef = useRef(label);
+  labelRef.current = label;
 
-    useEffect(() => {
-      const getCoffeeOrigins = async (): Promise<void> => {
-        const coffee = await getCoffee();
-        setCoffeeOrigins(coffee?.getOrigins() || coffeeOrigins);
-      };
-
-      getCoffeeOrigins().catch(ex => console.error(ex));
-    }, []);
-
-    const onSelection = (id: string) => {
-      return (amount: number) => {
-        setSelections({ ...selections, [id]: amount });
-      };
+  useEffect(() => {
+    const getCoffeeOrigins = async (): Promise<void> => {
+      const coffee = await getCoffee();
+      setCoffeeOrigins(coffee?.getOrigins() || coffeeOrigins);
     };
 
-    // update order when either selections or coffeeOrigins change
-    useEffect(() => {
-      order.setCoffeeSelections(selections);
-      order.setCoffeeOrigins(coffeeOrigins);
-      setOrder(Order.fromOrder(order));
-    }, [selections, coffeeOrigins]);
+    getCoffeeOrigins().catch(ex => console.error(ex));
+  }, []);
 
-    const LAST_STEP = 2;
-    const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
-    const onBack = () => setStep(step <= 0 ? 0 : step - 1);
-    const onPay = () => {
-      console.log('Paid!');
-      history.push('/thankyou');
+  const onSelection = (id: string) => {
+    return (amount: number) => {
+      setSelections({ ...selections, [id]: amount });
     };
-    const handleNextClick = () => (step === LAST_STEP ? onPay() : onNext());
+  };
 
-    return (
-      <FormControl className={classes.main} component='fieldset'>
-        {(() => {
-          switch (step) {
-            case 0:
-              return coffeeOrigins.getTable({
-                selections,
-                onSelection,
-                tableClass: classes.table
-              });
-            case 1:
-              return (
-                <LabelDesigner
-                  labelDesignRef={labelDesignRef}
-                  labelDesign={labelDesign}
-                  setLabelDesign={setLabelDesign}
-                  label={label}
-                  setLabel={setLabel}
-                />
-              );
-            case 2:
-              return <OrderSummary label={label} order={order} />;
-            default:
-              return setStep(0);
-          }
-        })()}
-        <div className={classes.buttons}>
-          <Button
-            color='primary'
-            variant='contained'
-            className={classes.nextButton}
-            onClick={onBack}
-            disabled={step === 0}
-          >
-            Back
-          </Button>
-          <Button
-            color='primary'
-            variant='contained'
-            className={classes.nextButton}
-            onClick={handleNextClick}
-            disabled={!order.hasItems()}
-          >
-            {step >= LAST_STEP ? 'Pay' : 'Next'}
-          </Button>
-        </div>
-      </FormControl>
-    );
-  }
-);
+  // update order when either selections or coffeeOrigins change
+  useEffect(() => {
+    order.setCoffeeSelections(selections);
+    order.setCoffeeOrigins(coffeeOrigins);
+    setOrder(Order.fromOrder(order));
+  }, [selections, coffeeOrigins]);
+
+  const LAST_STEP = 2;
+  const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
+  const onBack = () => setStep(step <= 0 ? 0 : step - 1);
+  const onPay = () => {
+    console.log('Paid!');
+    history.push('/thankyou');
+  };
+  const handleNextClick = () => (step === LAST_STEP ? onPay() : onNext());
+
+  return (
+    <FormControl className={classes.main} component='fieldset'>
+      {(() => {
+        switch (step) {
+          case 0:
+            return coffeeOrigins.getTable({
+              selections,
+              onSelection,
+              tableClass: classes.table
+            });
+          case 1:
+            return (
+              <LabelDesigner
+                labelDesignRef={labelDesignRef}
+                labelDesign={labelDesign}
+                setLabelDesign={setLabelDesign}
+                label={label}
+                setLabel={setLabel}
+              />
+            );
+          case 2:
+            return <OrderSummary label={label} order={order} />;
+          default:
+            return setStep(0);
+        }
+      })()}
+      <div className={classes.buttons}>
+        <Button
+          color='primary'
+          variant='contained'
+          className={classes.nextButton}
+          onClick={onBack}
+          disabled={step === 0}
+        >
+          Back
+        </Button>
+        <Button
+          color='primary'
+          variant='contained'
+          className={classes.nextButton}
+          onClick={handleNextClick}
+          disabled={!order.hasItems()}
+        >
+          {step >= LAST_STEP ? 'Pay' : 'Next'}
+        </Button>
+      </div>
+    </FormControl>
+  );
+});

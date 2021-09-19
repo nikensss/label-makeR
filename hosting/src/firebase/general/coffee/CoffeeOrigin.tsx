@@ -98,9 +98,7 @@ export const coffeeOriginAsCard = (coffeeOrigin: CoffeeOrigin): JSX.Element => {
           variant='outlined'
           color='primary'
           label={coffeeOrigin.price.amount}
-          avatar={
-            <Avatar>{getSymbolFromCurrency(coffeeOrigin.price.unit)}</Avatar>
-          }
+          avatar={<Avatar>{getSymbolFromCurrency(coffeeOrigin.price.unit)}</Avatar>}
         />
       </CardActions>
     </Card>

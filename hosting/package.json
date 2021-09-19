@@ -73,19 +73,5 @@
     "husky": "^7.0.1",
     "prettier": "2.3.2",
     "sass": "^1.37.2"
-  },
-  "prettier": {
-    "printWidth": 80,
-    "tabWidth": 2,
-    "useTabs": false,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "none",
-    "arrowParens": "avoid",
-    "jsxSingleQuote": true,
-    "quoteProps": "consistent",
-    "proseWrap": "always",
-    "bracketSpacing": true,
-    "embeddedLanguageFormatting": "auto"
   }
 }
