@@ -41,12 +41,12 @@ export class CoffeeOriginRenderer {
 
   get price(): string {
     const { price } = this.coffeeOrigin;
-    return `${price.amount} ${price.unit}`;
+    return `${price.amount} ${getSymbolFromCurrency(price.unit)}`;
   }
 
   getTotalPrice(quantity: number): string {
     const { price } = this.coffeeOrigin;
-    return `${price.amount * quantity} ${price.unit}`;
+    return `${price.amount * quantity} ${getSymbolFromCurrency(price.unit)}`;
   }
 }
 
