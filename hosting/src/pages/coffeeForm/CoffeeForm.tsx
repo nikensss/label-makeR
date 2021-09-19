@@ -4,8 +4,8 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Order } from '../../classes/Order';
-import { CoffeeSelectionSummary } from '../../components/CoffeeSelectionSummary';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
+import { OrderSummary } from '../../components/OrderSummary';
 import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
@@ -119,7 +119,7 @@ export const CoffeeForm = withStyles(styles)(
                 />
               );
             case 2:
-              return <CoffeeSelectionSummary label={label} order={order} />;
+              return <OrderSummary label={label} order={order} />;
             default:
               return setStep(0);
           }

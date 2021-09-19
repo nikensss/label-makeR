@@ -10,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import Typography from '@material-ui/core/Typography';
+import getSymbolFromCurrency from 'currency-symbol-map';
 
 export class Order {
   private coffeeSelections: CoffeeSelections = {};
@@ -74,9 +75,9 @@ export class Order {
             </TableRow>
           </TableHead>
           <TableBody>
-            {coffees.map(([id, amount], key) => {
+            {coffees.map(([id, quantity], key) => {
               const coffeeOrigin = this.coffeeOrigins.find(id);
-              if (!coffeeOrigin || !amount) return;
+              if (!coffeeOrigin || !quantity) return <></>;
 
               const renderer = new CoffeeOriginRenderer(coffeeOrigin);
 
@@ -87,13 +88,43 @@ export class Order {
                   </TableCell>
                   <TableCell align='right'>{renderer.weight}</TableCell>
                   <TableCell align='right'>{renderer.price}</TableCell>
-                  <TableCell align='right'>{amount}</TableCell>
+                  <TableCell align='right'>{quantity}</TableCell>
                   <TableCell align='right'>
-                    {renderer.getTotalPrice(amount)}
+                    {renderer.getTotalPrice(quantity)}
                   </TableCell>
                 </TableRow>
               );
             })}
+            <TableRow>
+              <TableCell rowSpan={4} />
+              <TableCell colSpan={3}>Subtotal</TableCell>
+              <TableCell align='right'>
+                {(() => {
+                  const { amount, unit } = coffees.reduce(
+                    (t, [id, quantity]) => {
+                      const coffeeOrigin = this.coffeeOrigins.find(id);
+                      if (!coffeeOrigin || !quantity) return t;
+
+                      const { price } = coffeeOrigin;
+                      if (price.unit !== t.unit) {
+                        const { unit } = price;
+                        throw new Error(
+                          `Currency mismatch: ${t.unit} !== ${unit}`
+                        );
+                      }
+
+                      return {
+                        amount: t.amount + quantity * price.amount,
+                        unit: t.unit
+                      };
+                    },
+                    { amount: 0, unit: 'GBP' }
+                  );
+
+                  return `${amount} ${getSymbolFromCurrency(unit)}`;
+                })()}
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </TableContainer>

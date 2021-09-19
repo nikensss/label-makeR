@@ -46,11 +46,20 @@ export class CoffeeOriginRenderer {
 
   getTotalPrice(quantity: number): string {
     const { price } = this.coffeeOrigin;
-    return `${price.amount * quantity} ${getSymbolFromCurrency(price.unit)}`;
+    const totalPrice = this.calculateTotalPrice(quantity);
+
+    return `${totalPrice.amount} ${getSymbolFromCurrency(price.unit)}`;
+  }
+
+  calculateTotalPrice(quantity: number): Price {
+    return {
+      amount: this.coffeeOrigin.price.amount * quantity,
+      unit: this.coffeeOrigin.price.unit
+    };
   }
 }
 
-const useStyles = makeStyles({
+const styles = makeStyles({
   root: {
     width: '380px',
     height: '532px'
@@ -61,7 +70,7 @@ const useStyles = makeStyles({
 });
 
 export const coffeeOriginAsCard = (coffeeOrigin: CoffeeOrigin): JSX.Element => {
-  const classes = useStyles();
+  const classes = styles();
   return (
     <Card className={classes.root}>
       <CardMedia

@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import createStyles from '@material-ui/styles/createStyles';
 import { Order } from '../classes/Order';
 
-type CoffeeSelectionSummaryProps = {
+type OrderSummaryProps = {
   order: Order;
   label: string;
   classes: ClassNameMap<string>;
@@ -30,8 +30,8 @@ const styles = (theme: Theme) =>
     }
   });
 
-export const CoffeeSelectionSummary = withStyles(styles)(
-  ({ order, label, classes }: CoffeeSelectionSummaryProps): JSX.Element => {
+export const OrderSummary = withStyles(styles)(
+  ({ order, label, classes }: OrderSummaryProps): JSX.Element => {
     if (!order) throw new Error('We should not be here');
 
     return (
@@ -40,7 +40,11 @@ export const CoffeeSelectionSummary = withStyles(styles)(
         <div className={classes.selectionAndLabel}>
           <div>{order.toReactComponent()}</div>
           <Paper elevation={13}>
-            <img style={{ width: '380px', height: '532px' }} src={label} />
+            <img
+              alt={'Designed label'}
+              style={{ width: '380px', height: '532px' }}
+              src={label}
+            />
           </Paper>
         </div>
       </div>
