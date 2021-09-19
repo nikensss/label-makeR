@@ -115,6 +115,7 @@ export const CoffeeForm = withStyles(styles)(
                   labelDesignRef={labelDesignRef}
                   labelDesign={labelDesign}
                   setLabelDesign={setLabelDesign}
+                  label={label}
                   setLabel={setLabel}
                 />
               );
