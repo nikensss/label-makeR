@@ -22,8 +22,11 @@ const styles = ({ palette, spacing }: Theme) => {
       alignItems: 'center'
     },
     table: {
-      width: '65%',
-      height: '70%'
+      'width': '65%',
+      'height': '70%',
+      '& > *': {
+        maxHeight: '92%'
+      }
     },
     nextButton: {
       marginTop: spacing(3)

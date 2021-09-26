@@ -7,6 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
+import Alert from '@mui/material/Alert';
 import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
 import { CoffeeOrigin, CoffeeOriginRenderer, DisplayableCoffeeOriginKeys } from './CoffeeOrigin';
@@ -30,12 +31,18 @@ export class CoffeeOrigins {
     if (!this.isReady()) return null;
 
     return (
-      <TableContainer className={tableClass} component={Paper}>
-        <Table stickyHeader>
-          <TableHead>{this.getColumns()}</TableHead>
-          <TableBody>{this.getRows({ selections, onSelection })}</TableBody>
-        </Table>
-      </TableContainer>
+      <div className={tableClass}>
+        <Alert severity='info'>
+          Minimum order per product is 30 kg, ie: 30 bags of 1 kg, 60 bags of 0.5 kg, 120 bags of
+          0.25 kg.
+        </Alert>
+        <TableContainer component={Paper}>
+          <Table stickyHeader>
+            <TableHead>{this.getColumns()}</TableHead>
+            <TableBody>{this.getRows({ selections, onSelection })}</TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     );
   }
 
