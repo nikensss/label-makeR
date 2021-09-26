@@ -8,16 +8,17 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
 import Alert from '@mui/material/Alert';
+import { useState } from 'react';
 import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
 import { CoffeeOrigin, CoffeeOriginRenderer, DisplayableCoffeeOriginKeys } from './CoffeeOrigin';
 
-interface GetRowsInput {
+interface GetRowsProps {
   selections: CoffeeSelections;
   onSelection: (id: string) => (amount: number) => void;
 }
 
-export interface GetTableInput extends GetRowsInput {
+export interface GetTableProps extends GetRowsProps {
   tableClass: string;
 }
 export class CoffeeOrigins {
@@ -27,7 +28,7 @@ export class CoffeeOrigins {
     return this.coffeeOrigins.find(co => co.id === id) || null;
   }
 
-  getTable({ selections, onSelection, tableClass }: GetTableInput): JSX.Element | null {
+  getTable({ selections, onSelection, tableClass }: GetTableProps): JSX.Element | null {
     if (!this.isReady()) return null;
 
     return (
@@ -76,29 +77,58 @@ export class CoffeeOrigins {
     );
   }
 
-  private getRows({ selections, onSelection }: GetRowsInput): JSX.Element[] | null {
+  private getRows({ selections, onSelection }: GetRowsProps): JSX.Element[] | null {
     if (!this.isReady()) return null;
 
     const keys = this.getKeys();
 
     return this.coffeeOrigins.map((coffeeOrigin, i) => {
       const { id } = coffeeOrigin;
-      const renderer = new CoffeeOriginRenderer(coffeeOrigin);
 
       return (
-        <TableRow hover key={i} style={{ cursor: 'pointer' }}>
-          <TableCell padding='checkbox'>
-            <CoffeeCounter quantity={selections[id]} onCoffeeAmountChange={onSelection(id)} />
-          </TableCell>
-          {keys.map((k, i) => {
-            return (
-              <TableCell key={i}>
-                <Typography>{renderer[k] ?? ''}</Typography>
-              </TableCell>
-            );
-          })}
-        </TableRow>
+        <CoffeeRow
+          keys={keys}
+          key={i}
+          quantity={selections[id]}
+          onCoffeeAmountChange={onSelection(id)}
+          coffeeOrigin={coffeeOrigin}
+        />
       );
     });
   }
 }
+
+type CoffeeRowProps = {
+  key: number;
+  keys: DisplayableCoffeeOriginKeys[];
+  quantity: CoffeeSelections['string'];
+  onCoffeeAmountChange: ReturnType<GetRowsProps['onSelection']>;
+  coffeeOrigin: CoffeeOrigin;
+};
+
+const CoffeeRow = ({ keys, key, quantity, coffeeOrigin, onCoffeeAmountChange }: CoffeeRowProps) => {
+  const renderer = new CoffeeOriginRenderer(coffeeOrigin);
+  const [isValid] = useState(true);
+  const getBackgroundColor = (isValid: boolean) => {
+    return isValid ? 'transparent' : '#ff0000';
+  };
+
+  return (
+    <TableRow
+      hover
+      key={key}
+      style={{ cursor: 'pointer', backgroundColor: getBackgroundColor(isValid) }}
+    >
+      <TableCell padding='checkbox'>
+        <CoffeeCounter quantity={quantity} onCoffeeAmountChange={onCoffeeAmountChange} />
+      </TableCell>
+      {keys.map((k, i) => {
+        return (
+          <TableCell key={i}>
+            <Typography>{renderer[k] ?? ''}</Typography>
+          </TableCell>
+        );
+      })}
+    </TableRow>
+  );
+};
