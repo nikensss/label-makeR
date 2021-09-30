@@ -37,17 +37,15 @@ export class CoffeeOriginView {
 
   get price(): string {
     const { price } = this.coffeeOrigin;
-    return `${price.amount} ${getSymbolFromCurrency(price.unit)}`;
+    return priceDisplay(price);
   }
 
   getTotalPrice(quantity: number): string {
-    const { price } = this.coffeeOrigin;
     const totalPrice = this.calculateTotalPrice(quantity);
-
-    return `${totalPrice.amount} ${getSymbolFromCurrency(price.unit)}`;
+    return priceDisplay(totalPrice);
   }
 
-  calculateTotalPrice(quantity: number): Price {
+  private calculateTotalPrice(quantity: number): Price {
     return {
       amount: this.coffeeOrigin.price.amount * quantity,
       unit: this.coffeeOrigin.price.unit
