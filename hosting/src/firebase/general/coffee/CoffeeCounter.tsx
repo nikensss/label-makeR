@@ -23,12 +23,20 @@ const styles = ({ spacing }: Theme) => {
 
 type CoffeeCounterProps = {
   classes: ClassNameMap<string>;
-  onCoffeeAmountChange: (quantity: number) => void;
+  onCoffeeQuantityChange: (quantity: number) => void;
   quantity?: number;
+  minAmount: number;
+  setIsValid: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const CoffeeCounter = withStyles(styles)(
-  ({ classes, onCoffeeAmountChange, quantity = 0 }: CoffeeCounterProps) => {
+  ({
+    classes,
+    minAmount,
+    setIsValid,
+    onCoffeeQuantityChange,
+    quantity = 0
+  }: CoffeeCounterProps) => {
     const [qty, setQty] = useState(quantity);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +52,10 @@ export const CoffeeCounter = withStyles(styles)(
     const onSubtractUnit = () => setQty(qty <= 0 ? 0 : qty - 1);
     const onAddUnit = () => setQty(qty + 1);
 
-    useEffect(() => onCoffeeAmountChange(qty), [qty]);
+    useEffect(() => {
+      setIsValid(qty >= minAmount || qty === 0);
+      onCoffeeQuantityChange(qty);
+    }, [qty]);
 
     return (
       <div className={classes.container}>

@@ -8,10 +8,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
 import Alert from '@mui/material/Alert';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
-import { CoffeeOrigin, CoffeeOriginRenderer, DisplayableCoffeeOriginKeys } from './CoffeeOrigin';
+import { CoffeeOrigin, CoffeeOriginView, DisplayableCoffeeOriginKeys } from './CoffeeOrigin';
 
 interface GetRowsProps {
   selections: CoffeeSelections;
@@ -90,7 +90,7 @@ export class CoffeeOrigins {
           keys={keys}
           key={i}
           quantity={selections[id]}
-          onCoffeeAmountChange={onSelection(id)}
+          onCoffeeQuantityChange={onSelection(id)}
           coffeeOrigin={coffeeOrigin}
         />
       );
@@ -102,25 +102,52 @@ type CoffeeRowProps = {
   key: number;
   keys: DisplayableCoffeeOriginKeys[];
   quantity: CoffeeSelections['string'];
-  onCoffeeAmountChange: ReturnType<GetRowsProps['onSelection']>;
+  onCoffeeQuantityChange: ReturnType<GetRowsProps['onSelection']>;
   coffeeOrigin: CoffeeOrigin;
 };
 
-const CoffeeRow = ({ keys, key, quantity, coffeeOrigin, onCoffeeAmountChange }: CoffeeRowProps) => {
-  const renderer = new CoffeeOriginRenderer(coffeeOrigin);
-  const [isValid] = useState(true);
-  const getBackgroundColor = (isValid: boolean) => {
-    return isValid ? 'transparent' : '#ff0000';
-  };
+const CoffeeRow = ({
+  keys,
+  key,
+  quantity,
+  coffeeOrigin,
+  onCoffeeQuantityChange
+}: CoffeeRowProps) => {
+  const renderer = new CoffeeOriginView(coffeeOrigin);
+  const [isValid, setIsValid] = useState(true);
+  const [styles, setStyles] = useState<Record<string, string>>({});
+
+  const minAmount = 30 / coffeeOrigin.weight.amount;
+  if (coffeeOrigin.weight.unit !== 'KG') {
+    console.error('Weight is not in kg! Min amount is most definitely wrong!');
+  }
+
+  useEffect(() => {
+    if (!isValid) {
+      setStyles({
+        ...styles,
+        backgroundColor: 'rgb(253,237,237)',
+        color: 'rgb(95,33,32)'
+      });
+      return;
+    }
+
+    setStyles({
+      ...styles,
+      backgroundColor: 'transparent',
+      color: 'inherit'
+    });
+  }, [isValid]);
 
   return (
-    <TableRow
-      hover
-      key={key}
-      style={{ cursor: 'pointer', backgroundColor: getBackgroundColor(isValid) }}
-    >
+    <TableRow hover key={key} style={styles}>
       <TableCell padding='checkbox'>
-        <CoffeeCounter quantity={quantity} onCoffeeAmountChange={onCoffeeAmountChange} />
+        <CoffeeCounter
+          minAmount={minAmount}
+          setIsValid={setIsValid}
+          quantity={quantity}
+          onCoffeeQuantityChange={onCoffeeQuantityChange}
+        />
       </TableCell>
       {keys.map((k, i) => {
         return (

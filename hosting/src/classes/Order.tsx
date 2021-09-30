@@ -1,15 +1,15 @@
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+import { CoffeeOriginView, Price, priceDisplay } from '../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins } from '../firebase/general/coffee/CoffeeOrigins';
 import { CoffeeSelections } from '../pages/coffeeForm/CoffeeForm';
 import { onlyNumbers } from '../utils/onlyNumbers';
-import { CoffeeOriginRenderer, Price, priceDisplay } from '../firebase/general/coffee/CoffeeOrigin';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import Paper from '@material-ui/core/Paper';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import Typography from '@material-ui/core/Typography';
 
 export class Order {
   private coffeeSelections: CoffeeSelections = {};
@@ -114,7 +114,7 @@ export class Order {
               const coffeeOrigin = this.coffeeOrigins.find(id);
               if (!coffeeOrigin || !quantity) return <></>;
 
-              const renderer = new CoffeeOriginRenderer(coffeeOrigin);
+              const renderer = new CoffeeOriginView(coffeeOrigin);
 
               return (
                 <TableRow key={key}>
