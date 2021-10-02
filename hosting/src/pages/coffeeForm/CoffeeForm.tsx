@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { Order } from '../../classes/Order';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
 import { OrderSummary } from '../../components/OrderSummary';
-import { CoffeeOrigins } from '../../firebase/general/coffee/CoffeeOrigins';
+import { CoffeeOrigins, GetRowsProps } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
 const styles = ({ palette, spacing }: Theme) => {
@@ -22,8 +22,11 @@ const styles = ({ palette, spacing }: Theme) => {
       alignItems: 'center'
     },
     table: {
-      width: '65%',
-      height: '70%'
+      'width': '65%',
+      'height': '70%',
+      '& > *': {
+        maxHeight: '92%'
+      }
     },
     nextButton: {
       marginTop: spacing(3)
@@ -39,11 +42,27 @@ const styles = ({ palette, spacing }: Theme) => {
   });
 };
 
-type CoffeeFormInput = { classes: ClassNameMap<string> };
+interface CoffeeFormProps {
+  classes: ClassNameMap<string>;
+}
 
-export type CoffeeSelections = Record<string, number | undefined>;
+export interface CoffeeSelection {
+  quantity: number;
+  valid: boolean;
+}
 
-export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormInput): JSX.Element => {
+export const onlyCoffeeSelection = (o: unknown): o is CoffeeSelection => {
+  if (o === null || o === undefined || typeof o !== 'object') return false;
+  const d = o as CoffeeSelection;
+  const props: (keyof CoffeeSelection)[] = ['quantity', 'valid'];
+  return Object.keys(d).every(k => (props as string[]).includes(k));
+};
+
+export interface CoffeeSelections {
+  [key: string]: CoffeeSelection | undefined;
+}
+
+export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX.Element => {
   const history = useHistory();
   const [step, setStep] = useState(0);
   const [selections, setSelections] = useState<CoffeeSelections>({});
@@ -74,9 +93,16 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormInput): JSX
     getCoffeeOrigins().catch(ex => console.error(ex));
   }, []);
 
-  const onSelection = (id: string) => {
-    return (amount: number) => {
-      setSelections({ ...selections, [id]: amount });
+  // TODO: create CoffeeOrigin class and use it as input type to this func
+  const onSelection: GetRowsProps['onSelection'] = (id: string, minAmount: number) => {
+    return (quantity: number) => {
+      setSelections({
+        ...selections,
+        [id]: {
+          quantity,
+          valid: quantity >= minAmount || quantity === 0
+        }
+      });
     };
   };
 
@@ -137,7 +163,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormInput): JSX
           variant='contained'
           className={classes.nextButton}
           onClick={handleNextClick}
-          disabled={!order.hasItems()}
+          disabled={!order.isValid()}
         >
           {step >= LAST_STEP ? 'Pay' : 'Next'}
         </Button>
