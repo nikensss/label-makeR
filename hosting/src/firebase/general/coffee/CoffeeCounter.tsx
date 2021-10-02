@@ -1,6 +1,8 @@
 import { Button, createStyles, TextField, Theme } from '@material-ui/core';
 import withStyles, { ClassNameMap } from '@material-ui/styles/withStyles';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
+import { GetRowsProps } from './CoffeeOrigins';
 
 const styles = ({ spacing }: Theme) => {
   return createStyles({
@@ -23,21 +25,17 @@ const styles = ({ spacing }: Theme) => {
 
 type CoffeeCounterProps = {
   classes: ClassNameMap<string>;
-  onCoffeeQuantityChange: (quantity: number) => void;
-  quantity?: number;
-  minAmount: number;
-  setIsValid: React.Dispatch<React.SetStateAction<boolean>>;
+  onCoffeeQuantityChange: ReturnType<GetRowsProps['onSelection']>;
+  coffeeSelection?: CoffeeSelections[string];
 };
 
 export const CoffeeCounter = withStyles(styles)(
   ({
     classes,
-    minAmount,
-    setIsValid,
     onCoffeeQuantityChange,
-    quantity = 0
+    coffeeSelection = { quantity: 0, valid: true }
   }: CoffeeCounterProps) => {
-    const [qty, setQty] = useState(quantity);
+    const [qty, setQty] = useState(coffeeSelection.quantity);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
       const isNumber = /^[0-9\b]+$/;
@@ -52,10 +50,7 @@ export const CoffeeCounter = withStyles(styles)(
     const onSubtractUnit = () => setQty(qty <= 0 ? 0 : qty - 1);
     const onAddUnit = () => setQty(qty + 1);
 
-    useEffect(() => {
-      setIsValid(qty >= minAmount || qty === 0);
-      onCoffeeQuantityChange(qty);
-    }, [qty]);
+    useEffect(() => onCoffeeQuantityChange(qty), [qty]);
 
     return (
       <div className={classes.container}>

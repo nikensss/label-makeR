@@ -8,8 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { CoffeeOriginView, Price, priceDisplay } from '../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins } from '../firebase/general/coffee/CoffeeOrigins';
-import { CoffeeSelections } from '../pages/coffeeForm/CoffeeForm';
-import { onlyNumbers } from '../utils/onlyNumbers';
+import { CoffeeSelections, onlyCoffeeSelection } from '../pages/coffeeForm/CoffeeForm';
 
 export class Order {
   private coffeeSelections: CoffeeSelections = {};
@@ -32,23 +31,26 @@ export class Order {
     this.coffeeOrigins = coffeeOrigins;
   }
 
-  setAmount(id: string, amount: number): void {
-    this.coffeeSelections[id] = amount;
+  setQuantity(id: string, quantity: number): void {
+    const coffeeSelection = this.coffeeSelections[id];
+    if (coffeeSelection) coffeeSelection.quantity = quantity;
   }
 
-  hasItems(): boolean {
-    const value = Object.values(this.coffeeSelections)
-      .filter(onlyNumbers)
-      .find(v => v > 0);
+  isValid(): boolean {
+    const coffeeSelections = Object.values(this.coffeeSelections).filter(onlyCoffeeSelection);
+    const allValid = coffeeSelections.every(({ valid }) => valid === true);
+    const totalAmount = coffeeSelections.map(({ quantity }) => quantity).reduce((t, q) => t + q, 0);
 
-    return typeof value === 'number';
+    return allValid && totalAmount !== 0;
   }
 
-  get coffees(): [id: string, amount: number | undefined][] {
-    return Object.entries(this.coffeeSelections).filter(([, value]) => {
-      if (!value) return false;
-      return value > 0;
-    });
+  get coffees(): [id: string, quantity: number | undefined][] {
+    return Object.entries(this.coffeeSelections)
+      .filter(([, value]) => {
+        if (!value) return false;
+        return value.quantity > 0;
+      })
+      .map(([id, value]) => [id, value?.quantity]);
   }
 
   get price(): Price {

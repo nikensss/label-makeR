@@ -13,9 +13,9 @@ import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
 import { CoffeeOrigin, CoffeeOriginView, DisplayableCoffeeOriginKeys } from './CoffeeOrigin';
 
-interface GetRowsProps {
+export interface GetRowsProps {
   selections: CoffeeSelections;
-  onSelection: (id: string) => (amount: number) => void;
+  onSelection: (id: string, minAmount: number) => (amount: number) => void;
 }
 
 export interface GetTableProps extends GetRowsProps {
@@ -84,13 +84,14 @@ export class CoffeeOrigins {
 
     return this.coffeeOrigins.map((coffeeOrigin, i) => {
       const { id } = coffeeOrigin;
+      const minAmount = 30 / coffeeOrigin.weight.amount;
 
       return (
         <CoffeeRow
           keys={keys}
           key={i}
-          quantity={selections[id]}
-          onCoffeeQuantityChange={onSelection(id)}
+          coffeeSelection={selections[id]}
+          onCoffeeQuantityChange={onSelection(id, minAmount)}
           coffeeOrigin={coffeeOrigin}
         />
       );
@@ -98,32 +99,30 @@ export class CoffeeOrigins {
   }
 }
 
-type CoffeeRowProps = {
+interface CoffeeRowProps {
   key: number;
   keys: DisplayableCoffeeOriginKeys[];
-  quantity: CoffeeSelections['string'];
+  coffeeSelection: CoffeeSelections['string'];
   onCoffeeQuantityChange: ReturnType<GetRowsProps['onSelection']>;
   coffeeOrigin: CoffeeOrigin;
-};
+}
 
 const CoffeeRow = ({
   keys,
   key,
-  quantity,
+  coffeeSelection,
   coffeeOrigin,
   onCoffeeQuantityChange
 }: CoffeeRowProps) => {
   const renderer = new CoffeeOriginView(coffeeOrigin);
-  const [isValid, setIsValid] = useState(true);
   const [styles, setStyles] = useState<Record<string, string>>({});
 
-  const minAmount = 30 / coffeeOrigin.weight.amount;
-  if (coffeeOrigin.weight.unit !== 'KG') {
-    console.error('Weight is not in kg! Min amount is most definitely wrong!');
-  }
-
   useEffect(() => {
-    if (!isValid) {
+    // coffeeSelection only exists if the user selected it, so it might be
+    // undefined for many rows; for this reason, we have to highlight it only
+    // if the selection exists (coffeeSelection is not undefined) and if the
+    // quantity is not valid
+    if (coffeeSelection && !coffeeSelection.valid) {
       setStyles({
         ...styles,
         backgroundColor: 'rgb(253,237,237)',
@@ -137,15 +136,13 @@ const CoffeeRow = ({
       backgroundColor: 'transparent',
       color: 'inherit'
     });
-  }, [isValid]);
+  }, [coffeeSelection]);
 
   return (
     <TableRow hover key={key} style={styles}>
       <TableCell padding='checkbox'>
         <CoffeeCounter
-          minAmount={minAmount}
-          setIsValid={setIsValid}
-          quantity={quantity}
+          coffeeSelection={coffeeSelection}
           onCoffeeQuantityChange={onCoffeeQuantityChange}
         />
       </TableCell>
