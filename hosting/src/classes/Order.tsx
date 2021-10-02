@@ -6,9 +6,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { CoffeeOriginView, Price, priceDisplay } from '../firebase/general/coffee/CoffeeOrigin';
+import { CoffeeOrigin, Price, priceDisplay } from '../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins } from '../firebase/general/coffee/CoffeeOrigins';
-import { CoffeeSelections, onlyCoffeeSelection } from '../pages/coffeeForm/CoffeeForm';
+import { CoffeeSelections, onlyCoffeeOrigin } from '../pages/coffeeForm/CoffeeForm';
 
 export class Order {
   private coffeeSelections: CoffeeSelections = {};
@@ -37,36 +37,24 @@ export class Order {
   }
 
   isValid(): boolean {
-    const coffeeSelections = Object.values(this.coffeeSelections).filter(onlyCoffeeSelection);
-    const allValid = coffeeSelections.every(({ valid }) => valid === true);
-    const totalAmount = coffeeSelections.map(({ quantity }) => quantity).reduce((t, q) => t + q, 0);
+    const coffeeSelections = Object.values(this.coffeeSelections).filter(onlyCoffeeOrigin);
+    const allValid = coffeeSelections.every(c => c.isValid());
+    const totalAmount = coffeeSelections.map(c => c.quantity).reduce((t, q) => t + q, 0);
 
     return allValid && totalAmount !== 0;
   }
 
-  get coffees(): [id: string, quantity: number | undefined][] {
-    return Object.entries(this.coffeeSelections)
-      .filter(([, value]) => {
-        if (!value) return false;
-        return value.quantity > 0;
-      })
-      .map(([id, value]) => [id, value?.quantity]);
+  get coffees(): CoffeeOrigin[] {
+    return Object.values(this.coffeeSelections)
+      .filter(onlyCoffeeOrigin)
+      .filter(c => c.isValid() && c.quantity > 0);
   }
 
   get price(): Price {
     return this.coffees.reduce(
-      (t, [id, quantity]) => {
-        const coffeeOrigin = this.coffeeOrigins.find(id);
-        if (!coffeeOrigin || !quantity) return t;
-
-        const { price } = coffeeOrigin;
-        if (price.unit !== t.unit) {
-          const { unit } = price;
-          throw new Error(`Currency mismatch: ${t.unit} !== ${unit}`);
-        }
-
+      (t, coffee) => {
         return {
-          amount: t.amount + quantity * price.amount,
+          amount: t.amount + coffee.getTotalPrice().amount,
           unit: t.unit
         };
       },
@@ -112,21 +100,16 @@ export class Order {
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.coffees.map(([id, quantity], key) => {
-              const coffeeOrigin = this.coffeeOrigins.find(id);
-              if (!coffeeOrigin || !quantity) return <></>;
-
-              const renderer = new CoffeeOriginView(coffeeOrigin);
-
+            {this.coffees.map((coffee, key) => {
               return (
                 <TableRow key={key}>
                   <TableCell component='th' scope='row'>
-                    {renderer.label}
+                    {coffee.display('label')}
                   </TableCell>
-                  <TableCell align='right'>{renderer.weight}</TableCell>
-                  <TableCell align='right'>{renderer.price}</TableCell>
-                  <TableCell align='right'>{quantity}</TableCell>
-                  <TableCell align='right'>{renderer.getTotalPrice(quantity)}</TableCell>
+                  <TableCell align='right'>{coffee.display('weight')}</TableCell>
+                  <TableCell align='right'>{coffee.display('price')}</TableCell>
+                  <TableCell align='right'>{coffee.quantity}</TableCell>
+                  <TableCell align='right'>{coffee.display('totalPrice')}</TableCell>
                 </TableRow>
               );
             })}
