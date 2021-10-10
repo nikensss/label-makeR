@@ -1,11 +1,14 @@
 import { Button, createStyles, FormControl, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Order } from '../../classes/Order';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
 import { OrderSummary } from '../../components/OrderSummary';
+import { config } from '../../config/config';
 import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins, GetRowsProps } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
@@ -67,6 +70,13 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(new CoffeeOrigins([]));
   const [order, setOrder] = useState(new Order());
 
+  const [open, setOpen] = useState(false);
+  const [apiErrorMessage, setApiErrorMessage] = useState('');
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') return;
+    setOpen(false);
+  };
+
   const [labelDesign, setLabelDesign] = useState<LabelDesign>({
     backgroundColor: '#473D54',
     logo: '',
@@ -115,57 +125,76 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
   const onBack = () => setStep(step <= 0 ? 0 : step - 1);
   const onPay = () => {
-    console.log('Paid!');
-    history.push('/thankyou');
+    console.log('Paid!', { config });
+    fetch(config.orderCheck, {
+      headers: { 'content-type': 'application/json' },
+      method: 'POST',
+      body: JSON.stringify(selections)
+    })
+      .then(response => response.json())
+      .then(response => {
+        console.log({ response });
+        if (response.status === 'ok') return history.push('/thankyou');
+        setApiErrorMessage(response.message || 'Something went wrong.');
+        setOpen(true);
+      })
+      .catch(ex => console.error(ex));
   };
   const handleNextClick = () => (step === LAST_STEP ? onPay() : onNext());
 
   return (
-    <FormControl className={classes.main} component='fieldset'>
-      {(() => {
-        switch (step) {
-          case 0:
-            return coffeeOrigins.getTable({
-              selections,
-              onSelection,
-              tableClass: classes.table
-            });
-          case 1:
-            return (
-              <LabelDesigner
-                labelDesignRef={labelDesignRef}
-                labelDesign={labelDesign}
-                setLabelDesign={setLabelDesign}
-                label={label}
-                setLabel={setLabel}
-              />
-            );
-          case 2:
-            return <OrderSummary label={label} order={order} />;
-          default:
-            return setStep(0);
-        }
-      })()}
-      <div className={classes.buttons}>
-        <Button
-          color='primary'
-          variant='contained'
-          className={classes.nextButton}
-          onClick={onBack}
-          disabled={step === 0}
-        >
-          Back
-        </Button>
-        <Button
-          color='primary'
-          variant='contained'
-          className={classes.nextButton}
-          onClick={handleNextClick}
-          disabled={!order.isValid()}
-        >
-          {step >= LAST_STEP ? 'Pay' : 'Next'}
-        </Button>
-      </div>
-    </FormControl>
+    <>
+      <FormControl className={classes.main} component='fieldset'>
+        {(() => {
+          switch (step) {
+            case 0:
+              return coffeeOrigins.getTable({
+                selections,
+                onSelection,
+                tableClass: classes.table
+              });
+            case 1:
+              return (
+                <LabelDesigner
+                  labelDesignRef={labelDesignRef}
+                  labelDesign={labelDesign}
+                  setLabelDesign={setLabelDesign}
+                  label={label}
+                  setLabel={setLabel}
+                />
+              );
+            case 2:
+              return <OrderSummary label={label} order={order} />;
+            default:
+              return setStep(0);
+          }
+        })()}
+        <div className={classes.buttons}>
+          <Button
+            color='primary'
+            variant='contained'
+            className={classes.nextButton}
+            onClick={onBack}
+            disabled={step === 0}
+          >
+            Back
+          </Button>
+          <Button
+            color='primary'
+            variant='contained'
+            className={classes.nextButton}
+            onClick={handleNextClick}
+            disabled={!order.isValid()}
+          >
+            {step >= LAST_STEP ? 'Pay' : 'Next'}
+          </Button>
+        </div>
+      </FormControl>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity='error' sx={{ width: '100%' }}>
+          {apiErrorMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 });
