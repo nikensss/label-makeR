@@ -6,7 +6,6 @@ const r = Router();
 r.post('/check', async (req, res) => {
   logger.debug('body', { body: req.body });
   const selections = req.body;
-  console.log({ selections });
   if (selections === null || typeof selections !== 'object') {
     return res
       .status(403)
