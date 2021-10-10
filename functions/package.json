@@ -10,7 +10,6 @@
     "logs": "firebase functions:log",
     "pretty": "prettier --write src/**/*.ts",
     "pretty:check": "prettier --check src/**/*.ts",
-    "prepare": "husky install",
     "prepareHusky": "husky install"
   },
   "engines": {
