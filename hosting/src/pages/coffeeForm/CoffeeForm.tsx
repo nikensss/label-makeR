@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { Order } from '../../classes/Order';
 import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
 import { OrderSummary } from '../../components/OrderSummary';
+import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins, GetRowsProps } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
 
@@ -42,7 +43,7 @@ const styles = ({ palette, spacing }: Theme) => {
   });
 };
 
-interface CoffeeFormProps {
+export interface CoffeeFormProps {
   classes: ClassNameMap<string>;
 }
 
@@ -51,15 +52,12 @@ export interface CoffeeSelection {
   valid: boolean;
 }
 
-export const onlyCoffeeSelection = (o: unknown): o is CoffeeSelection => {
-  if (o === null || o === undefined || typeof o !== 'object') return false;
-  const d = o as CoffeeSelection;
-  const props: (keyof CoffeeSelection)[] = ['quantity', 'valid'];
-  return Object.keys(d).every(k => (props as string[]).includes(k));
+export const onlyCoffeeOrigin = (o: unknown): o is CoffeeOrigin => {
+  return o instanceof CoffeeOrigin;
 };
 
 export interface CoffeeSelections {
-  [key: string]: CoffeeSelection | undefined;
+  [key: string]: CoffeeOrigin | undefined;
 }
 
 export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX.Element => {
@@ -94,14 +92,14 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   }, []);
 
   // TODO: create CoffeeOrigin class and use it as input type to this func
-  const onSelection: GetRowsProps['onSelection'] = (id: string, minAmount: number) => {
+  const onSelection: GetRowsProps['onSelection'] = (id: string) => {
     return (quantity: number) => {
+      const c = selections[id] || coffeeOrigins.find(id);
+      if (!c) throw new Error(`Unknown ${id}`);
+      c.quantity = quantity;
       setSelections({
         ...selections,
-        [id]: {
-          quantity,
-          valid: quantity >= minAmount || quantity === 0
-        }
+        [id]: c
       });
     };
   };

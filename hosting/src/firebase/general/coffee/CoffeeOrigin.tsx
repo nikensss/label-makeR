@@ -1,6 +1,6 @@
 import getSymbolFromCurrency from 'currency-symbol-map';
 
-export interface CoffeeOrigin {
+export interface ICoffeeOrigin {
   label: string;
   id: string;
   weight: Weight;
@@ -21,33 +21,67 @@ export const priceDisplay = ({ amount, unit }: Price): string => {
   return `${amount.toFixed(2)} ${getSymbolFromCurrency(unit)}`;
 };
 
-export type DisplayableCoffeeOriginKeys = Exclude<keyof CoffeeOrigin, 'id'>;
+export type DisplayableCoffeeOriginKeys = Parameters<CoffeeOrigin['display']>[0];
 
-export class CoffeeOriginView {
-  constructor(private coffeeOrigin: CoffeeOrigin) {}
+export class CoffeeOrigin {
+  private coffeeOrigin: ICoffeeOrigin;
+  private _quantity = 0;
 
-  get label(): string {
-    return this.coffeeOrigin.label;
+  constructor(coffeeOrigin: ICoffeeOrigin) {
+    this.coffeeOrigin = coffeeOrigin;
   }
 
-  get weight(): string {
-    const { weight } = this.coffeeOrigin;
-    return `${weight.amount} ${weight.unit}`;
+  get id(): string {
+    return this.coffeeOrigin.id;
   }
 
-  get price(): string {
-    const { price } = this.coffeeOrigin;
-    return priceDisplay(price);
+  get minQuantity(): number {
+    return 30 / this.coffeeOrigin.weight.amount;
   }
 
-  getTotalPrice(quantity: number): string {
-    const totalPrice = this.calculateTotalPrice(quantity);
-    return priceDisplay(totalPrice);
+  get quantity(): number {
+    return this._quantity;
   }
 
-  private calculateTotalPrice(quantity: number): Price {
+  set quantity(qty: number) {
+    if (qty < 0) throw new Error('Negative quantities not allowed!');
+    this._quantity = qty;
+  }
+
+  isValid(): boolean {
+    return this.quantity === 0 || this.quantity >= this.minQuantity;
+  }
+
+  display(prop: Exclude<keyof ICoffeeOrigin, 'id'> | 'quantity' | 'totalPrice'): string {
+    switch (prop) {
+      case 'label':
+        return this.coffeeOrigin.label;
+      case 'price':
+        return priceDisplay(this.coffeeOrigin.price);
+      case 'weight':
+        return `${this.coffeeOrigin.weight.amount} ${this.coffeeOrigin.weight.unit}`;
+      case 'quantity':
+        return `${this.quantity}`;
+      case 'totalPrice':
+        return priceDisplay(this.getTotalPrice());
+    }
+  }
+
+  style(): Record<string, string> {
+    if (this.isValid()) {
+      return {
+        backgroundColor: 'transparent'
+      };
+    }
+
     return {
-      amount: this.coffeeOrigin.price.amount * quantity,
+      backgroundColor: 'rgb(253,237,237)'
+    };
+  }
+
+  getTotalPrice(): Price {
+    return {
+      amount: this.coffeeOrigin.price.amount * this.quantity,
       unit: this.coffeeOrigin.price.unit
     };
   }

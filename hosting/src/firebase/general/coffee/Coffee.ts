@@ -1,18 +1,18 @@
 import firebase from 'firebase';
 import { FirestoreDocument } from '../../firebase';
-import { CoffeeOrigin } from './CoffeeOrigin';
+import { CoffeeOrigin, ICoffeeOrigin } from './CoffeeOrigin';
 import { CoffeeOrigins } from './CoffeeOrigins';
 
 export interface FirestoreCoffee {
-  origins: CoffeeOrigin[];
+  origins: ICoffeeOrigin[];
 }
 
-const isCoffeeOrigin = (data: unknown): data is CoffeeOrigin => {
+const isCoffeeOrigin = (data: unknown): data is ICoffeeOrigin => {
   if (data === undefined || typeof data !== 'object' || data === null) {
     return false;
   }
 
-  const d = data as CoffeeOrigin;
+  const d = data as ICoffeeOrigin;
   if (!d.label || typeof d.label !== 'string') return false;
   if (!d.id || typeof d.id !== 'string') return false;
 
@@ -50,7 +50,7 @@ export class Coffee implements FirestoreDocument {
   }
 
   getOrigins(): CoffeeOrigins {
-    return new CoffeeOrigins(this.data.origins);
+    return new CoffeeOrigins(this.data.origins.map(o => new CoffeeOrigin(o)));
   }
 
   toFirestore(): FirestoreCoffee {

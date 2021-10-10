@@ -26,15 +26,11 @@ const styles = ({ spacing }: Theme) => {
 type CoffeeCounterProps = {
   classes: ClassNameMap<string>;
   onCoffeeQuantityChange: ReturnType<GetRowsProps['onSelection']>;
-  coffeeSelection?: CoffeeSelections[string];
+  coffeeSelection: Exclude<CoffeeSelections[string], undefined>;
 };
 
 export const CoffeeCounter = withStyles(styles)(
-  ({
-    classes,
-    onCoffeeQuantityChange,
-    coffeeSelection = { quantity: 0, valid: true }
-  }: CoffeeCounterProps) => {
+  ({ classes, onCoffeeQuantityChange, coffeeSelection }: CoffeeCounterProps) => {
     const [qty, setQty] = useState(coffeeSelection.quantity);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {

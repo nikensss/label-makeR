@@ -8,14 +8,13 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
 import Alert from '@mui/material/Alert';
-import { useEffect, useState } from 'react';
 import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
-import { CoffeeOrigin, CoffeeOriginView, DisplayableCoffeeOriginKeys } from './CoffeeOrigin';
+import { DisplayableCoffeeOriginKeys, CoffeeOrigin } from './CoffeeOrigin';
 
 export interface GetRowsProps {
   selections: CoffeeSelections;
-  onSelection: (id: string, minAmount: number) => (amount: number) => void;
+  onSelection: (id: string) => (amount: number) => void;
 }
 
 export interface GetTableProps extends GetRowsProps {
@@ -53,11 +52,7 @@ export class CoffeeOrigins {
 
   private getKeys(): DisplayableCoffeeOriginKeys[] {
     if (!this.isReady()) return [];
-
-    const [coffeeOrigin] = this.coffeeOrigins;
-    return Object.keys(coffeeOrigin)
-      .sort()
-      .filter(l => !['value', 'id'].includes(l)) as DisplayableCoffeeOriginKeys[];
+    return ['label', 'price', 'weight'];
   }
 
   private getColumns(): JSX.Element | null {
@@ -84,15 +79,13 @@ export class CoffeeOrigins {
 
     return this.coffeeOrigins.map((coffeeOrigin, i) => {
       const { id } = coffeeOrigin;
-      const minAmount = 30 / coffeeOrigin.weight.amount;
 
       return (
         <CoffeeRow
           keys={keys}
           key={i}
-          coffeeSelection={selections[id]}
-          onCoffeeQuantityChange={onSelection(id, minAmount)}
-          coffeeOrigin={coffeeOrigin}
+          coffeeSelection={selections[id] || coffeeOrigin}
+          onCoffeeQuantityChange={onSelection(id)}
         />
       );
     });
@@ -102,44 +95,13 @@ export class CoffeeOrigins {
 interface CoffeeRowProps {
   key: number;
   keys: DisplayableCoffeeOriginKeys[];
-  coffeeSelection: CoffeeSelections['string'];
+  coffeeSelection: Exclude<CoffeeSelections[string], undefined>;
   onCoffeeQuantityChange: ReturnType<GetRowsProps['onSelection']>;
-  coffeeOrigin: CoffeeOrigin;
 }
 
-const CoffeeRow = ({
-  keys,
-  key,
-  coffeeSelection,
-  coffeeOrigin,
-  onCoffeeQuantityChange
-}: CoffeeRowProps) => {
-  const renderer = new CoffeeOriginView(coffeeOrigin);
-  const [styles, setStyles] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    // coffeeSelection only exists if the user selected it, so it might be
-    // undefined for many rows; for this reason, we have to highlight it only
-    // if the selection exists (coffeeSelection is not undefined) and if the
-    // quantity is not valid
-    if (coffeeSelection && !coffeeSelection.valid) {
-      setStyles({
-        ...styles,
-        backgroundColor: 'rgb(253,237,237)',
-        color: 'rgb(95,33,32)'
-      });
-      return;
-    }
-
-    setStyles({
-      ...styles,
-      backgroundColor: 'transparent',
-      color: 'inherit'
-    });
-  }, [coffeeSelection]);
-
+const CoffeeRow = ({ keys, key, coffeeSelection, onCoffeeQuantityChange }: CoffeeRowProps) => {
   return (
-    <TableRow hover key={key} style={styles}>
+    <TableRow hover key={key} style={coffeeSelection.style()}>
       <TableCell padding='checkbox'>
         <CoffeeCounter
           coffeeSelection={coffeeSelection}
@@ -149,7 +111,7 @@ const CoffeeRow = ({
       {keys.map((k, i) => {
         return (
           <TableCell key={i}>
-            <Typography>{renderer[k] ?? ''}</Typography>
+            <Typography>{coffeeSelection?.display(k) ?? ''}</Typography>
           </TableCell>
         );
       })}
