@@ -1,4 +1,4 @@
 {
   "cSpell.words": ["signup", "unsubscribers"],
-  "eslint.workingDirectories": ["hosting"]
+  "eslint.workingDirectories": ["hosting", "functions"]
 }
