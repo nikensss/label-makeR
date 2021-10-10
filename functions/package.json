@@ -1,12 +1,17 @@
 {
   "name": "functions",
+  "version": "0.1.0",
   "scripts": {
     "lint": "eslint src/**/*.ts",
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions,firestore --import ./emulators/data --export-on-exit",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run serve",
+    "tag:add": "git tag functions && git push origin functions",
+    "tag:delete": "git tag -d functions && git push origin --delete functions",
+    "tag:update": "npm run tag:delete && npm run tag:add",
     "deploy": "firebase deploy --only functions",
+    "postdeploy": "npm run tag:update",
     "logs": "firebase functions:log",
     "pretty": "prettier --write src/**/*.ts",
     "pretty:check": "prettier --check src/**/*.ts",

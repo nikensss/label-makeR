@@ -1,5 +1,5 @@
 const prod = {
-  orderCheck: 'https://europe-west3-label-maker-app.cloudfunctions.com/api/order/check'
+  orderCheck: 'https://europe-west3-label-maker-app.cloudfunctions.net/api/order/check'
 };
 
 const dev = {
