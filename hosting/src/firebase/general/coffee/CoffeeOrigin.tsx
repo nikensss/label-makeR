@@ -44,7 +44,7 @@ export class CoffeeOrigin {
   }
 
   set quantity(qty: number) {
-    if (qty < 0) throw new Error('Negative quantities not allowes!');
+    if (qty < 0) throw new Error('Negative quantities not allowed!');
     this._quantity = qty;
   }
 
