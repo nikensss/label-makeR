@@ -2,6 +2,7 @@ import { Button, createStyles, FormControl, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -66,6 +67,8 @@ export interface CoffeeSelections {
 export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX.Element => {
   const history = useHistory();
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const isLastStep = () => step === LAST_STEP;
   const [selections, setSelections] = useState<CoffeeSelections>({});
   const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(new CoffeeOrigins([]));
   const [order, setOrder] = useState(new Order());
@@ -124,23 +127,34 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   const LAST_STEP = 2;
   const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
   const onBack = () => setStep(step <= 0 ? 0 : step - 1);
-  const onPay = () => {
+  const onPay = async () => {
     console.log('Paid!', { config });
-    fetch(config.orderCheck, {
-      headers: { 'content-type': 'application/json' },
-      method: 'POST',
-      body: JSON.stringify(selections)
-    })
-      .then(response => response.json())
-      .then(response => {
-        console.log({ response });
-        if (response.status === 'ok') return history.push('/thankyou');
-        setApiErrorMessage(response.message || 'Something went wrong.');
-        setOpen(true);
-      })
-      .catch(ex => console.error(ex));
+    try {
+      setIsLoading(true);
+      const response = await fetch(config.orderCheck, {
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+        body: JSON.stringify(selections)
+      });
+      const { status, message } = await response.json();
+
+      if (status === 'ok') return history.push('/thankyou');
+      throw new Error(message || 'Something went wrong');
+    } catch (ex) {
+      console.error('Exception caught!', { ex });
+      setApiErrorMessage(ex.message || 'Something went wrong');
+      setOpen(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
-  const handleNextClick = () => (step === LAST_STEP ? onPay() : onNext());
+
+  const handleNextClick = () => (isLastStep() ? onPay() : onNext());
+
+  const nextButtonMarkUp = () => {
+    if (isLoading) return <CircularProgress size={25} />;
+    return isLastStep() ? 'Pay' : 'Next';
+  };
 
   return (
     <>
@@ -175,7 +189,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
             variant='contained'
             className={classes.nextButton}
             onClick={onBack}
-            disabled={step === 0}
+            disabled={step === 0 || isLoading}
           >
             Back
           </Button>
@@ -184,9 +198,9 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
             variant='contained'
             className={classes.nextButton}
             onClick={handleNextClick}
-            disabled={!order.isValid()}
+            disabled={!order.isValid() || isLoading}
           >
-            {step >= LAST_STEP ? 'Pay' : 'Next'}
+            {nextButtonMarkUp()}
           </Button>
         </div>
       </FormControl>
