@@ -3,6 +3,7 @@ import { Theme } from '@material-ui/core/styles/createTheme';
 import withStyles, { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import createStyles from '@material-ui/styles/createStyles';
+import Alert from '@mui/material/Alert';
 import { Order } from '../classes/Order';
 
 type OrderSummaryProps = {
@@ -22,6 +23,7 @@ const styles = (theme: Theme) =>
     },
     selectionAndLabel: {
       'display': 'flex',
+      'flexDirection': 'row',
       'justifyContent': 'center',
       'alignItems': 'center',
       '& > *': {
@@ -43,6 +45,7 @@ export const OrderSummary = withStyles(styles)(
             <img alt={'Designed label'} style={{ width: '380px', height: '532px' }} src={label} />
           </Paper>
         </div>
+        <Alert severity='info'>Products will arrive in about 21 working days.</Alert>
       </div>
     );
   }
