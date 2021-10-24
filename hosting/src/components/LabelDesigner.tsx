@@ -1,18 +1,22 @@
-import ImageIcon from '@material-ui/icons/Image';
-import P5 from 'p5';
 import { createStyles, Theme, withStyles } from '@material-ui/core';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { createRef, MutableRefObject, useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import SaveIcon from '@material-ui/icons/Save';
 import Grid from '@material-ui/core/Grid';
 import Input from '@material-ui/core/Input';
+import Slider from '@material-ui/core/Slider';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import ImageIcon from '@material-ui/icons/Image';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import P5 from 'p5';
+import { createRef, MutableRefObject, useEffect, useState } from 'react';
 
 export interface LabelDesign {
   backgroundColor: string;
+  font: string;
   logo: string;
   scale: number;
   text: string;
@@ -115,6 +119,10 @@ export const LabelDesigner = withStyles(styles)(
       setLabelDesign({ ...labelDesign, text: event.target.value });
     };
 
+    const handleFontSelection = (event: SelectChangeEvent) => {
+      setLabelDesign({ ...labelDesign, font: event.target.value });
+    };
+
     const onFile = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (!file) return;
@@ -154,7 +162,7 @@ export const LabelDesigner = withStyles(styles)(
         p5.rect(0, 400, p5.width, p5.height - 400);
         p5.fill('black');
         p5.textSize(25);
-        p5.textFont('Source Code Pro');
+        p5.textFont(labelDesignRef.current.font);
         p5.textAlign(p5.CENTER);
         p5.text(labelDesignRef.current.text, p5.width / 2, 450);
 
@@ -260,16 +268,33 @@ export const LabelDesigner = withStyles(styles)(
               />
             </Grid>
           </Grid>
-          <Button
-            className={classes.button}
-            onClick={() => canvas?.save('coffee_label.png')}
-            color='primary'
-            startIcon={<SaveIcon />}
-            size='large'
-            variant='outlined'
-          >
-            Save label
-          </Button>
+          <FormControl fullWidth>
+            <InputLabel id='demo-simple-select-label'>Age</InputLabel>
+            <Select
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
+              value={labelDesign.font}
+              label='Font'
+              onChange={handleFontSelection}
+              style={{ fontFamily: labelDesignRef.current.font }}
+            >
+              <MenuItem value={'Source Code Pro'} style={{ fontFamily: 'Source Code Pro' }}>
+                Source Code Pro
+              </MenuItem>
+              <MenuItem value={'Montserrat'} style={{ fontFamily: 'Montserrat' }}>
+                Montserrat
+              </MenuItem>
+              <MenuItem value={'Oswald'} style={{ fontFamily: 'Oswald' }}>
+                Oswald
+              </MenuItem>
+              <MenuItem value={'Roboto Slab'} style={{ fontFamily: 'Roboto Slab' }}>
+                Roboto Slab
+              </MenuItem>
+              <MenuItem value={'Zen Old Mincho'} style={{ fontFamily: 'Zen Old Mincho' }}>
+                Zen Old Mincho
+              </MenuItem>
+            </Select>
+          </FormControl>
         </div>
         <div className={classes.label} ref={canvasContainer}></div>
       </div>
