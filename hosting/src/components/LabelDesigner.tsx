@@ -245,29 +245,6 @@ export const LabelDesigner = withStyles(styles)(
               />
             </Grid>
           </Grid>
-          <TextField
-            fullWidth
-            onChange={onChangeText}
-            id='outlined-basic'
-            label='Label text'
-            variant='outlined'
-            defaultValue={labelDesign.text}
-          />
-          <Grid container spacing={2} alignItems='center'>
-            <Grid item>
-              <label style={{ cursor: 'pointer' }} htmlFor='background-color-input'>
-                <Typography>Background color</Typography>
-              </label>
-            </Grid>
-            <Grid item xs>
-              <input
-                id='background-color-input'
-                value={labelDesign.backgroundColor}
-                onChange={onBackgroundColorChange}
-                type={'color'}
-              />
-            </Grid>
-          </Grid>
           <FormControl fullWidth>
             <InputLabel>Font</InputLabel>
             <Select
@@ -295,6 +272,29 @@ export const LabelDesigner = withStyles(styles)(
               </MenuItem>
             </Select>
           </FormControl>
+          <TextField
+            fullWidth
+            onChange={onChangeText}
+            id='outlined-basic'
+            label='Label text'
+            variant='outlined'
+            defaultValue={labelDesign.text}
+          />
+          <Grid container spacing={2} alignItems='center'>
+            <Grid item>
+              <label style={{ cursor: 'pointer' }} htmlFor='background-color-input'>
+                <Typography>Background color</Typography>
+              </label>
+            </Grid>
+            <Grid item xs>
+              <input
+                id='background-color-input'
+                value={labelDesign.backgroundColor}
+                onChange={onBackgroundColorChange}
+                type={'color'}
+              />
+            </Grid>
+          </Grid>
         </div>
         <div className={classes.label} ref={canvasContainer}></div>
       </div>
