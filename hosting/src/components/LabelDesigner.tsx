@@ -55,17 +55,17 @@ const styles = (theme: Theme) =>
       }
     },
     controls: {
-      'width': '100%',
-      'height': '100%',
-      'display': 'flex',
-      'justifyContent': 'center',
-      'alignItems': 'center',
-      'flexDirection': 'column',
-      'borderColor': theme.palette.primary.main,
-      'borderRadius': theme.spacing(1),
-      'borderWidth': '1px',
-      'borderStyle': 'solid',
-      'padding': theme.spacing(2),
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'column',
+      borderColor: theme.palette.primary.main,
+      borderRadius: theme.spacing(1),
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      padding: theme.spacing(2),
       '& > *': {
         margin: theme.spacing(1)
       }
@@ -298,10 +298,10 @@ export const LabelDesigner = withStyles(styles)(
                 onChange={onScaleChange}
                 onBlur={onBlurChange}
                 inputProps={{
-                  'step': 0.01,
-                  'min': 0,
-                  'max': 5,
-                  'type': 'number',
+                  step: 0.01,
+                  min: 0,
+                  max: 5,
+                  type: 'number',
                   'aria-labelledby': 'input-slider'
                 }}
               />

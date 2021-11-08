@@ -27,8 +27,8 @@ const styles = ({ palette, spacing }: Theme) => {
       alignItems: 'center'
     },
     table: {
-      'width': '65%',
-      'height': '70%',
+      width: '65%',
+      height: '70%',
       '& > *': {
         maxHeight: '92%'
       }
@@ -37,9 +37,9 @@ const styles = ({ palette, spacing }: Theme) => {
       marginTop: spacing(3)
     },
     buttons: {
-      'display': 'flex',
-      'justifyContent': 'space-between',
-      'alignItems': 'center',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       '& > *': {
         margin: spacing(3)
       }

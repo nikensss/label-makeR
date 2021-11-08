@@ -7,7 +7,7 @@ import { GetRowsProps } from './CoffeeOrigins';
 const styles = ({ spacing }: Theme) => {
   return createStyles({
     numberInput: {
-      'width': '7ch',
+      width: '7ch',
       '& *': {
         textAlign: 'center'
       }
