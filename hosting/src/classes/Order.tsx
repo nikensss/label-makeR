@@ -45,9 +45,11 @@ export class Order {
   }
 
   get coffees(): CoffeeOrigin[] {
-    return Object.values(this.coffeeSelections)
-      .filter(onlyCoffeeOrigin)
-      .filter(c => c.isValid() && c.quantity > 0);
+    return (
+      Object.values(this.coffeeSelections)
+        .filter(onlyCoffeeOrigin)
+        .filter(c => c.isValid() && c.quantity > 0) || []
+    );
   }
 
   get price(): Price {
