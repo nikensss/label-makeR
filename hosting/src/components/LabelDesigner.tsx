@@ -313,7 +313,9 @@ export const LabelDesigner = withStyles(styles)(
             </Grid>
           </Grid>
           <FormControl fullWidth component='fieldset'>
-            <FormLabel component='legend'>Bag Color</FormLabel>
+            <FormLabel component='legend'>
+              <Typography>Bag Color</Typography>
+            </FormLabel>
             <RadioGroup
               onChange={onBagColorChange}
               row
@@ -323,17 +325,17 @@ export const LabelDesigner = withStyles(styles)(
               <FormControlLabel
                 value='white'
                 control={<Radio checked={labelDesign.bagColor === 'white'} />}
-                label='White'
+                label={<Typography>White</Typography>}
               />
               <FormControlLabel
                 value='black'
                 control={<Radio checked={labelDesign.bagColor === 'black'} />}
-                label='Black'
+                label={<Typography>Black</Typography>}
               />
               <FormControlLabel
                 value='brown'
                 control={<Radio checked={labelDesign.bagColor === 'brown'} />}
-                label='Brown'
+                label={<Typography>Brown</Typography>}
               />
             </RadioGroup>
           </FormControl>
