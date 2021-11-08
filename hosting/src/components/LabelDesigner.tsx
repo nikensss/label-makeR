@@ -7,6 +7,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import ImageIcon from '@material-ui/icons/Image';
+import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
@@ -67,6 +68,12 @@ const styles = (theme: Theme) =>
         margin: theme.spacing(1)
       }
     },
+    imageButtons: {
+      display: 'flex',
+      width: '100%',
+      justifyContent: 'space-around',
+      alignItems: 'center'
+    },
     label: {
       width: '100%',
       height: '100%',
@@ -100,6 +107,7 @@ export const LabelDesigner = withStyles(styles)(
     const labelDimensions = { width: 380, height: 532 } as const;
     const canvasContainer = createRef<HTMLDivElement>();
     const [canvas, setCanvas] = useState<P5 | null>(null);
+    const [hasLogo, setHasLogo] = useState(!!labelDesignRef.current.logo);
 
     const onChange = (key: keyof Pick<LabelDesign, 'x' | 'y' | 'scale'>) => {
       return (...args: unknown[]) => {
@@ -151,8 +159,13 @@ export const LabelDesigner = withStyles(styles)(
           return setLabelDesign({ ...labelDesign, logo: '' });
         }
         setLabelDesign({ ...labelDesign, logo });
+        setHasLogo(!!logo);
       };
       reader.readAsDataURL(file);
+    };
+
+    const onCenterLogo = () => {
+      setLabelDesign({ ...labelDesign, x: labelDimensions.width / 2, y: 200 });
     };
 
     const sketch = (p5: P5) => {
@@ -163,6 +176,7 @@ export const LabelDesigner = withStyles(styles)(
         p5.pixelDensity(2);
         img = p5.createImg(labelDesignRef.current.logo, '');
         img.hide();
+        p5.imageMode(p5.CENTER);
       };
 
       p5.draw = () => {
@@ -172,6 +186,7 @@ export const LabelDesigner = withStyles(styles)(
         if (img) {
           const { width, height } = img.elt;
           const { x, y, scale } = labelDesignRef.current;
+          // const labelCenter = { x: labelDimensions.width / 2, y: 200 };
           p5.image(img, x, y, width * scale, height * scale);
         }
 
@@ -198,7 +213,7 @@ export const LabelDesigner = withStyles(styles)(
     return (
       <div className={classes.container}>
         <div className={classes.controls}>
-          <div>
+          <div className={classes.imageButtons}>
             <input
               accept='image/*'
               className={classes.input}
@@ -217,11 +232,21 @@ export const LabelDesigner = withStyles(styles)(
                 <Typography>Upload logo</Typography>
               </Button>
             </label>
+            <Button
+              startIcon={<FilterCenterFocusIcon />}
+              variant='contained'
+              color='primary'
+              component='span'
+              disabled={!hasLogo}
+              onClick={onCenterLogo}
+            >
+              <Typography>Center</Typography>
+            </Button>
           </div>
           <Typography>Horizontal position</Typography>
           <Slider
             value={labelDesign.x}
-            min={0}
+            min={-(canvas?.width || labelDimensions.width)}
             max={canvas?.width || labelDimensions.width}
             onChange={onChangeX}
             aria-labelledby='continuous-slider'
@@ -229,7 +254,7 @@ export const LabelDesigner = withStyles(styles)(
           <Typography>Vertical position</Typography>
           <Slider
             value={labelDesign.y}
-            min={0}
+            min={-(canvas?.height || labelDimensions.height)}
             max={canvas?.height || labelDimensions.height}
             onChange={onChangeY}
             aria-labelledby='continuous-slider'
