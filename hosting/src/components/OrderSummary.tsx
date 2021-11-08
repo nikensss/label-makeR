@@ -1,4 +1,3 @@
-import { Paper } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles/createTheme';
 import withStyles, { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
@@ -22,13 +21,20 @@ const styles = (theme: Theme) =>
       height: '70%'
     },
     selectionAndLabel: {
-      'display': 'flex',
-      'flexDirection': 'row',
-      'justifyContent': 'center',
-      'alignItems': 'center',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: theme.spacing(1),
       '& > *': {
         margin: theme.spacing(1)
       }
+    },
+    label: {
+      borderRadius: '10px',
+      width: '380px',
+      height: '532px',
+      boxShadow: '0 0 10px 6px #303030A0'
     }
   });
 
@@ -41,9 +47,7 @@ export const OrderSummary = withStyles(styles)(
         <Typography variant='h3'>Your order</Typography>
         <div className={classes.selectionAndLabel}>
           <div>{order.toTable()}</div>
-          <Paper elevation={13}>
-            <img alt={'Designed label'} style={{ width: '380px', height: '532px' }} src={label} />
-          </Paper>
+          <img alt={'Designed label'} className={classes.label} src={label} />
         </div>
         <Alert severity='info'>Products will arrive in about 21 working days.</Alert>
       </div>

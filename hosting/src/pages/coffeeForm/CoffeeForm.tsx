@@ -27,8 +27,8 @@ const styles = ({ palette, spacing }: Theme) => {
       alignItems: 'center'
     },
     table: {
-      'width': '65%',
-      'height': '70%',
+      width: '65%',
+      height: '70%',
       '& > *': {
         maxHeight: '92%'
       }
@@ -37,9 +37,9 @@ const styles = ({ palette, spacing }: Theme) => {
       marginTop: spacing(3)
     },
     buttons: {
-      'display': 'flex',
-      'justifyContent': 'space-between',
-      'alignItems': 'center',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       '& > *': {
         margin: spacing(3)
       }
@@ -81,12 +81,13 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   };
 
   const [labelDesign, setLabelDesign] = useState<LabelDesign>({
-    backgroundColor: '#473D54',
+    backgroundColor: '#A0A0A0',
     bagColor: 'white',
     font: 'Source Code Pro',
     logo: '',
-    scale: 0.25,
-    text: 'Italian light roast',
+    scale: 0.1,
+    text: 'Your brand here',
+    website: 'www.yourwebsite.com',
     x: 0,
     y: 0
   });
@@ -172,8 +173,8 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
             case 1:
               return (
                 <LabelDesigner
+                  order={order}
                   labelDesignRef={labelDesignRef}
-                  labelDesign={labelDesign}
                   setLabelDesign={setLabelDesign}
                   label={label}
                   setLabel={setLabel}
