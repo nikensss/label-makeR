@@ -8,14 +8,26 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import ImageIcon from '@material-ui/icons/Image';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import P5 from 'p5';
-import { createRef, MutableRefObject, useEffect, useState } from 'react';
+import { ChangeEvent, createRef, MutableRefObject, useEffect, useState } from 'react';
+
+const BAG_COLORS = ['white', 'black', 'brown'] as const;
+
+const isValidBagColor = (color: string): color is LabelDesign['bagColor'] => {
+  //eslint-disable-next-line
+  return BAG_COLORS.includes(color as any);
+};
 
 export interface LabelDesign {
   backgroundColor: string;
+  bagColor: typeof BAG_COLORS[number];
   font: string;
   logo: string;
   scale: number;
@@ -105,12 +117,12 @@ export const LabelDesigner = withStyles(styles)(
       setLabelDesign({ ...labelDesign, backgroundColor });
     };
 
-    const handleScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const scale = !event.target.value ? 0.25 : parseFloat(event.target.value);
       setLabelDesign({ ...labelDesign, scale });
     };
 
-    const handleBlur = () => {
+    const onBlurChange = () => {
       if (labelDesign.scale < 0) setLabelDesign({ ...labelDesign, scale: 0 });
       if (labelDesign.scale > 5) setLabelDesign({ ...labelDesign, scale: 5 });
     };
@@ -119,8 +131,13 @@ export const LabelDesigner = withStyles(styles)(
       setLabelDesign({ ...labelDesign, text: event.target.value });
     };
 
-    const handleFontSelection = (event: SelectChangeEvent) => {
+    const onFontSelectionChange = (event: SelectChangeEvent) => {
       setLabelDesign({ ...labelDesign, font: event.target.value });
+    };
+
+    const onBagColorChange = (event: ChangeEvent<HTMLInputElement>) => {
+      const bagColor = event.target.value;
+      if (isValidBagColor(bagColor)) setLabelDesign({ ...labelDesign, bagColor });
     };
 
     const onFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -233,8 +250,8 @@ export const LabelDesigner = withStyles(styles)(
               <Input
                 value={labelDesign.scale}
                 margin='dense'
-                onChange={handleScaleChange}
-                onBlur={handleBlur}
+                onChange={onScaleChange}
+                onBlur={onBlurChange}
                 inputProps={{
                   'step': 0.01,
                   'min': 0,
@@ -252,7 +269,7 @@ export const LabelDesigner = withStyles(styles)(
               id='demo-simple-select'
               value={labelDesign.font}
               label='Font'
-              onChange={handleFontSelection}
+              onChange={onFontSelectionChange}
               style={{ fontFamily: labelDesignRef.current.font }}
             >
               <MenuItem value={'Source Code Pro'} style={{ fontFamily: 'Source Code Pro' }}>
@@ -295,6 +312,33 @@ export const LabelDesigner = withStyles(styles)(
               />
             </Grid>
           </Grid>
+          <FormControl fullWidth component='fieldset'>
+            <FormLabel component='legend'>
+              <Typography>Bag Color</Typography>
+            </FormLabel>
+            <RadioGroup
+              onChange={onBagColorChange}
+              row
+              aria-label='bag color'
+              name='row-radio-buttons-group'
+            >
+              <FormControlLabel
+                value='white'
+                control={<Radio checked={labelDesign.bagColor === 'white'} />}
+                label={<Typography>White</Typography>}
+              />
+              <FormControlLabel
+                value='black'
+                control={<Radio checked={labelDesign.bagColor === 'black'} />}
+                label={<Typography>Black</Typography>}
+              />
+              <FormControlLabel
+                value='brown'
+                control={<Radio checked={labelDesign.bagColor === 'brown'} />}
+                label={<Typography>Brown</Typography>}
+              />
+            </RadioGroup>
+          </FormControl>
         </div>
         <div className={classes.label} ref={canvasContainer}></div>
       </div>
