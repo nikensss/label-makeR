@@ -81,12 +81,12 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   };
 
   const [labelDesign, setLabelDesign] = useState<LabelDesign>({
-    backgroundColor: '#473D54',
+    backgroundColor: '#787878',
     bagColor: 'white',
     font: 'Source Code Pro',
     logo: '',
-    scale: 0.25,
-    text: 'Italian light roast',
+    scale: 0.1,
+    text: 'Your brand here',
     x: 0,
     y: 0
   });
@@ -173,7 +173,6 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
               return (
                 <LabelDesigner
                   labelDesignRef={labelDesignRef}
-                  labelDesign={labelDesign}
                   setLabelDesign={setLabelDesign}
                   label={label}
                   setLabel={setLabel}

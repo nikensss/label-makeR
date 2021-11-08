@@ -88,7 +88,6 @@ const styles = (theme: Theme) =>
 
 type LabelDesignerInput = {
   labelDesignRef: MutableRefObject<LabelDesign>;
-  labelDesign: LabelDesign;
   setLabelDesign: React.Dispatch<React.SetStateAction<LabelDesign>>;
   label: string;
   setLabel: React.Dispatch<React.SetStateAction<string>>;
@@ -96,14 +95,8 @@ type LabelDesignerInput = {
 };
 
 export const LabelDesigner = withStyles(styles)(
-  ({
-    labelDesignRef,
-    labelDesign,
-    setLabelDesign,
-    label,
-    setLabel,
-    classes
-  }: LabelDesignerInput) => {
+  ({ labelDesignRef, setLabelDesign, label, setLabel, classes }: LabelDesignerInput) => {
+    const labelDesign = labelDesignRef.current;
     const labelDimensions = { width: 380, height: 532 } as const;
     const canvasContainer = createRef<HTMLDivElement>();
     const [canvas, setCanvas] = useState<P5 | null>(null);
@@ -165,7 +158,7 @@ export const LabelDesigner = withStyles(styles)(
     };
 
     const onCenterLogo = () => {
-      setLabelDesign({ ...labelDesign, x: labelDimensions.width / 2, y: 200 });
+      setLabelDesign({ ...labelDesign, x: labelDimensions.width / 2, y: 140 });
     };
 
     const sketch = (p5: P5) => {
@@ -190,13 +183,11 @@ export const LabelDesigner = withStyles(styles)(
           p5.image(img, x, y, width * scale, height * scale);
         }
 
-        p5.fill('white');
-        p5.rect(0, 400, p5.width, p5.height - 400);
         p5.fill('black');
-        p5.textSize(25);
+        p5.textSize(18);
         p5.textFont(labelDesignRef.current.font);
         p5.textAlign(p5.CENTER);
-        p5.text(labelDesignRef.current.text, p5.width / 2, 450);
+        p5.text(labelDesignRef.current.text, p5.width / 2, 250);
 
         const { canvas } = p5.get();
         const data = canvas.toDataURL();
