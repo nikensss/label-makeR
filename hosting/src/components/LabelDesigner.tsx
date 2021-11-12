@@ -49,7 +49,6 @@ const styles = (theme: Theme) =>
   createStyles({
     container: {
       width: '75%',
-      height: '80%',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'stretch',
@@ -126,8 +125,6 @@ export const LabelDesigner = withStyles(styles)(
       };
     };
 
-    const onChangeX = onChange('x');
-    const onChangeY = onChange('y');
     const onChangeScale = onChange('scale');
     const onBackgroundColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const backgroundColor = event.target.value;
@@ -188,6 +185,22 @@ export const LabelDesigner = withStyles(styles)(
 
     const frontLabelSketch = (p5: P5) => {
       let img: P5.Element | null = null;
+      const dragged: { x: number | null; y: number | null } = { x: null, y: null };
+      let dragStartedOutsideImage = true;
+
+      const mouseIsOnImage = (): boolean => {
+        if (!img) return false;
+
+        const { width, height } = img.elt;
+        const { x, y, scale } = labelDesignRef.current;
+        const effectiveWidth = width * scale;
+        const effectiveHeight = height * scale;
+        const m = { x: p5.mouseX, y: p5.mouseY };
+
+        const xIsOnImage = x - effectiveWidth / 2 < m.x && m.x < x + effectiveWidth / 2;
+        const yIsOnImage = y - effectiveHeight / 2 < m.y && m.y < y + effectiveHeight / 2;
+        return xIsOnImage && yIsOnImage;
+      };
 
       p5.setup = () => {
         p5.createCanvas(labelDimensions.width, labelDimensions.height);
@@ -233,6 +246,30 @@ export const LabelDesigner = withStyles(styles)(
         const { canvas } = p5.get();
         const data = canvas.toDataURL();
         if (data !== labels.front) setLabels({ ...labels, front: canvas.toDataURL() });
+      };
+
+      p5.mouseDragged = () => {
+        if (!mouseIsOnImage()) return;
+        if (dragStartedOutsideImage) return;
+
+        if (dragged.x !== null && dragged.y !== null) {
+          setLabelDesign({
+            ...labelDesignRef.current,
+            x: labelDesignRef.current.x + (p5.mouseX - dragged.x),
+            y: labelDesignRef.current.y + (p5.mouseY - dragged.y)
+          });
+        }
+
+        dragged.x = p5.mouseX;
+        dragged.y = p5.mouseY;
+      };
+
+      p5.mousePressed = () => {
+        dragStartedOutsideImage = !mouseIsOnImage();
+      };
+
+      p5.mouseReleased = () => {
+        [dragged.x, dragged.y] = [null, null];
       };
     };
 
@@ -299,22 +336,6 @@ export const LabelDesigner = withStyles(styles)(
               <Typography>Center</Typography>
             </Button>
           </div>
-          <Typography>Horizontal position</Typography>
-          <Slider
-            value={labelDesign.x}
-            min={-(frontLabelCanvas?.width || labelDimensions.width)}
-            max={frontLabelCanvas?.width || labelDimensions.width}
-            onChange={onChangeX}
-            aria-labelledby='continuous-slider'
-          />
-          <Typography>Vertical position</Typography>
-          <Slider
-            value={labelDesign.y}
-            min={-(frontLabelCanvas?.height || labelDimensions.height)}
-            max={frontLabelCanvas?.height || labelDimensions.height}
-            onChange={onChangeY}
-            aria-labelledby='continuous-slider'
-          />
           <Typography>Scale</Typography>
           <Grid container spacing={2} alignItems='center'>
             <Grid item xs>
