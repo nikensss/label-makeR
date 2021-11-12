@@ -7,7 +7,7 @@ import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Order } from '../../classes/Order';
-import { LabelDesign, LabelDesigner } from '../../components/LabelDesigner';
+import { LabelDesign, LabelDesigner, Labels } from '../../components/LabelDesigner';
 import { OrderSummary } from '../../components/OrderSummary';
 import { config } from '../../config/config';
 import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
@@ -86,7 +86,8 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
     font: 'Source Code Pro',
     logo: '',
     scale: 0.1,
-    text: 'Your brand here',
+    brand: 'Your brand here',
+    description: 'Your description here',
     website: 'www.yourwebsite.com',
     x: 0,
     y: 0
@@ -94,9 +95,9 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   const labelDesignRef = useRef(labelDesign);
   labelDesignRef.current = labelDesign;
 
-  const [label, setLabel] = useState('');
-  const labelRef = useRef(label);
-  labelRef.current = label;
+  const [labels, setLabels] = useState<Labels>({ front: '', back: '' });
+  const labelRef = useRef(labels);
+  labelRef.current = labels;
 
   useEffect(() => {
     const getCoffeeOrigins = async (): Promise<void> => {
@@ -176,12 +177,12 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
                   order={order}
                   labelDesignRef={labelDesignRef}
                   setLabelDesign={setLabelDesign}
-                  label={label}
-                  setLabel={setLabel}
+                  labels={labels}
+                  setLabels={setLabels}
                 />
               );
             case 2:
-              return <OrderSummary label={label} order={order} />;
+              return <OrderSummary labels={labels} order={order} />;
             default:
               return setStep(0);
           }

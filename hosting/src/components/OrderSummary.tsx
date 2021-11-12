@@ -4,10 +4,11 @@ import Typography from '@material-ui/core/Typography';
 import createStyles from '@material-ui/styles/createStyles';
 import Alert from '@mui/material/Alert';
 import { Order } from '../classes/Order';
+import { Labels } from './LabelDesigner';
 
 type OrderSummaryProps = {
   order: Order;
-  label: string;
+  labels: Labels;
   classes: ClassNameMap<string>;
 };
 
@@ -39,7 +40,7 @@ const styles = (theme: Theme) =>
   });
 
 export const OrderSummary = withStyles(styles)(
-  ({ order, label, classes }: OrderSummaryProps): JSX.Element => {
+  ({ order, labels, classes }: OrderSummaryProps): JSX.Element => {
     if (!order) throw new Error('We should not be here');
 
     return (
@@ -47,7 +48,8 @@ export const OrderSummary = withStyles(styles)(
         <Typography variant='h3'>Your order</Typography>
         <div className={classes.selectionAndLabel}>
           <div>{order.toTable()}</div>
-          <img alt={'Designed label'} className={classes.label} src={label} />
+          <img alt={'Designed label'} className={classes.label} src={labels.front} />
+          <img alt={'Designed label'} className={classes.label} src={labels.back} />
         </div>
         <Alert severity='info'>Products will arrive in about 21 working days.</Alert>
       </div>
