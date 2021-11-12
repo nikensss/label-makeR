@@ -121,44 +121,46 @@ export const LabelDesigner = withStyles(styles)(
       return (...args: unknown[]) => {
         const [, value] = args;
         if (typeof value !== 'number') return;
-        setLabelDesign({ ...labelDesign, [key]: value });
+        setLabelDesign({ ...labelDesignRef.current, [key]: value });
       };
     };
 
     const onChangeScale = onChange('scale');
     const onBackgroundColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const backgroundColor = event.target.value;
-      setLabelDesign({ ...labelDesign, backgroundColor });
+      setLabelDesign({ ...labelDesignRef.current, backgroundColor });
     };
 
     const onScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const scale = !event.target.value ? 0.25 : parseFloat(event.target.value);
-      setLabelDesign({ ...labelDesign, scale });
+      setLabelDesign({ ...labelDesignRef.current, scale });
     };
 
     const onBlurChange = () => {
-      if (labelDesign.scale < 0) setLabelDesign({ ...labelDesign, scale: 0 });
-      if (labelDesign.scale > 5) setLabelDesign({ ...labelDesign, scale: 5 });
+      if (labelDesign.scale < 0) setLabelDesign({ ...labelDesignRef.current, scale: 0 });
+      if (labelDesign.scale > 5) setLabelDesign({ ...labelDesignRef.current, scale: 5 });
     };
 
     const onBrandChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setLabelDesign({ ...labelDesign, brand: event.target.value });
+      setLabelDesign({ ...labelDesignRef.current, brand: event.target.value });
     };
+
     const onWebsiteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setLabelDesign({ ...labelDesign, website: event.target.value });
+      setLabelDesign({ ...labelDesignRef.current, website: event.target.value });
     };
+
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setLabelDesign({ ...labelDesign, description: event.target.value });
+      setLabelDesign({ ...labelDesignRef.current, description: event.target.value });
     };
 
     const onFontSelectionChange = (event: SelectChangeEvent) => {
-      setLabelDesign({ ...labelDesign, font: event.target.value });
+      setLabelDesign({ ...labelDesignRef.current, font: event.target.value });
     };
 
     const onBagColorChange = (event: ChangeEvent<HTMLInputElement>) => {
       const bagColor = event.target.value;
       if (isValidBagColor(bagColor)) {
-        setLabelDesign({ ...labelDesign, bagColor });
+        setLabelDesign({ ...labelDesignRef.current, bagColor });
       }
     };
 
@@ -170,9 +172,9 @@ export const LabelDesigner = withStyles(styles)(
       reader.onload = (e: ProgressEvent<FileReader>) => {
         const logo = e.target?.result;
         if (typeof logo !== 'string') {
-          return setLabelDesign({ ...labelDesign, logo: '' });
+          return setLabelDesign({ ...labelDesignRef.current, logo: '' });
         }
-        setLabelDesign({ ...labelDesign, logo });
+        setLabelDesign({ ...labelDesignRef.current, logo });
         setHasLogo(!!logo);
         centerButton.current?.click();
       };
@@ -180,7 +182,7 @@ export const LabelDesigner = withStyles(styles)(
     };
 
     const onCenterLogo = () => {
-      setLabelDesign({ ...labelDesign, x: labelDimensions.width / 2, y: 140 });
+      setLabelDesign({ ...labelDesignRef.current, x: labelDimensions.width / 2, y: 110 });
     };
 
     const frontLabelSketch = (p5: P5) => {
@@ -217,7 +219,6 @@ export const LabelDesigner = withStyles(styles)(
         if (img) {
           const { width, height } = img.elt;
           const { x, y, scale } = labelDesignRef.current;
-          // const labelCenter = { x: labelDimensions.width / 2, y: 200 };
           p5.image(img, x, y, width * scale, height * scale);
         }
 
@@ -300,7 +301,7 @@ export const LabelDesigner = withStyles(styles)(
       backLabelCanvas?.remove();
       setFrontLabelCanvas(new P5(frontLabelSketch, frontLabel.current));
       setBackLabelCanvas(new P5(backLabelSketch, backLabel.current));
-    }, [frontLabel.current, backLabel.current, labelDesign.logo]);
+    }, [frontLabel.current, backLabel.current, labelDesignRef.current.logo]);
 
     return (
       <div className={classes.container}>
@@ -340,7 +341,7 @@ export const LabelDesigner = withStyles(styles)(
           <Grid container spacing={2} alignItems='center'>
             <Grid item xs>
               <Slider
-                value={labelDesign.scale}
+                value={labelDesignRef.current.scale}
                 min={0}
                 max={5}
                 step={0.01}
@@ -350,7 +351,7 @@ export const LabelDesigner = withStyles(styles)(
             </Grid>
             <Grid item>
               <Input
-                value={labelDesign.scale}
+                value={labelDesignRef.current.scale}
                 margin='dense'
                 onChange={onScaleChange}
                 onBlur={onBlurChange}
@@ -367,9 +368,9 @@ export const LabelDesigner = withStyles(styles)(
           <FormControl fullWidth>
             <InputLabel>Font</InputLabel>
             <Select
-              labelId='demo-simple-select-label'
-              id='demo-simple-select'
-              value={labelDesign.font}
+              labelId='font-select-label'
+              id='font-select'
+              value={labelDesignRef.current.font}
               label='Font'
               onChange={onFontSelectionChange}
               style={{ fontFamily: labelDesignRef.current.font }}
@@ -396,21 +397,21 @@ export const LabelDesigner = withStyles(styles)(
             onChange={onBrandChange}
             label='Your brand'
             variant='outlined'
-            defaultValue={labelDesign.brand}
+            defaultValue={labelDesignRef.current.brand}
           />
           <TextField
             fullWidth
             onChange={onWebsiteChange}
             label='Your website'
             variant='outlined'
-            defaultValue={labelDesign.website}
+            defaultValue={labelDesignRef.current.website}
           />
           <TextField
             fullWidth
             onChange={onDescriptionChange}
             label='Your description'
             variant='outlined'
-            defaultValue={labelDesign.description}
+            defaultValue={labelDesignRef.current.description}
           />
           <Grid container spacing={2} alignItems='center'>
             <Grid item>
@@ -421,7 +422,7 @@ export const LabelDesigner = withStyles(styles)(
             <Grid item xs>
               <input
                 id='background-color-input'
-                value={labelDesign.backgroundColor}
+                value={labelDesignRef.current.backgroundColor}
                 onChange={onBackgroundColorChange}
                 type={'color'}
               />
@@ -439,17 +440,17 @@ export const LabelDesigner = withStyles(styles)(
             >
               <FormControlLabel
                 value='white'
-                control={<Radio checked={labelDesign.bagColor === 'white'} />}
+                control={<Radio checked={labelDesignRef.current.bagColor === 'white'} />}
                 label={<Typography>White</Typography>}
               />
               <FormControlLabel
                 value='black'
-                control={<Radio checked={labelDesign.bagColor === 'black'} />}
+                control={<Radio checked={labelDesignRef.current.bagColor === 'black'} />}
                 label={<Typography>Black</Typography>}
               />
               <FormControlLabel
                 value='brown'
-                control={<Radio checked={labelDesign.bagColor === 'brown'} />}
+                control={<Radio checked={labelDesignRef.current.bagColor === 'brown'} />}
                 label={<Typography>Brown</Typography>}
               />
             </RadioGroup>
