@@ -33,7 +33,8 @@ export interface LabelDesign {
   font: string;
   logo: string;
   scale: number;
-  text: string;
+  brand: string;
+  description: string;
   website: string;
   x: number;
   y: number;
@@ -42,8 +43,8 @@ export interface LabelDesign {
 const styles = (theme: Theme) =>
   createStyles({
     container: {
-      width: '65%',
-      height: '70%',
+      width: '75%',
+      height: '80%',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'stretch',
@@ -101,8 +102,10 @@ export const LabelDesigner = withStyles(styles)(
   ({ order, labelDesignRef, setLabelDesign, label, setLabel, classes }: LabelDesignerInput) => {
     const labelDesign = labelDesignRef.current;
     const labelDimensions = { width: 380, height: 532 } as const;
-    const canvasContainer = createRef<HTMLDivElement>();
-    const [canvas, setCanvas] = useState<P5 | null>(null);
+    const frontLabel = createRef<HTMLDivElement>();
+    const backLabel = createRef<HTMLDivElement>();
+    const [frontLabelCanvas, setFrontLabelCanvas] = useState<P5 | null>(null);
+    const [backLabelCanvas, setBackLabelCanvas] = useState<P5 | null>(null);
     const [hasLogo, setHasLogo] = useState(!!labelDesignRef.current.logo);
     const [coffee] = order.coffees;
     const name = coffee?.display('label') || 'ROMO BLEND';
@@ -136,11 +139,14 @@ export const LabelDesigner = withStyles(styles)(
       if (labelDesign.scale > 5) setLabelDesign({ ...labelDesign, scale: 5 });
     };
 
-    const onBrandTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setLabelDesign({ ...labelDesign, text: event.target.value });
+    const onBrandChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setLabelDesign({ ...labelDesign, brand: event.target.value });
     };
     const onWebsiteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setLabelDesign({ ...labelDesign, website: event.target.value });
+    };
+    const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setLabelDesign({ ...labelDesign, description: event.target.value });
     };
 
     const onFontSelectionChange = (event: SelectChangeEvent) => {
@@ -149,7 +155,9 @@ export const LabelDesigner = withStyles(styles)(
 
     const onBagColorChange = (event: ChangeEvent<HTMLInputElement>) => {
       const bagColor = event.target.value;
-      if (isValidBagColor(bagColor)) setLabelDesign({ ...labelDesign, bagColor });
+      if (isValidBagColor(bagColor)) {
+        setLabelDesign({ ...labelDesign, bagColor });
+      }
     };
 
     const onFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,7 +181,7 @@ export const LabelDesigner = withStyles(styles)(
       setLabelDesign({ ...labelDesign, x: labelDimensions.width / 2, y: 140 });
     };
 
-    const sketch = (p5: P5) => {
+    const frontLabelSketch = (p5: P5) => {
       let img: P5.Element | null = null;
 
       p5.setup = () => {
@@ -200,7 +208,7 @@ export const LabelDesigner = withStyles(styles)(
         p5.textSize(18);
         p5.textFont(labelDesignRef.current.font);
         p5.textAlign(p5.CENTER);
-        p5.text(labelDesignRef.current.text, p5.width / 2, 250);
+        p5.text(labelDesignRef.current.brand, p5.width / 2, 250);
 
         // show coffee type
         p5.text(name, p5.width / 2, 340);
@@ -222,12 +230,34 @@ export const LabelDesigner = withStyles(styles)(
         if (data !== label) setLabel(canvas.toDataURL());
       };
     };
+    const backLabelSketch = (p5: P5) => {
+      p5.setup = () => {
+        p5.createCanvas(labelDimensions.width, labelDimensions.height);
+        p5.pixelDensity(2);
+      };
+
+      p5.draw = () => {
+        p5.background(labelDesignRef.current.backgroundColor);
+
+        p5.fill('black');
+        p5.textSize(18);
+        p5.textFont(labelDesignRef.current.font);
+        p5.textAlign(p5.CENTER);
+        p5.text(labelDesignRef.current.description, p5.width / 2, 250);
+
+        const { canvas } = p5.get();
+        const data = canvas.toDataURL();
+        if (data !== label) console.log(canvas.toDataURL());
+      };
+    };
 
     useEffect(() => {
-      if (!canvasContainer.current) return;
-      canvas?.remove();
-      setCanvas(new P5(sketch, canvasContainer.current));
-    }, [canvasContainer.current, labelDesign.logo]);
+      if (!frontLabel.current || !backLabel.current) return;
+      frontLabelCanvas?.remove();
+      backLabelCanvas?.remove();
+      setFrontLabelCanvas(new P5(frontLabelSketch, frontLabel.current));
+      setBackLabelCanvas(new P5(backLabelSketch, backLabel.current));
+    }, [frontLabel.current, backLabel.current, labelDesign.logo]);
 
     return (
       <div className={classes.container}>
@@ -266,16 +296,16 @@ export const LabelDesigner = withStyles(styles)(
           <Typography>Horizontal position</Typography>
           <Slider
             value={labelDesign.x}
-            min={-(canvas?.width || labelDimensions.width)}
-            max={canvas?.width || labelDimensions.width}
+            min={-(frontLabelCanvas?.width || labelDimensions.width)}
+            max={frontLabelCanvas?.width || labelDimensions.width}
             onChange={onChangeX}
             aria-labelledby='continuous-slider'
           />
           <Typography>Vertical position</Typography>
           <Slider
             value={labelDesign.y}
-            min={-(canvas?.height || labelDimensions.height)}
-            max={canvas?.height || labelDimensions.height}
+            min={-(frontLabelCanvas?.height || labelDimensions.height)}
+            max={frontLabelCanvas?.height || labelDimensions.height}
             onChange={onChangeY}
             aria-labelledby='continuous-slider'
           />
@@ -336,10 +366,10 @@ export const LabelDesigner = withStyles(styles)(
           </FormControl>
           <TextField
             fullWidth
-            onChange={onBrandTextChange}
+            onChange={onBrandChange}
             label='Your brand'
             variant='outlined'
-            defaultValue={labelDesign.text}
+            defaultValue={labelDesign.brand}
           />
           <TextField
             fullWidth
@@ -347,6 +377,13 @@ export const LabelDesigner = withStyles(styles)(
             label='Your website'
             variant='outlined'
             defaultValue={labelDesign.website}
+          />
+          <TextField
+            fullWidth
+            onChange={onDescriptionChange}
+            label='Your description'
+            variant='outlined'
+            defaultValue={labelDesign.description}
           />
           <Grid container spacing={2} alignItems='center'>
             <Grid item>
@@ -391,7 +428,8 @@ export const LabelDesigner = withStyles(styles)(
             </RadioGroup>
           </FormControl>
         </div>
-        <div className={classes.label} ref={canvasContainer}></div>
+        <div className={classes.label} ref={frontLabel}></div>
+        <div className={classes.label} ref={backLabel}></div>
       </div>
     );
   }

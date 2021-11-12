@@ -86,7 +86,8 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
     font: 'Source Code Pro',
     logo: '',
     scale: 0.1,
-    text: 'Your brand here',
+    brand: 'Your brand here',
+    description: 'Your description here',
     website: 'www.yourwebsite.com',
     x: 0,
     y: 0
