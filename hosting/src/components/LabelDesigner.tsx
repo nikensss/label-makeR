@@ -27,6 +27,11 @@ const isValidBagColor = (color: string): color is LabelDesign['bagColor'] => {
   return BAG_COLORS.includes(color as any);
 };
 
+export interface Labels {
+  front: string;
+  back: string;
+}
+
 export interface LabelDesign {
   backgroundColor: string;
   bagColor: typeof BAG_COLORS[number];
@@ -93,13 +98,13 @@ type LabelDesignerInput = {
   order: Order;
   labelDesignRef: MutableRefObject<LabelDesign>;
   setLabelDesign: React.Dispatch<React.SetStateAction<LabelDesign>>;
-  label: string;
-  setLabel: React.Dispatch<React.SetStateAction<string>>;
+  labels: Labels;
+  setLabels: React.Dispatch<React.SetStateAction<Labels>>;
   classes: ClassNameMap<string>;
 };
 
 export const LabelDesigner = withStyles(styles)(
-  ({ order, labelDesignRef, setLabelDesign, label, setLabel, classes }: LabelDesignerInput) => {
+  ({ order, labelDesignRef, setLabelDesign, labels, setLabels, classes }: LabelDesignerInput) => {
     const labelDesign = labelDesignRef.current;
     const labelDimensions = { width: 380, height: 532 } as const;
     const frontLabel = createRef<HTMLDivElement>();
@@ -227,9 +232,10 @@ export const LabelDesigner = withStyles(styles)(
 
         const { canvas } = p5.get();
         const data = canvas.toDataURL();
-        if (data !== label) setLabel(canvas.toDataURL());
+        if (data !== labels.front) setLabels({ ...labels, front: canvas.toDataURL() });
       };
     };
+
     const backLabelSketch = (p5: P5) => {
       p5.setup = () => {
         p5.createCanvas(labelDimensions.width, labelDimensions.height);
@@ -247,7 +253,7 @@ export const LabelDesigner = withStyles(styles)(
 
         const { canvas } = p5.get();
         const data = canvas.toDataURL();
-        if (data !== label) console.log(canvas.toDataURL());
+        if (data !== labels.back) setLabels({ ...labels, back: canvas.toDataURL() });
       };
     };
 
