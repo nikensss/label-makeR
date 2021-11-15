@@ -5,7 +5,6 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { Order } from '../../classes/Order';
 import { LabelDesign, LabelDesigner, Labels } from '../../components/LabelDesigner';
 import { OrderSummary } from '../../components/OrderSummary';
@@ -65,7 +64,6 @@ export interface CoffeeSelections {
 }
 
 export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX.Element => {
-  const history = useHistory();
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const isLastStep = () => step === LAST_STEP;

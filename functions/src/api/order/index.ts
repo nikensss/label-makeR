@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions/v1';
+import { logger } from 'firebase-functions';
 import Stripe from 'stripe';
+import { config } from '../../config/config';
 
-const { logger } = functions;
-const stripe = new Stripe(functions.config().stripe.api_key, {
+const stripe = new Stripe(config.stripe.api_key, {
   apiVersion: '2020-08-27'
 });
 const r = Router();
@@ -16,15 +16,14 @@ r.post('/create-checkout-session', async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
-          // Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
           price: PRICE_ID,
           quantity: 1
         }
       ],
       payment_method_types: ['card'],
       mode: 'payment',
-      success_url: `http://localhost:3000/thankyou`,
-      cancel_url: `http://localhost:3000/cancel`
+      success_url: config.stripe.success_url,
+      cancel_url: config.stripe.cancel_url
     });
 
     if (session.url === null) throw new Error('Stripe session URL is null!');
@@ -40,16 +39,11 @@ r.post('/check', async (req, res) => {
   logger.debug('body', { body: req.body });
   const selections = req.body;
   if (selections === null || typeof selections !== 'object') {
-    return res
-      .status(403)
-      .send({ status: 'error', message: 'invalid selections' })
-      .end();
+    return res.status(403).send({ status: 'error', message: 'invalid selections' }).end();
   }
 
   const db = admin.firestore();
-  const coffeeOrigins = (
-    await db.collection('general').doc('coffee').get()
-  ).get('origins');
+  const coffeeOrigins = (await db.collection('general').doc('coffee').get()).get('origins');
 
   for (const [key, value] of Object.entries(selections)) {
     const selection = value as { _quantity: number | undefined };
