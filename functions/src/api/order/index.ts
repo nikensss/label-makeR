@@ -1,8 +1,41 @@
 import { Router } from 'express';
 import * as admin from 'firebase-admin';
-import { logger } from 'firebase-functions/v1';
+import * as functions from 'firebase-functions/v1';
+import Stripe from 'stripe';
 
+const { logger } = functions;
+const stripe = new Stripe(functions.config().stripe.api_key, {
+  apiVersion: '2020-08-27'
+});
 const r = Router();
+
+r.post('/create-checkout-session', async (req, res) => {
+  const PRICE_ID = 'price_1Jw7jcGcy7B7ncxe5K2VkYzm';
+  try {
+    logger.info('Creating stripe checkout session', { body: req.body });
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          // Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
+          price: PRICE_ID,
+          quantity: 1
+        }
+      ],
+      payment_method_types: ['card'],
+      mode: 'payment',
+      success_url: `http://localhost:3000/thankyou`,
+      cancel_url: `http://localhost:3000/cancel`
+    });
+
+    if (session.url === null) throw new Error('Stripe session URL is null!');
+    logger.info('Stripe checkout session created', { session });
+    return res.status(200).send({ url: session.url }).end();
+  } catch (ex) {
+    logger.error('Could not create stripe session', { ex });
+    return res.status(500).send({ error: 'internal server error' }).end();
+  }
+});
+
 r.post('/check', async (req, res) => {
   logger.debug('body', { body: req.body });
   const selections = req.body;

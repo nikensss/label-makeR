@@ -140,10 +140,10 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
         method: 'POST',
         body: JSON.stringify(selections)
       });
-      const { status, message } = await response.json();
+      const { url } = await response.json();
 
-      if (status === 'ok') return history.push('/thankyou');
-      throw new Error(message || 'Something went wrong');
+      if (!url) throw new Error('Can not proceed to checkout!');
+      window.location.href = url;
     } catch (ex) {
       console.error('Exception caught!', { ex });
       setApiErrorMessage(ex.message || 'Something went wrong');
