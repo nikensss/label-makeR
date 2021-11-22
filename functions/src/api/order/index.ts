@@ -10,7 +10,7 @@ const stripe = new Stripe(config.stripe.api_key, {
 const r = Router();
 
 r.post('/create-checkout-session', async (req, res) => {
-  const PRICE_ID = 'price_1Jw7jcGcy7B7ncxe5K2VkYzm';
+  const PRICE_ID = 'price_1JygePLo3VoIXnrPDMlKiwI8';
   try {
     logger.info('Creating stripe checkout session', { body: req.body });
     const session = await stripe.checkout.sessions.create({
