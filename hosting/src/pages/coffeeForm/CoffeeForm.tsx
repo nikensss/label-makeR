@@ -13,6 +13,7 @@ import { config } from '../../config/config';
 import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins, GetRowsProps } from '../../firebase/general/coffee/CoffeeOrigins';
 import { getCoffee } from '../../firebase/general/General';
+import { generateAllLabels } from '../../utils/generateAllLabels';
 
 const styles = ({ palette, spacing }: Theme) => {
   return createStyles({
@@ -135,6 +136,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
     console.log('Paid!', { config });
     try {
       setIsLoading(true);
+      console.log({ labels: await generateAllLabels(labelDesign, order) });
       const response = await fetch(config.orderCheck, {
         headers: { 'content-type': 'application/json' },
         method: 'POST',
