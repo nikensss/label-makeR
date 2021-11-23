@@ -96,6 +96,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   const labelDesignRef = useRef(labelDesign);
   labelDesignRef.current = labelDesign;
 
+  // the labels to be shown to the client
   const [labels, setLabels] = useState<Labels>({ front: '', back: '' });
   const labelRef = useRef(labels);
   labelRef.current = labels;
@@ -133,18 +134,28 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
   const onBack = () => setStep(step <= 0 ? 0 : step - 1);
   const onPay = async () => {
-    console.log('Paid!', { config });
+    console.log('Requesting payment!', { config });
     try {
       setIsLoading(true);
-      console.log({ labels: await generateAllLabels(labelDesign, order) });
+
+      // 1) generate all labels and send them to the backend to be saved in GCS
+      // 2) a link to those files should be saved in firestore
+      // 3) if the payment is successful, those images should be attached in the
+      // confirmation email for the client and in the order email for the
+      // coffee roaster
+
       const response = await fetch(config.orderCheck, {
         headers: { 'content-type': 'application/json' },
         method: 'POST',
-        body: JSON.stringify(selections)
+        body: JSON.stringify({
+          selections,
+          labels: [...(await generateAllLabels(labelDesign, order)), labels.back]
+        })
       });
       const { status, message } = await response.json();
 
       if (status === 'ok') return history.push('/thankyou');
+
       throw new Error(message || 'Something went wrong');
     } catch (ex) {
       console.error('Exception caught!', { ex });

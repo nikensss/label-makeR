@@ -4,6 +4,7 @@ import { logger } from 'firebase-functions';
 import { order } from './order';
 
 const app = express();
+
 app.use((req, res, next) => {
   logger.info('Request received!', { headers: req.headers, url: req.url });
   next();

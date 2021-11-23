@@ -4,7 +4,7 @@
   "scripts": {
     "lint": "eslint src/**/*.ts",
     "build": "tsc",
-    "serve": "npm run build && firebase emulators:start --only functions,firestore --import ./emulators/data --export-on-exit",
+    "serve": "npm run build && firebase emulators:start --only functions,firestore,storage --import ./emulators/data --export-on-exit",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run serve",
     "tag:add": "git tag functions && git push origin functions",
