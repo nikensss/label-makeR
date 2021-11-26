@@ -5,6 +5,7 @@ import { order } from './order';
 import { webhooks as stripeWebhooks } from './stripe/webhooks';
 
 const app = express();
+
 app.use((req, res, next) => {
   logger.info('Request received!', { headers: req.headers, url: req.url });
   next();

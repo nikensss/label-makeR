@@ -9,5 +9,4 @@ typings/
 node_modules/
 
 emulators
-
 .runtimeconfig.json
