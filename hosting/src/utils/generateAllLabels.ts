@@ -60,6 +60,7 @@ const generateLabel = async (
       const { canvas } = p5.get();
       label = canvas.toDataURL();
       p5.noLoop();
+      p5.remove();
     };
   });
 
