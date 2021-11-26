@@ -69,7 +69,7 @@ r.post('/check', async (req, res) => {
     logger.info('Stripe checkout session created', { session });
     return res.status(200).send({ url: session.url }).end();
   } catch (ex) {
-    logger.error(`Could not save labels: ${ex instanceof Error ? ex.message : ex}`, { ex });
+    logger.error(`Could not process request: ${ex instanceof Error ? ex.message : ex}`, { ex });
     return res.status(500).send({ status: 'error', message: 'Please, try again later' }).end();
   }
 });
@@ -138,7 +138,16 @@ const saveOrder = async (
 ) => {
   const db = admin.firestore();
   const orderDoc = db.collection('orders').doc(session.id);
-  await orderDoc.set({ id: session.id, selections, labelLinks });
+  const now = admin.firestore.FieldValue.serverTimestamp();
+
+  await orderDoc.set({
+    id: session.id,
+    selections,
+    labelLinks,
+    payment_status: 'pending',
+    createdAt: now,
+    updatedAt: now
+  });
 };
 
 export const order = r;
