@@ -17,7 +17,7 @@ export interface Price {
   unit: string;
 }
 
-export const priceDisplay = ({ amount, unit }: Price): string => {
+export const displayPrice = ({ amount, unit }: Price): string => {
   return `${amount.toFixed(2)} ${getSymbolFromCurrency(unit)}`;
 };
 
@@ -57,13 +57,13 @@ export class CoffeeOrigin {
       case 'label':
         return this.coffeeOrigin.label;
       case 'price':
-        return priceDisplay(this.coffeeOrigin.price);
+        return displayPrice(this.coffeeOrigin.price);
       case 'weight':
         return `${this.coffeeOrigin.weight.amount} ${this.coffeeOrigin.weight.unit}`;
       case 'quantity':
         return `${this.quantity}`;
       case 'totalPrice':
-        return priceDisplay(this.getTotalPrice());
+        return displayPrice(this.getTotalPrice());
     }
   }
 

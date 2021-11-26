@@ -52,11 +52,6 @@ export interface CoffeeFormProps {
   classes: ClassNameMap<string>;
 }
 
-export interface CoffeeSelection {
-  quantity: number;
-  valid: boolean;
-}
-
 export const onlyCoffeeOrigin = (o: unknown): o is CoffeeOrigin => {
   return o instanceof CoffeeOrigin;
 };
@@ -115,15 +110,19 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
     return (quantity: number) => {
       const c = selections[id] || coffeeOrigins.find(id);
       if (!c) throw new Error(`Unknown ${id}`);
+
       c.quantity = quantity;
-      setSelections({
-        ...selections,
-        [id]: c
-      });
+
+      if (quantity === 0) {
+        const copy = { ...selections };
+        delete copy[id];
+        return setSelections(copy);
+      }
+
+      setSelections({ ...selections, [id]: c });
     };
   };
 
-  // update order when either selections or coffeeOrigins change
   useEffect(() => {
     order.setCoffeeSelections(selections);
     order.setCoffeeOrigins(coffeeOrigins);

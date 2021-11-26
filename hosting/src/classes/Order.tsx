@@ -6,7 +6,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { CoffeeOrigin, Price, priceDisplay } from '../firebase/general/coffee/CoffeeOrigin';
+import { CoffeeOrigin, Price, displayPrice } from '../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins } from '../firebase/general/coffee/CoffeeOrigins';
 import { CoffeeSelections, onlyCoffeeOrigin } from '../pages/coffeeForm/CoffeeForm';
 
@@ -118,16 +118,16 @@ export class Order {
             <TableRow>
               <TableCell rowSpan={3} />
               <TableCell colSpan={3}>Subtotal</TableCell>
-              <TableCell align='right'>{priceDisplay(this.price)}</TableCell>
+              <TableCell align='right'>{displayPrice(this.price)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell colSpan={2}>Tax</TableCell>
               <TableCell align='right'>{`${(Order.TAX_RATE * 100).toFixed(0)} %`}</TableCell>
-              <TableCell align='right'>{priceDisplay(this.taxes)}</TableCell>
+              <TableCell align='right'>{displayPrice(this.taxes)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell colSpan={3}>Total</TableCell>
-              <TableCell align='right'>{priceDisplay(this.priceWithTaxes)}</TableCell>
+              <TableCell align='right'>{displayPrice(this.priceWithTaxes)}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

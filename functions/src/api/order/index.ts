@@ -2,6 +2,23 @@ import { Router } from 'express';
 import * as admin from 'firebase-admin';
 import { logger } from 'firebase-functions/v1';
 import { isArrayOfStrings } from '../../utils/types/isArrayOfStrings';
+import { ICoffeeOrigin } from '../../firestore/general/coffee/ICoffeeOrigin.interface';
+
+export interface ICoffeeSelections {
+  [key: string]: CoffeeOrigin | undefined;
+}
+
+/** In the frontend, the `CoffeeOrigin` class wraps a `ICoffeeOrigin` interface
+ * and adds a `_quantity` property to represent the data set.
+ * The `ICoffeeOrigin`  is the interface that represents the data structure
+ * in the database.
+ * Until we find a better way to share types between fe and be, we will do it
+ * like this.
+ */
+export interface CoffeeOrigin {
+  coffeeOrigin: ICoffeeOrigin;
+  _quantity: number;
+}
 
 const r = Router();
 r.post('/check', async (req, res) => {
@@ -17,66 +34,77 @@ r.post('/check', async (req, res) => {
     return res.status(403).send({ status: 'error', message: 'invalid labels' }).end();
   }
 
-  const db = admin.firestore();
-  const coffeeOrigins = (await db.collection('general').doc('coffee').get()).get('origins');
-
-  for (const [key, value] of Object.entries(selections)) {
-    const selection = value as { _quantity: number | undefined };
-    const origin = coffeeOrigins.find((o: { id: string }) => o.id === key);
-    if (!origin) {
-      return res
-        .status(403)
-        .send({ status: 'error', message: `unknown coffee origin ${key}` })
-        .end();
-    }
-
-    const minQuantity = 30 / origin.weight.amount + 10;
-    if (!isValidQuantity(selection._quantity, minQuantity)) {
-      return res
-        .status(403)
-        .send({
-          status: 'error',
-          message: `quantity ${selection._quantity} smaller than min quantity of ${minQuantity} for coffee origin ${key}`
-        })
-        .end();
-    }
-  }
-
   try {
-    const labelsBucket = admin.storage().bucket('coffee-labels');
-    const now = Date.now();
-    logger.debug('Saving all labels', { labels });
-    await Promise.all(
-      labels.map((l, i) => {
-        const match = l.match(/data:(.+)?;(.+)?,(.+)/);
-        if (match === null) throw new Error('Image could not be read');
-        const [, contentType, encoding, image] = match;
-        if (!contentType) throw new Error('No content type for image!');
-        if (!image) throw new Error('No image content available!');
-        if (encoding !== 'base64') throw new Error('Image is not base64 encoded!');
+    const orderErrors = await getOrderErrors(selections);
+    if (orderErrors) {
+      return res.status(403).send({ status: 'error', message: orderErrors.message }).end();
+    }
 
-        const buffer = Buffer.from(image, encoding);
-        return labelsBucket.file(`${now}_${i}.png`).save(buffer, {
-          gzip: true,
-          metadata: {
-            contentType,
-            cacheControl: 'public, max-age=31536000'
-          }
-        });
-      })
-    );
-    logger.debug(`A total of ${labels.length} labels were saved`);
+    const labelLinks = await saveLabels(labels);
+    logger.debug(`A total of ${labelLinks.length} labels were saved`, { labelLinks });
   } catch (ex) {
     logger.error(`Could not save labels: ${ex instanceof Error ? ex.message : ex}`, { ex });
+    return res.status(500).send({ status: 'error', message: 'Please, try again later' }).end();
   }
 
   return res.status(200).send({ status: 'ok' }).end();
 });
 
-const isValidQuantity = (quantity: number | undefined, minQuantity: number) => {
+const getOrderErrors = async (selections: ICoffeeSelections) => {
+  const db = admin.firestore();
+  const coffeeDoc = db.collection('general').doc('coffee');
+  const coffeeOrigins = (await coffeeDoc.get()).get('origins') as ICoffeeOrigin[];
+
+  for (const [key, selection] of Object.entries(selections)) {
+    if (!selection) continue;
+    const origin = coffeeOrigins.find(({ id }) => id === key);
+    if (!origin) return new Error(`unknown coffee origin: ${key}`);
+
+    if (!isValidQuantity(selection, origin)) {
+      const minQty = getMinQuantity(origin);
+      const qty = selection._quantity;
+      return new Error(`Quantity ordered (${qty}) below threshold (${minQty}) for ${key}`);
+    }
+  }
+
+  return null;
+};
+
+// 'selection' is the data the frontend sends us
+// 'origin' is the data we read from the database
+const getMinQuantity = (origin: ICoffeeOrigin): number => 30 / origin.weight.amount;
+const isValidQuantity = (selection: CoffeeOrigin, origin: ICoffeeOrigin) => {
+  const quantity = selection._quantity;
   if (typeof quantity === 'undefined') return false;
-  if (quantity === 0) return true;
-  return quantity >= minQuantity;
+  return quantity === 0 || quantity >= getMinQuantity(origin);
+};
+
+const saveLabels = async (labels: string[]): Promise<string[]> => {
+  const labelsBucket = admin.storage().bucket('coffee-labels');
+  const now = Date.now();
+  logger.debug('Saving all labels', { labels });
+  return await Promise.all(
+    labels.map(async (l, i) => {
+      const match = l.match(/data:(.+)?;(.+)?,(.+)/);
+      if (match === null) throw new Error('Image could not be read');
+      const [, contentType, encoding, image] = match;
+      if (!contentType) throw new Error('No content type for image!');
+      if (!image) throw new Error('No image content available!');
+      if (encoding !== 'base64') throw new Error('Image is not base64 encoded!');
+
+      const buffer = Buffer.from(image, encoding);
+      const file = labelsBucket.file(`${now}_${i}.png`);
+      await file.save(buffer, {
+        gzip: true,
+        metadata: {
+          contentType,
+          cacheControl: 'public, max-age=31536000'
+        }
+      });
+
+      return file.publicUrl();
+    })
+  );
 };
 
 export const order = r;
