@@ -102,18 +102,21 @@ type LabelDesignerInput = {
   classes: ClassNameMap<string>;
 };
 
+export const LABEL_DIMENSIONS = { width: 380, height: 532 } as const;
+
 export const LabelDesigner = withStyles(styles)(
   ({ order, labelDesignRef, setLabelDesign, labels, setLabels, classes }: LabelDesignerInput) => {
     const labelDesign = labelDesignRef.current;
-    const labelDimensions = { width: 380, height: 532 } as const;
-    const frontLabel = createRef<HTMLDivElement>();
-    const backLabel = createRef<HTMLDivElement>();
+    const frontLabelCanvasRef = createRef<HTMLDivElement>();
+    const backLabelCanvasRef = createRef<HTMLDivElement>();
     const [frontLabelCanvas, setFrontLabelCanvas] = useState<P5 | null>(null);
     const [backLabelCanvas, setBackLabelCanvas] = useState<P5 | null>(null);
     const [hasLogo, setHasLogo] = useState(!!labelDesignRef.current.logo);
     const [coffee] = order.coffees;
     const name = coffee?.display('label') || 'ROMO BLEND';
-    const weight = coffee?.display('weight') || '250g';
+    const weight = coffee?.display('weight') || '0.25 kg';
+    const [frontLabel, setFrontLabel] = useState('');
+    const [backLabel, setBackLabel] = useState('');
 
     const centerButton = useRef<HTMLButtonElement | null>(null);
 
@@ -182,7 +185,7 @@ export const LabelDesigner = withStyles(styles)(
     };
 
     const onCenterLogo = () => {
-      setLabelDesign({ ...labelDesignRef.current, x: labelDimensions.width / 2, y: 110 });
+      setLabelDesign({ ...labelDesignRef.current, x: LABEL_DIMENSIONS.width / 2, y: 110 });
     };
 
     const frontLabelSketch = (p5: P5) => {
@@ -205,7 +208,7 @@ export const LabelDesigner = withStyles(styles)(
       };
 
       p5.setup = () => {
-        p5.createCanvas(labelDimensions.width, labelDimensions.height);
+        p5.createCanvas(LABEL_DIMENSIONS.width, LABEL_DIMENSIONS.height);
         p5.pixelDensity(2);
         img = p5.createImg(labelDesignRef.current.logo, '');
         img.hide();
@@ -245,8 +248,7 @@ export const LabelDesigner = withStyles(styles)(
         p5.line(25, 420, p5.width - 25, 420);
 
         const { canvas } = p5.get();
-        const data = canvas.toDataURL();
-        if (data !== labels.front) setLabels({ ...labels, front: canvas.toDataURL() });
+        setFrontLabel(canvas.toDataURL());
       };
 
       p5.mouseDragged = () => {
@@ -276,7 +278,7 @@ export const LabelDesigner = withStyles(styles)(
 
     const backLabelSketch = (p5: P5) => {
       p5.setup = () => {
-        p5.createCanvas(labelDimensions.width, labelDimensions.height);
+        p5.createCanvas(LABEL_DIMENSIONS.width, LABEL_DIMENSIONS.height);
         p5.pixelDensity(2);
       };
 
@@ -290,18 +292,19 @@ export const LabelDesigner = withStyles(styles)(
         p5.text(labelDesignRef.current.description, p5.width / 2, 250);
 
         const { canvas } = p5.get();
-        const data = canvas.toDataURL();
-        if (data !== labels.back) setLabels({ ...labels, back: canvas.toDataURL() });
+        setBackLabel(canvas.toDataURL());
       };
     };
 
+    useEffect(() => setLabels({ front: frontLabel, back: backLabel }), [frontLabel, backLabel]);
+
     useEffect(() => {
-      if (!frontLabel.current || !backLabel.current) return;
+      if (!frontLabelCanvasRef.current || !backLabelCanvasRef.current) return;
       frontLabelCanvas?.remove();
       backLabelCanvas?.remove();
-      setFrontLabelCanvas(new P5(frontLabelSketch, frontLabel.current));
-      setBackLabelCanvas(new P5(backLabelSketch, backLabel.current));
-    }, [frontLabel.current, backLabel.current, labelDesignRef.current.logo]);
+      setFrontLabelCanvas(new P5(frontLabelSketch, frontLabelCanvasRef.current));
+      setBackLabelCanvas(new P5(backLabelSketch, backLabelCanvasRef.current));
+    }, [frontLabelCanvasRef.current, backLabelCanvasRef.current, labelDesignRef.current.logo]);
 
     return (
       <div className={classes.container}>
@@ -456,8 +459,8 @@ export const LabelDesigner = withStyles(styles)(
             </RadioGroup>
           </FormControl>
         </div>
-        <div className={classes.label} ref={frontLabel}></div>
-        <div className={classes.label} ref={backLabel}></div>
+        <div className={classes.label} ref={frontLabelCanvasRef}></div>
+        <div className={classes.label} ref={backLabelCanvasRef}></div>
       </div>
     );
   }
