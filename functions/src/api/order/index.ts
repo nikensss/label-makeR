@@ -27,32 +27,6 @@ const stripe = new Stripe(config.stripe.api_key, {
 });
 const r = Router();
 
-r.post('/create-checkout-session', async (req, res) => {
-  const PRICE_ID = 'price_1JygePLo3VoIXnrPDMlKiwI8';
-  try {
-    logger.info('Creating stripe checkout session', { body: req.body });
-    const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price: PRICE_ID,
-          quantity: 1
-        }
-      ],
-      payment_method_types: ['card'],
-      mode: 'payment',
-      success_url: config.stripe.success_url,
-      cancel_url: config.stripe.cancel_url
-    });
-
-    if (session.url === null) throw new Error('Stripe session URL is null!');
-    logger.info('Stripe checkout session created', { session });
-    return res.status(200).send({ url: session.url }).end();
-  } catch (ex) {
-    logger.error('Could not create stripe session', { ex });
-    return res.status(500).send({ error: 'internal server error' }).end();
-  }
-});
-
 r.post('/check', async (req, res) => {
   logger.debug('body', { body: req.body });
   const { selections, labels } = req.body;
@@ -74,12 +48,30 @@ r.post('/check', async (req, res) => {
 
     const labelLinks = await saveLabels(labels);
     logger.debug(`A total of ${labelLinks.length} labels were saved`, { labelLinks });
+
+    logger.info('Creating stripe checkout session', { body: req.body });
+    const PRICE_ID = 'price_1JygePLo3VoIXnrPDMlKiwI8';
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price: PRICE_ID,
+          quantity: 1
+        }
+      ],
+      payment_method_types: ['card'],
+      mode: 'payment',
+      success_url: config.stripe.success_url,
+      cancel_url: config.stripe.cancel_url
+    });
+
+    if (session.url === null) throw new Error('Stripe session URL is null!');
+    await saveOrder(session, selections, labelLinks);
+    logger.info('Stripe checkout session created', { session });
+    return res.status(200).send({ url: session.url }).end();
   } catch (ex) {
     logger.error(`Could not save labels: ${ex instanceof Error ? ex.message : ex}`, { ex });
     return res.status(500).send({ status: 'error', message: 'Please, try again later' }).end();
   }
-
-  return res.status(200).send({ status: 'ok' }).end();
 });
 
 const getOrderErrors = async (selections: ICoffeeSelections) => {
@@ -137,6 +129,16 @@ const saveLabels = async (labels: string[]): Promise<string[]> => {
       return file.publicUrl();
     })
   );
+};
+
+const saveOrder = async (
+  session: Stripe.Response<Stripe.Checkout.Session>,
+  selections: ICoffeeSelections,
+  labelLinks: string[]
+) => {
+  const db = admin.firestore();
+  const orderDoc = db.collection('orders').doc(session.id);
+  await orderDoc.set({ id: session.id, selections, labelLinks });
 };
 
 export const order = r;
