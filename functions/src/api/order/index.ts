@@ -138,7 +138,10 @@ const saveOrder = async (
   labelLinks: string[]
 ) => {
   const db = admin.firestore();
-  const orderDoc = db.collection('orders').doc(session.id);
+  const { payment_intent } = session;
+  if (payment_intent === null) throw new Error('Payment intent is null! Cannot continue');
+  const id = typeof payment_intent === 'string' ? payment_intent : payment_intent.id;
+  const orderDoc = db.collection('orders').doc(id);
   const now = admin.firestore.FieldValue.serverTimestamp();
 
   await orderDoc.set({
