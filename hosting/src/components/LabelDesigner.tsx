@@ -105,14 +105,14 @@ type LabelDesignerInput = {
 export const LABEL_DIMENSIONS = { width: 380, height: 532 } as const;
 
 export const LabelDesigner = withStyles(styles)(
-  ({ order, labelDesignRef, setLabelDesign, labels, setLabels, classes }: LabelDesignerInput) => {
+  ({ order, labelDesignRef, setLabelDesign, setLabels, classes }: LabelDesignerInput) => {
     const labelDesign = labelDesignRef.current;
     const frontLabelCanvasRef = createRef<HTMLDivElement>();
     const backLabelCanvasRef = createRef<HTMLDivElement>();
     const [frontLabelCanvas, setFrontLabelCanvas] = useState<P5 | null>(null);
     const [backLabelCanvas, setBackLabelCanvas] = useState<P5 | null>(null);
     const [hasLogo, setHasLogo] = useState(!!labelDesignRef.current.logo);
-    const [coffee] = order.coffees;
+    const [coffee] = order.selections;
     const name = coffee?.display('label') || 'ROMO BLEND';
     const weight = coffee?.display('weight') || '0.25 kg';
     const [frontLabel, setFrontLabel] = useState('');

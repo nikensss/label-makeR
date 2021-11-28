@@ -9,8 +9,8 @@ import { Order } from '../../classes/Order';
 import { LabelDesign, LabelDesigner, Labels } from '../../components/LabelDesigner';
 import { OrderSummary } from '../../components/OrderSummary';
 import { config } from '../../config/config';
-import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins, GetRowsProps } from '../../firebase/general/coffee/CoffeeOrigins';
+import { CoffeeSelection } from '../../firebase/general/coffee/CoffeeSelection';
 import { getCoffee } from '../../firebase/general/General';
 import { generateAllLabels } from '../../utils/generateAllLabels';
 
@@ -51,12 +51,12 @@ export interface CoffeeFormProps {
   classes: ClassNameMap<string>;
 }
 
-export const onlyCoffeeOrigin = (o: unknown): o is CoffeeOrigin => {
-  return o instanceof CoffeeOrigin;
+export const onlyCoffeeSelection = (o: unknown): o is CoffeeSelection => {
+  return o instanceof CoffeeSelection;
 };
 
 export interface CoffeeSelections {
-  [key: string]: CoffeeOrigin | undefined;
+  [key: string]: CoffeeSelection | undefined;
 }
 
 export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX.Element => {
@@ -106,10 +106,10 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   // TODO: create CoffeeOrigin class and use it as input type to this func
   const onSelection: GetRowsProps['onSelection'] = (id: string) => {
     return (quantity: number) => {
-      const c = selections[id] || coffeeOrigins.find(id);
-      if (!c) throw new Error(`Unknown ${id}`);
-
-      c.quantity = quantity;
+      const origin = coffeeOrigins.find(id);
+      if (!origin) throw new Error(`Unknown ${id}`);
+      const selection = selections[id] || new CoffeeSelection(origin);
+      selection.setQuantity(quantity);
 
       if (quantity === 0) {
         const copy = { ...selections };
@@ -117,7 +117,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
         return setSelections(copy);
       }
 
-      setSelections({ ...selections, [id]: c });
+      setSelections({ ...selections, [id]: selection });
     };
   };
 

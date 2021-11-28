@@ -6,12 +6,12 @@ export const generateAllLabels = async (
   labelDesign: LabelDesign,
   order: Order
 ): Promise<string[]> => {
-  return await Promise.all(order.coffees.map(c => generateLabel(labelDesign, c)));
+  return await Promise.all(order.selections.map(c => generateLabel(labelDesign, c)));
 };
 
 const generateLabel = async (
   labelDesign: LabelDesign,
-  coffee: Order['coffees'][number]
+  coffee: Order['selections'][number]
 ): Promise<string> => {
   let label = '';
   // create new P5 canvas

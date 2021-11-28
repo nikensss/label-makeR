@@ -31,7 +31,7 @@ type CoffeeCounterProps = {
 
 export const CoffeeCounter = withStyles(styles)(
   ({ classes, onCoffeeQuantityChange, coffeeSelection }: CoffeeCounterProps) => {
-    const [qty, setQty] = useState(coffeeSelection.quantity);
+    const [qty, setQty] = useState(coffeeSelection.getQuantity());
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
       const isNumber = /^[0-9\b]+$/;

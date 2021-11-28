@@ -7,19 +7,19 @@ import { config } from '../../config/config';
 import { ICoffeeOrigin } from '../../firestore/general/coffee/ICoffeeOrigin.interface';
 
 export interface ICoffeeSelections {
-  [key: string]: CoffeeOrigin | undefined;
+  [key: string]: CoffeeSelection | undefined;
 }
 
 /** In the frontend, the `CoffeeOrigin` class wraps a `ICoffeeOrigin` interface
- * and adds a `_quantity` property to represent the data set.
+ * and adds a `quantity` property to represent the data set.
  * The `ICoffeeOrigin`  is the interface that represents the data structure
  * in the database.
  * Until we find a better way to share types between fe and be, we will do it
  * like this.
  */
-export interface CoffeeOrigin {
+export interface CoffeeSelection {
   coffeeOrigin: ICoffeeOrigin;
-  _quantity: number;
+  quantity: number;
 }
 
 const stripe = new Stripe(config.stripe.api_key, {
@@ -86,7 +86,7 @@ const getOrderErrors = async (selections: ICoffeeSelections) => {
 
     if (!isValidQuantity(selection, origin)) {
       const minQty = getMinQuantity(origin);
-      const qty = selection._quantity;
+      const qty = selection.quantity;
       return new Error(`Quantity ordered (${qty}) below threshold (${minQty}) for ${key}`);
     }
   }
@@ -97,8 +97,8 @@ const getOrderErrors = async (selections: ICoffeeSelections) => {
 // 'selection' is the data the frontend sends us
 // 'origin' is the data we read from the database
 const getMinQuantity = (origin: ICoffeeOrigin): number => 30 / origin.weight.amount;
-const isValidQuantity = (selection: CoffeeOrigin, origin: ICoffeeOrigin) => {
-  const quantity = selection._quantity;
+const isValidQuantity = (selection: CoffeeSelection, origin: ICoffeeOrigin) => {
+  const quantity = selection.quantity;
   if (typeof quantity === 'undefined') return false;
   return quantity === 0 || quantity >= getMinQuantity(origin);
 };
@@ -141,11 +141,11 @@ const saveOrder = async (
   const now = admin.firestore.FieldValue.serverTimestamp();
 
   await orderDoc.set({
-    id: session.id,
-    selections,
-    labelLinks,
-    payment_status: 'pending',
     createdAt: now,
+    id: session.id,
+    labelLinks,
+    session,
+    selections,
     updatedAt: now
   });
 };
