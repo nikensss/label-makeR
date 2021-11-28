@@ -30,10 +30,15 @@ const r = Router();
 
 r.post('/check', async (req, res) => {
   logger.debug('body', { body: req.body });
-  const { selections, labels } = req.body;
+  const { selections, labels, bagColor } = req.body;
   if (selections === null || typeof selections !== 'object') {
     logger.info('Invalid selections! Cannot continue', { selections });
     return res.status(403).send({ status: 'error', message: 'invalid selections' }).end();
+  }
+
+  if (!bagColor || !['white', 'brown', 'black'].includes(bagColor)) {
+    logger.info(`Invalid bag color (${bagColor})`, { bagColor });
+    return res.status(403).send({ status: 'error', message: 'invalid bag color' }).end();
   }
 
   if (!labels || !Array.isArray(labels) || !isArrayOfStrings(labels)) {
@@ -66,7 +71,7 @@ r.post('/check', async (req, res) => {
     });
 
     if (session.url === null) throw new Error('Stripe session URL is null!');
-    await saveOrder(session, selections, labelLinks);
+    await saveOrder(session, selections, bagColor, labelLinks);
     logger.info('Stripe checkout session created', { session });
     return res.status(200).send({ url: session.url }).end();
   } catch (ex) {
@@ -135,6 +140,7 @@ const saveLabels = async (labels: string[]): Promise<string[]> => {
 const saveOrder = async (
   session: Stripe.Response<Stripe.Checkout.Session>,
   selections: ICoffeeSelections,
+  bagColor: string,
   labelLinks: string[]
 ) => {
   const db = admin.firestore();
@@ -146,7 +152,8 @@ const saveOrder = async (
 
   await orderDoc.set({
     createdAt: now,
-    id: session.id,
+    bagColor,
+    id,
     labelLinks,
     session,
     selections,

@@ -124,8 +124,9 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   useEffect(() => {
     order.setCoffeeSelections(selections);
     order.setCoffeeOrigins(coffeeOrigins);
+    order.setBagColor(labelDesign.bagColor);
     setOrder(Order.fromOrder(order));
-  }, [selections, coffeeOrigins]);
+  }, [selections, coffeeOrigins, labelDesign]);
 
   const LAST_STEP = 2;
   const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
@@ -146,6 +147,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
         method: 'POST',
         body: JSON.stringify({
           selections,
+          bagColor: order.getBagColor(),
           labels: [...(await generateAllLabels(labelDesign, order)), labels.back]
         })
       });

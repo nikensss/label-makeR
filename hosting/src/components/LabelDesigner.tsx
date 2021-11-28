@@ -20,7 +20,7 @@ import P5 from 'p5';
 import { ChangeEvent, createRef, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Order } from '../classes/Order';
 
-const BAG_COLORS = ['white', 'black', 'brown'] as const;
+export const BAG_COLORS = ['white', 'black', 'brown'] as const;
 
 const isValidBagColor = (color: string): color is LabelDesign['bagColor'] => {
   //eslint-disable-next-line

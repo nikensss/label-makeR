@@ -6,6 +6,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { LabelDesign } from '../components/LabelDesigner';
 import { Price } from '../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins } from '../firebase/general/coffee/CoffeeOrigins';
 import { CoffeeSelection, displayPrice } from '../firebase/general/coffee/CoffeeSelection';
@@ -15,11 +16,13 @@ export class Order {
   private coffeeSelections: CoffeeSelections = {};
   private coffeeOrigins: CoffeeOrigins = new CoffeeOrigins([]);
   private static TAX_RATE = 0.21;
+  private bagColor: LabelDesign['bagColor'] = 'white';
 
   static fromOrder(order: Order): Order {
     const clone = new Order();
     clone.coffeeOrigins = order.coffeeOrigins;
     clone.coffeeSelections = order.coffeeSelections;
+    clone.bagColor = order.bagColor || 'white';
 
     return clone;
   }
@@ -30,6 +33,14 @@ export class Order {
 
   setCoffeeOrigins(coffeeOrigins: CoffeeOrigins): void {
     this.coffeeOrigins = coffeeOrigins;
+  }
+
+  setBagColor(color: LabelDesign['bagColor']): void {
+    this.bagColor = color;
+  }
+
+  getBagColor(): typeof this.bagColor {
+    return this.bagColor;
   }
 
   setQuantity(id: string, quantity: number): void {
