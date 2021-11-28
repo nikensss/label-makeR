@@ -2,7 +2,7 @@ import * as cors from 'cors';
 import * as express from 'express';
 import { logger } from 'firebase-functions';
 import { order } from './order';
-import { webhooks as stripeWebhooks } from './stripe/webhooks';
+import { stripe } from './stripe';
 
 const app = express();
 
@@ -15,6 +15,6 @@ app.use(express.json());
 app.use(express.raw());
 
 app.use('/order', order);
-app.use('/stripe-webhooks', stripeWebhooks);
+app.use('/stripe', stripe);
 
 export { app };

@@ -5,6 +5,7 @@ import { isArrayOfStrings } from '../../utils/types/isArrayOfStrings';
 import Stripe from 'stripe';
 import { config } from '../../config/config';
 import { ICoffeeOrigin } from '../../firestore/general/coffee/ICoffeeOrigin.interface';
+import { format } from 'date-fns';
 
 export interface ICoffeeSelections {
   [key: string]: CoffeeSelection | undefined;
@@ -105,7 +106,7 @@ const isValidQuantity = (selection: CoffeeSelection, origin: ICoffeeOrigin) => {
 
 const saveLabels = async (labels: string[]): Promise<string[]> => {
   const labelsBucket = admin.storage().bucket('coffee-labels');
-  const now = Date.now();
+  const now = format(new Date(), 'yyyy-MM-dd_HH:mm:ss_xxx');
   logger.debug('Saving all labels', { labels });
   return await Promise.all(
     labels.map(async (l, i) => {
@@ -117,7 +118,7 @@ const saveLabels = async (labels: string[]): Promise<string[]> => {
       if (encoding !== 'base64') throw new Error('Image is not base64 encoded!');
 
       const buffer = Buffer.from(image, encoding);
-      const file = labelsBucket.file(`${now}_${i}.png`);
+      const file = labelsBucket.file(`${now}__${i}.png`);
       await file.save(buffer, {
         gzip: true,
         metadata: {
