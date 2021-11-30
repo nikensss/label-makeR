@@ -14,4 +14,5 @@ export interface Weight {
 export interface Price {
   amount: number;
   unit: string;
+  id: string;
 }

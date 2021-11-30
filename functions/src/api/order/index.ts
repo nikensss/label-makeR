@@ -19,7 +19,7 @@ export interface ICoffeeSelections {
  * like this.
  */
 export interface CoffeeSelection {
-  coffeeOrigin: ICoffeeOrigin;
+  coffeeOrigin: { coffeeOrigin: ICoffeeOrigin };
   quantity: number;
 }
 
@@ -56,21 +56,10 @@ r.post('/check', async (req, res) => {
     logger.debug(`A total of ${labelLinks.length} labels were saved`, { labelLinks });
 
     logger.info('Creating stripe checkout session', { body: req.body });
-    const PRICE_ID = 'price_1JygePLo3VoIXnrPDMlKiwI8';
-    const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price: PRICE_ID,
-          quantity: 1
-        }
-      ],
-      payment_method_types: ['card'],
-      mode: 'payment',
-      success_url: config.stripe.success_url,
-      cancel_url: config.stripe.cancel_url
-    });
 
+    const session = await createStripeSession(selections);
     if (session.url === null) throw new Error('Stripe session URL is null!');
+
     await saveOrder(session, selections, bagColor, labelLinks);
     logger.info('Stripe checkout session created', { session });
     return res.status(200).send({ url: session.url }).end();
@@ -160,5 +149,50 @@ const saveOrder = async (
     updatedAt: now
   });
 };
+
+const createStripeSession = async (
+  selections: ICoffeeSelections
+): Promise<Stripe.Response<Stripe.Checkout.Session>> => {
+  const db = admin.firestore();
+  const coffeeDoc = db.collection('general').doc('coffee');
+  const coffeeOrigins = (await coffeeDoc.get()).get('origins') as ICoffeeOrigin[];
+
+  const totalPrice = Object.values(selections).reduce((totalPrice, selection) => {
+    if (!selection) return totalPrice;
+    const coffeeOrigin = coffeeOrigins.find(c => c.id === selection.coffeeOrigin.coffeeOrigin.id);
+    if (!coffeeOrigin) throw new Error(`Unknown coffee ${selection.coffeeOrigin.coffeeOrigin.id}`);
+
+    return totalPrice + coffeeOrigin.price.amount * 100 * selection.quantity;
+  }, 0);
+
+  const lineItems = Object.values(selections)
+    .map(selection => {
+      if (!selection) return null;
+      const price = coffeeOrigins.find(c => c.id === selection.coffeeOrigin.coffeeOrigin.id)?.price
+        .id;
+      if (!price)
+        throw new Error(`No price available for ${selection.coffeeOrigin.coffeeOrigin.id}`);
+      const quantity = selection?.quantity;
+      return { price, quantity };
+    })
+    .filter(isLineItem);
+
+  const session = await stripe.checkout.sessions.create({
+    line_items: lineItems,
+    payment_method_types: ['card'],
+    mode: 'payment',
+    success_url: config.stripe.success_url,
+    cancel_url: config.stripe.cancel_url
+  });
+
+  if (totalPrice !== session.amount_subtotal) {
+    throw new Error(`Total price mismatch: ${totalPrice} !== ${session.amount_subtotal}`);
+  }
+
+  return session;
+};
+
+type LineItem = { price: string; quantity: number };
+const isLineItem = (e: LineItem | null): e is LineItem => e !== null;
 
 export const order = r;
