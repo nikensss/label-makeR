@@ -22,10 +22,10 @@ export class CoffeeOrigins {
 
   asLineItems(selections: CoffeeSelections): { price: string; quantity: number }[] {
     const lineItems: { price: string; quantity: number }[] = [];
-    for (const selection of selections) {
-      const origin = this.find(selection.id);
-      if (!origin) throw new Error(`Could not find coffee ${selection.id}`);
-      lineItems.push({ price: origin.getPriceId(), quantity: selection.quantity });
+    for (const { id, quantity } of selections) {
+      const origin = this.find(id);
+      if (!origin) throw new Error(`Could not find coffee ${id}`);
+      lineItems.push({ price: origin.getPriceId(), quantity });
     }
 
     return lineItems;
