@@ -1,6 +1,6 @@
-import firebase from 'firebase';
-import { FirestoreDocument } from '../../firebase';
-import { CoffeeOrigin, ICoffeeOrigin } from './CoffeeOrigin';
+import * as admin from 'firebase-admin';
+import { ICoffeeOrigin } from './ICoffeeOrigin.interface';
+import { FirestoreDocument } from '../../firestore';
 import { CoffeeOrigins } from './CoffeeOrigins';
 
 export interface ICoffee {
@@ -43,14 +43,14 @@ const isFirestoreCoffee = (data: unknown): data is ICoffee => {
 export class Coffee implements FirestoreDocument {
   private data: ICoffee;
 
-  constructor(snapshot: firebase.firestore.QueryDocumentSnapshot) {
+  constructor(snapshot: admin.firestore.QueryDocumentSnapshot) {
     const data = snapshot.data();
     if (!isFirestoreCoffee(data)) throw new Error('Invalid data provided');
     this.data = data;
   }
 
   getOrigins(): CoffeeOrigins {
-    return new CoffeeOrigins(this.data.origins.map(o => new CoffeeOrigin(o)));
+    return new CoffeeOrigins(this.data.origins);
   }
 
   toFirestore(): ICoffee {

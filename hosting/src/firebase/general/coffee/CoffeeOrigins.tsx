@@ -21,6 +21,7 @@ export interface GetRowsProps {
 export interface GetTableProps extends GetRowsProps {
   tableClass: string;
 }
+
 export class CoffeeOrigins {
   constructor(private readonly coffeeOrigins: CoffeeOrigin[]) {}
 

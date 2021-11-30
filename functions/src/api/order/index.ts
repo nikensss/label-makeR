@@ -4,32 +4,14 @@ import { logger } from 'firebase-functions';
 import { isArrayOfStrings } from '../../utils/types/isArrayOfStrings';
 import Stripe from 'stripe';
 import { config } from '../../config/config';
-import { ICoffeeOrigin } from '../../firestore/general/coffee/ICoffeeOrigin.interface';
 import { format } from 'date-fns';
+import { CoffeeSelections } from '../../classes/CoffeeSelections/CoffeeSelections';
+import { getCoffee } from '../../firestore/general/general';
 
-export interface ICoffeeSelections {
-  [key: string]: CoffeeSelection | undefined;
-}
-
-/** In the frontend, the `CoffeeOrigin` class wraps a `ICoffeeOrigin` interface
- * and adds a `quantity` property to represent the data set.
- * The `ICoffeeOrigin`  is the interface that represents the data structure
- * in the database.
- * Until we find a better way to share types between fe and be, we will do it
- * like this.
- */
-export interface CoffeeSelection {
-  coffeeOrigin: { coffeeOrigin: ICoffeeOrigin };
-  quantity: number;
-}
-
-const stripe = new Stripe(config.stripe.api_key, {
-  apiVersion: '2020-08-27'
-});
 const r = Router();
 
 r.post('/check', async (req, res) => {
-  logger.debug('body', { body: req.body });
+  logger.debug('Received request to check an order', { body: req.body });
   const { selections, labels, bagColor } = req.body;
   if (selections === null || typeof selections !== 'object') {
     logger.info('Invalid selections! Cannot continue', { selections });
@@ -47,20 +29,19 @@ r.post('/check', async (req, res) => {
   }
 
   try {
-    const orderErrors = await getOrderErrors(selections);
-    if (orderErrors) {
+    const coffeeSelections = new CoffeeSelections(selections);
+    const orderErrors = await getOrderErrors(coffeeSelections);
+    if (orderErrors instanceof Error) {
       return res.status(403).send({ status: 'error', message: orderErrors.message }).end();
     }
 
     const labelLinks = await saveLabels(labels);
     logger.debug(`A total of ${labelLinks.length} labels were saved`, { labelLinks });
 
-    logger.info('Creating stripe checkout session', { body: req.body });
-
-    const session = await createStripeSession(selections);
+    const session = await createStripeSession(coffeeSelections);
     if (session.url === null) throw new Error('Stripe session URL is null!');
 
-    await saveOrder(session, selections, bagColor, labelLinks);
+    await saveOrder(session, coffeeSelections, bagColor, labelLinks);
     logger.info('Stripe checkout session created', { session });
     return res.status(200).send({ url: session.url }).end();
   } catch (ex) {
@@ -69,33 +50,23 @@ r.post('/check', async (req, res) => {
   }
 });
 
-const getOrderErrors = async (selections: ICoffeeSelections) => {
-  const db = admin.firestore();
-  const coffeeDoc = db.collection('general').doc('coffee');
-  const coffeeOrigins = (await coffeeDoc.get()).get('origins') as ICoffeeOrigin[];
+const getOrderErrors = async (selections: CoffeeSelections) => {
+  const coffee = await getCoffee();
+  if (!coffee) throw new Error('Cannot retrieve coffee');
+  const coffeeOrigins = coffee.getOrigins();
 
-  for (const [key, selection] of Object.entries(selections)) {
-    if (!selection) continue;
-    const origin = coffeeOrigins.find(({ id }) => id === key);
-    if (!origin) return new Error(`unknown coffee origin: ${key}`);
+  for (const { id, quantity } of selections) {
+    const origin = coffeeOrigins.find(id);
+    if (!origin) return new Error(`unknown coffee origin: ${id}`);
 
-    if (!isValidQuantity(selection, origin)) {
-      const minQty = getMinQuantity(origin);
-      const qty = selection.quantity;
-      return new Error(`Quantity ordered (${qty}) below threshold (${minQty}) for ${key}`);
+    if (!origin.isValidQuantity(quantity)) {
+      const minQty = origin.minQuantity;
+      const qty = quantity;
+      return new Error(`Quantity ordered (${qty}) below threshold (${minQty}) for ${id}`);
     }
   }
 
   return null;
-};
-
-// 'selection' is the data the frontend sends us
-// 'origin' is the data we read from the database
-const getMinQuantity = (origin: ICoffeeOrigin): number => 30 / origin.weight.amount;
-const isValidQuantity = (selection: CoffeeSelection, origin: ICoffeeOrigin) => {
-  const quantity = selection.quantity;
-  if (typeof quantity === 'undefined') return false;
-  return quantity === 0 || quantity >= getMinQuantity(origin);
 };
 
 const saveLabels = async (labels: string[]): Promise<string[]> => {
@@ -128,13 +99,14 @@ const saveLabels = async (labels: string[]): Promise<string[]> => {
 
 const saveOrder = async (
   session: Stripe.Response<Stripe.Checkout.Session>,
-  selections: ICoffeeSelections,
+  selections: CoffeeSelections,
   bagColor: string,
   labelLinks: string[]
 ) => {
   const db = admin.firestore();
   const { payment_intent } = session;
   if (payment_intent === null) throw new Error('Payment intent is null! Cannot continue');
+
   const id = typeof payment_intent === 'string' ? payment_intent : payment_intent.id;
   const orderDoc = db.collection('orders').doc(id);
   const now = admin.firestore.FieldValue.serverTimestamp();
@@ -145,54 +117,35 @@ const saveOrder = async (
     id,
     labelLinks,
     session,
-    selections,
+    selections: selections.serialize(),
     updatedAt: now
   });
 };
 
 const createStripeSession = async (
-  selections: ICoffeeSelections
+  selections: CoffeeSelections
 ): Promise<Stripe.Response<Stripe.Checkout.Session>> => {
-  const db = admin.firestore();
-  const coffeeDoc = db.collection('general').doc('coffee');
-  const coffeeOrigins = (await coffeeDoc.get()).get('origins') as ICoffeeOrigin[];
+  logger.info('Creating stripe checkout session');
 
-  const totalPrice = Object.values(selections).reduce((totalPrice, selection) => {
-    if (!selection) return totalPrice;
-    const coffeeOrigin = coffeeOrigins.find(c => c.id === selection.coffeeOrigin.coffeeOrigin.id);
-    if (!coffeeOrigin) throw new Error(`Unknown coffee ${selection.coffeeOrigin.coffeeOrigin.id}`);
+  const coffee = await getCoffee();
+  if (!coffee) throw new Error('Cannot retrieve coffee doc');
+  const coffeeOrigins = coffee.getOrigins();
 
-    return totalPrice + coffeeOrigin.price.amount * 100 * selection.quantity;
-  }, 0);
-
-  const lineItems = Object.values(selections)
-    .map(selection => {
-      if (!selection) return null;
-      const price = coffeeOrigins.find(c => c.id === selection.coffeeOrigin.coffeeOrigin.id)?.price
-        .id;
-      if (!price)
-        throw new Error(`No price available for ${selection.coffeeOrigin.coffeeOrigin.id}`);
-      const quantity = selection?.quantity;
-      return { price, quantity };
-    })
-    .filter(isLineItem);
-
+  const stripe = new Stripe(config.stripe.api_key, { apiVersion: '2020-08-27' });
   const session = await stripe.checkout.sessions.create({
-    line_items: lineItems,
+    line_items: coffeeOrigins.asLineItems(selections),
     payment_method_types: ['card'],
     mode: 'payment',
     success_url: config.stripe.success_url,
     cancel_url: config.stripe.cancel_url
   });
 
+  const totalPrice = selections.getTotalPrice(coffeeOrigins);
   if (totalPrice !== session.amount_subtotal) {
     throw new Error(`Total price mismatch: ${totalPrice} !== ${session.amount_subtotal}`);
   }
 
   return session;
 };
-
-type LineItem = { price: string; quantity: number };
-const isLineItem = (e: LineItem | null): e is LineItem => e !== null;
 
 export const order = r;
