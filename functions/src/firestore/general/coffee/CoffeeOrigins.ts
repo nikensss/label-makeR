@@ -1,5 +1,5 @@
 import { ICoffeeOrigin } from './ICoffeeOrigin.interface';
-import * as clone from 'clone';
+import clone from 'clone';
 import { CoffeeOrigin } from './CoffeeOrigin';
 import { CoffeeSelections } from '../../../classes/CoffeeSelections/CoffeeSelections';
 

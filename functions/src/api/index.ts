@@ -1,5 +1,5 @@
-import * as cors from 'cors';
-import * as express from 'express';
+import cors from 'cors';
+import express from 'express';
 import { logger } from 'firebase-functions';
 import { order } from './order';
 import { stripe } from './stripe';

@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express from 'express';
 import { webhooks } from './webhooks';
 import { backupWebhook } from './webhooks/backupWebhook';
 
