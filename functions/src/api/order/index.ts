@@ -137,7 +137,11 @@ const createStripeSession = async (
     payment_method_types: ['card'],
     mode: 'payment',
     success_url: config.stripe.success_url,
-    cancel_url: config.stripe.cancel_url
+    cancel_url: config.stripe.cancel_url,
+    shipping_address_collection: {
+      allowed_countries: ['US', 'GB']
+    },
+    phone_number_collection: { enabled: true }
   });
 
   const totalPrice = selections.getTotalPrice(coffeeOrigins);
