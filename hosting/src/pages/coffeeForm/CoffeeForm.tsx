@@ -5,13 +5,12 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { Order } from '../../classes/Order';
 import { LabelDesign, LabelDesigner, Labels } from '../../components/LabelDesigner';
 import { OrderSummary } from '../../components/OrderSummary';
 import { config } from '../../config/config';
-import { CoffeeOrigin } from '../../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins, GetRowsProps } from '../../firebase/general/coffee/CoffeeOrigins';
+import { CoffeeSelection } from '../../firebase/general/coffee/CoffeeSelection';
 import { getCoffee } from '../../firebase/general/General';
 import { generateAllLabels } from '../../utils/generateAllLabels';
 
@@ -52,16 +51,15 @@ export interface CoffeeFormProps {
   classes: ClassNameMap<string>;
 }
 
-export const onlyCoffeeOrigin = (o: unknown): o is CoffeeOrigin => {
-  return o instanceof CoffeeOrigin;
+export const onlyCoffeeSelection = (o: unknown): o is CoffeeSelection => {
+  return o instanceof CoffeeSelection;
 };
 
 export interface CoffeeSelections {
-  [key: string]: CoffeeOrigin | undefined;
+  [key: string]: CoffeeSelection | undefined;
 }
 
 export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX.Element => {
-  const history = useHistory();
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const isLastStep = () => step === LAST_STEP;
@@ -108,10 +106,10 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   // TODO: create CoffeeOrigin class and use it as input type to this func
   const onSelection: GetRowsProps['onSelection'] = (id: string) => {
     return (quantity: number) => {
-      const c = selections[id] || coffeeOrigins.find(id);
-      if (!c) throw new Error(`Unknown ${id}`);
-
-      c.quantity = quantity;
+      const origin = coffeeOrigins.find(id);
+      if (!origin) throw new Error(`Unknown ${id}`);
+      const selection = selections[id] || new CoffeeSelection(origin);
+      selection.setQuantity(quantity);
 
       if (quantity === 0) {
         const copy = { ...selections };
@@ -119,15 +117,16 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
         return setSelections(copy);
       }
 
-      setSelections({ ...selections, [id]: c });
+      setSelections({ ...selections, [id]: selection });
     };
   };
 
   useEffect(() => {
     order.setCoffeeSelections(selections);
     order.setCoffeeOrigins(coffeeOrigins);
+    order.setBagColor(labelDesign.bagColor);
     setOrder(Order.fromOrder(order));
-  }, [selections, coffeeOrigins]);
+  }, [selections, coffeeOrigins, labelDesign]);
 
   const LAST_STEP = 2;
   const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
@@ -148,14 +147,14 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
         method: 'POST',
         body: JSON.stringify({
           selections,
+          bagColor: order.getBagColor(),
           labels: [...(await generateAllLabels(labelDesign, order)), labels.back]
         })
       });
-      const { status, message } = await response.json();
+      const { url } = await response.json();
 
-      if (status === 'ok') return history.push('/thankyou');
-
-      throw new Error(message || 'Something went wrong');
+      if (!url) throw new Error('Can not proceed to checkout!');
+      window.location.href = url;
     } catch (ex) {
       console.error('Exception caught!', { ex });
       setApiErrorMessage(ex.message || 'Something went wrong');

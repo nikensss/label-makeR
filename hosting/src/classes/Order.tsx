@@ -6,19 +6,23 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { CoffeeOrigin, Price, displayPrice } from '../firebase/general/coffee/CoffeeOrigin';
+import { LabelDesign } from '../components/LabelDesigner';
+import { Price } from '../firebase/general/coffee/CoffeeOrigin';
 import { CoffeeOrigins } from '../firebase/general/coffee/CoffeeOrigins';
-import { CoffeeSelections, onlyCoffeeOrigin } from '../pages/coffeeForm/CoffeeForm';
+import { CoffeeSelection, displayPrice } from '../firebase/general/coffee/CoffeeSelection';
+import { CoffeeSelections, onlyCoffeeSelection } from '../pages/coffeeForm/CoffeeForm';
 
 export class Order {
   private coffeeSelections: CoffeeSelections = {};
   private coffeeOrigins: CoffeeOrigins = new CoffeeOrigins([]);
   private static TAX_RATE = 0.21;
+  private bagColor: LabelDesign['bagColor'] = 'white';
 
   static fromOrder(order: Order): Order {
     const clone = new Order();
     clone.coffeeOrigins = order.coffeeOrigins;
     clone.coffeeSelections = order.coffeeSelections;
+    clone.bagColor = order.bagColor || 'white';
 
     return clone;
   }
@@ -31,29 +35,37 @@ export class Order {
     this.coffeeOrigins = coffeeOrigins;
   }
 
+  setBagColor(color: LabelDesign['bagColor']): void {
+    this.bagColor = color;
+  }
+
+  getBagColor(): typeof this.bagColor {
+    return this.bagColor;
+  }
+
   setQuantity(id: string, quantity: number): void {
-    const coffeeSelection = this.coffeeSelections[id];
-    if (coffeeSelection) coffeeSelection.quantity = quantity;
+    const selection = this.coffeeSelections[id];
+    if (selection) selection.setQuantity(quantity);
   }
 
   isValid(): boolean {
-    const coffeeSelections = Object.values(this.coffeeSelections).filter(onlyCoffeeOrigin);
+    const coffeeSelections = Object.values(this.coffeeSelections).filter(onlyCoffeeSelection);
     const allValid = coffeeSelections.every(c => c.isValid());
-    const totalAmount = coffeeSelections.map(c => c.quantity).reduce((t, q) => t + q, 0);
+    const totalAmount = coffeeSelections.map(c => c.getQuantity()).reduce((t, q) => t + q, 0);
 
     return allValid && totalAmount !== 0;
   }
 
-  get coffees(): CoffeeOrigin[] {
-    return (
-      Object.values(this.coffeeSelections)
-        .filter(onlyCoffeeOrigin)
-        .filter(c => c.isValid() && c.quantity > 0) || []
-    );
+  get selections(): CoffeeSelection[] {
+    const selections = Object.values(this.coffeeSelections)
+      .filter(onlyCoffeeSelection)
+      .filter(c => c.isValid() && c.getQuantity() > 0);
+
+    return selections || [];
   }
 
   get price(): Price {
-    return this.coffees.reduce(
+    return this.selections.reduce(
       (t, coffee) => {
         return {
           amount: t.amount + coffee.getTotalPrice().amount,
@@ -102,7 +114,7 @@ export class Order {
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.coffees.map((coffee, key) => {
+            {this.selections.map((coffee, key) => {
               return (
                 <TableRow key={key}>
                   <TableCell component='th' scope='row'>
@@ -110,7 +122,7 @@ export class Order {
                   </TableCell>
                   <TableCell align='right'>{coffee.display('weight')}</TableCell>
                   <TableCell align='right'>{coffee.display('price')}</TableCell>
-                  <TableCell align='right'>{coffee.quantity}</TableCell>
+                  <TableCell align='right'>{coffee.getQuantity()}</TableCell>
                   <TableCell align='right'>{coffee.display('totalPrice')}</TableCell>
                 </TableRow>
               );

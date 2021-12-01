@@ -20,7 +20,7 @@ import P5 from 'p5';
 import { ChangeEvent, createRef, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Order } from '../classes/Order';
 
-const BAG_COLORS = ['white', 'black', 'brown'] as const;
+export const BAG_COLORS = ['white', 'black', 'brown'] as const;
 
 const isValidBagColor = (color: string): color is LabelDesign['bagColor'] => {
   //eslint-disable-next-line
@@ -105,14 +105,14 @@ type LabelDesignerInput = {
 export const LABEL_DIMENSIONS = { width: 380, height: 532 } as const;
 
 export const LabelDesigner = withStyles(styles)(
-  ({ order, labelDesignRef, setLabelDesign, labels, setLabels, classes }: LabelDesignerInput) => {
+  ({ order, labelDesignRef, setLabelDesign, setLabels, classes }: LabelDesignerInput) => {
     const labelDesign = labelDesignRef.current;
     const frontLabelCanvasRef = createRef<HTMLDivElement>();
     const backLabelCanvasRef = createRef<HTMLDivElement>();
     const [frontLabelCanvas, setFrontLabelCanvas] = useState<P5 | null>(null);
     const [backLabelCanvas, setBackLabelCanvas] = useState<P5 | null>(null);
     const [hasLogo, setHasLogo] = useState(!!labelDesignRef.current.logo);
-    const [coffee] = order.coffees;
+    const [coffee] = order.selections;
     const name = coffee?.display('label') || 'ROMO BLEND';
     const weight = coffee?.display('weight') || '0.25 kg';
     const [frontLabel, setFrontLabel] = useState('');

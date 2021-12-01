@@ -10,7 +10,8 @@ import capitalize from '@material-ui/core/utils/capitalize';
 import Alert from '@mui/material/Alert';
 import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
-import { CoffeeOrigin, DisplayableCoffeeOriginKeys } from './CoffeeOrigin';
+import { CoffeeOrigin } from './CoffeeOrigin';
+import { CoffeeSelection, DisplayableCoffeeOriginKeys } from './CoffeeSelection';
 
 export interface GetRowsProps {
   selections: CoffeeSelections;
@@ -20,6 +21,7 @@ export interface GetRowsProps {
 export interface GetTableProps extends GetRowsProps {
   tableClass: string;
 }
+
 export class CoffeeOrigins {
   constructor(private readonly coffeeOrigins: CoffeeOrigin[]) {}
 
@@ -84,7 +86,7 @@ export class CoffeeOrigins {
         <CoffeeRow
           keys={keys}
           key={i}
-          coffeeSelection={selections[id] || coffeeOrigin}
+          coffeeSelection={selections[id] || new CoffeeSelection(coffeeOrigin)}
           onCoffeeQuantityChange={onSelection(id)}
         />
       );

@@ -1,5 +1,3 @@
-import getSymbolFromCurrency from 'currency-symbol-map';
-
 export interface ICoffeeOrigin {
   label: string;
   id: string;
@@ -17,15 +15,8 @@ export interface Price {
   unit: string;
 }
 
-export const displayPrice = ({ amount, unit }: Price): string => {
-  return `${amount.toFixed(2)} ${getSymbolFromCurrency(unit)}`;
-};
-
-export type DisplayableCoffeeOriginKeys = Parameters<CoffeeOrigin['display']>[0];
-
 export class CoffeeOrigin {
   private coffeeOrigin: ICoffeeOrigin;
-  private _quantity = 0;
 
   constructor(coffeeOrigin: ICoffeeOrigin) {
     this.coffeeOrigin = coffeeOrigin;
@@ -35,54 +26,19 @@ export class CoffeeOrigin {
     return this.coffeeOrigin.id;
   }
 
+  get label(): string {
+    return this.coffeeOrigin.label;
+  }
+
+  get price(): Price {
+    return this.coffeeOrigin.price;
+  }
+
+  get weight(): Weight {
+    return this.coffeeOrigin.weight;
+  }
+
   get minQuantity(): number {
-    return 30 / this.coffeeOrigin.weight.amount;
-  }
-
-  get quantity(): number {
-    return this._quantity;
-  }
-
-  set quantity(qty: number) {
-    if (qty < 0) throw new Error('Negative quantities not allowed!');
-    this._quantity = qty;
-  }
-
-  isValid(): boolean {
-    return this.quantity === 0 || this.quantity >= this.minQuantity;
-  }
-
-  display(prop: Exclude<keyof ICoffeeOrigin, 'id'> | 'quantity' | 'totalPrice'): string {
-    switch (prop) {
-      case 'label':
-        return this.coffeeOrigin.label;
-      case 'price':
-        return displayPrice(this.coffeeOrigin.price);
-      case 'weight':
-        return `${this.coffeeOrigin.weight.amount} ${this.coffeeOrigin.weight.unit}`;
-      case 'quantity':
-        return `${this.quantity}`;
-      case 'totalPrice':
-        return displayPrice(this.getTotalPrice());
-    }
-  }
-
-  style(): Record<string, string> {
-    if (this.isValid()) {
-      return {
-        backgroundColor: 'transparent'
-      };
-    }
-
-    return {
-      backgroundColor: 'rgb(253,237,237)'
-    };
-  }
-
-  getTotalPrice(): Price {
-    return {
-      amount: this.coffeeOrigin.price.amount * this.quantity,
-      unit: this.coffeeOrigin.price.unit
-    };
+    return 30 / this.weight.amount;
   }
 }
