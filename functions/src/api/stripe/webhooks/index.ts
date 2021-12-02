@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { logger } from 'firebase-functions/v1';
+import { updatePaymentIntentInOrder } from './payment_intent';
+import { onPaymentIntentSucceeded } from './payment_intent/succeeded';
 import { verifySignature } from './verifySignature';
-import { updatePaymentIntentInOrder } from './paymentIntent';
-import { onPaymentIntentSucceeded } from './paymentIntent/succeeded';
 
 const r = Router();
 

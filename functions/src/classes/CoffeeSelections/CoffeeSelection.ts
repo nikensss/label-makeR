@@ -1,5 +1,5 @@
 import clone from 'clone';
-import { ICoffeeOrigin } from '../../firestore/general/coffee/ICoffeeOrigin.interface';
+import { ICoffeeOrigin } from '../../firestore/general/coffee/CoffeeOrigin';
 
 export class CoffeeSelection {
   private selection: ICoffeeSelection;

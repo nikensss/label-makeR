@@ -1,5 +1,22 @@
-import { ICoffeeOrigin } from './ICoffeeOrigin.interface';
 import clone from 'clone';
+
+export interface ICoffeeOrigin {
+  label: string;
+  id: string;
+  weight: Weight;
+  price: Price;
+}
+
+export interface Weight {
+  amount: number;
+  unit: string;
+}
+
+export interface Price {
+  amount: number;
+  unit: string;
+  id: string;
+}
 
 export class CoffeeOrigin {
   private origin: ICoffeeOrigin;

@@ -1,6 +1,5 @@
-import { ICoffeeOrigin } from './ICoffeeOrigin.interface';
 import clone from 'clone';
-import { CoffeeOrigin } from './CoffeeOrigin';
+import { CoffeeOrigin, ICoffeeOrigin } from './CoffeeOrigin';
 import { CoffeeSelections } from '../../../classes/CoffeeSelections/CoffeeSelections';
 
 export class CoffeeOrigins {

@@ -24,6 +24,8 @@
   "main": "lib/index.js",
   "dependencies": {
     "@types/clone": "^2.1.1",
+    "@types/node": "^14.17.34",
+    "axios": "^0.24.0",
     "clone": "^2.1.2",
     "cors": "^2.8.5",
     "date-fns": "^2.26.0",
