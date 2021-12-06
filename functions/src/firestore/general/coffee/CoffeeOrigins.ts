@@ -9,6 +9,12 @@ export class CoffeeOrigins {
     this.origins = clone(origins).map(o => new CoffeeOrigin(o));
   }
 
+  static fromOrigins(origins: CoffeeOrigin[]): CoffeeOrigins {
+    const coffeeOrigins = new CoffeeOrigins([]);
+    coffeeOrigins.origins = origins;
+    return coffeeOrigins;
+  }
+
   *[Symbol.iterator](): IterableIterator<CoffeeOrigin> {
     for (const origin of this.origins) {
       yield origin;

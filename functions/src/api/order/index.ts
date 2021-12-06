@@ -31,7 +31,7 @@ r.post('/check', async (req, res) => {
   try {
     const coffeeSelections = new CoffeeSelections(selections);
     const orderErrors = await getOrderErrors(coffeeSelections);
-    if (orderErrors instanceof Error) {
+    if (orderErrors !== null) {
       return res.status(403).send({ status: 'error', message: orderErrors.message }).end();
     }
 

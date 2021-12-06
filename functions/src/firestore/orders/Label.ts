@@ -14,7 +14,7 @@ export class Label {
     return streamToBuffer(data);
   }
 
-  async asAttachement(n: number): Promise<{ filename: string; data: Buffer }> {
+  async asMailgunAttachement(n: number): Promise<{ filename: string; data: Buffer }> {
     return { filename: `label_${n}.png`, data: await this.asBuffer() };
   }
 }

@@ -26,8 +26,8 @@ export const onPaymentIntentSucceeded = async (req: Request): Promise<void> => {
       to: [email],
       subject: 'Thank you for your purchase',
       text: 'Testing mailgun',
-      html: '<h1>Testing mailgun</h1>This is a test with mailgun. If you received this, consider yourself lucky enought that we are confident to test with you.',
-      attachment: await Promise.all(labels.map((l, i) => l.asAttachement(i)))
+      html: order.asHtml(),
+      attachment: await Promise.all(labels.map((l, i) => l.asMailgunAttachement(i)))
     });
     logger.info(`Email sent to ${email} for successful payment of ${paymentIntent.id}`);
   } catch (ex) {

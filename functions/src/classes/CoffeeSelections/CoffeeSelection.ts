@@ -1,11 +1,13 @@
 import clone from 'clone';
-import { ICoffeeOrigin } from '../../firestore/general/coffee/CoffeeOrigin';
+import { CoffeeOrigin, ICoffeeOrigin } from '../../firestore/general/coffee/CoffeeOrigin';
 
 export class CoffeeSelection {
   private selection: ICoffeeSelection;
+  private _origin: CoffeeOrigin;
 
   constructor(selection: ICoffeeSelection) {
     this.selection = clone(selection);
+    this._origin = new CoffeeOrigin(this.selection.coffeeOrigin.coffeeOrigin);
   }
 
   get id(): string {
@@ -14,6 +16,26 @@ export class CoffeeSelection {
 
   get quantity(): number {
     return this.selection.quantity;
+  }
+
+  get currency(): string {
+    return this._origin.currency;
+  }
+
+  get title(): string {
+    return this._origin.title;
+  }
+
+  get origin(): CoffeeOrigin {
+    return new CoffeeOrigin(clone(this.selection.coffeeOrigin.coffeeOrigin));
+  }
+
+  asHtml(): string {
+    const title = this._origin.toString();
+    const qty = this.quantity;
+    const unitPrice = this._origin.getDisplayPrice();
+    const subtotal = `${qty * this._origin.price} ${this._origin.currency}`;
+    return `${title}: ${qty} &times; ${unitPrice} = ${subtotal}`;
   }
 
   serialize(): ICoffeeSelection {
