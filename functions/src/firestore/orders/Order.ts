@@ -77,6 +77,7 @@ export class Order implements FirestoreDocument {
 
     <section id="order-summary">
       <h2>Your order</h2>
+      <p>Bag color: ${this.order.bagColor}</p>
       ${this.getSelections().asHtml()}
     </section>
 
