@@ -70,7 +70,7 @@ const getOrderErrors = async (selections: CoffeeSelections) => {
 };
 
 const saveLabels = async (labels: string[]): Promise<string[]> => {
-  const labelsBucket = admin.storage().bucket('coffee-labels');
+  const labelsBucket = admin.storage().bucket(config.storage.bucket);
   const now = format(new Date(), 'yyyy-MM-dd_HH:mm:ss_xxx');
   logger.debug('Saving all labels', { labels });
   return await Promise.all(
@@ -83,7 +83,7 @@ const saveLabels = async (labels: string[]): Promise<string[]> => {
       if (encoding !== 'base64') throw new Error('Image is not base64 encoded!');
 
       const buffer = Buffer.from(image, encoding);
-      const file = labelsBucket.file(`${now}__${i}.png`);
+      const file = labelsBucket.file(`coffee-labels/${now}__${i}.png`);
       await file.save(buffer, {
         gzip: true,
         metadata: {
