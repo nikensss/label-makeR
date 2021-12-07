@@ -1,11 +1,13 @@
 import { Request } from 'express';
 import * as admin from 'firebase-admin';
+import { logger } from 'firebase-functions';
 
 const Timestamp = admin.firestore.Timestamp;
 
 export const updatePaymentIntentInOrder = async (req: Request): Promise<void> => {
   const db = admin.firestore();
 
+  logger.info(`Updating order ${req.body.data.object.id}`);
   await db.runTransaction(async t => {
     const paymentIntent = req.body.data.object;
     const orderDoc = await t.get(db.collection('orders').doc(paymentIntent.id));
