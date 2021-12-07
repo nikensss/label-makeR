@@ -6,11 +6,13 @@ import {
 } from '../../classes/CoffeeSelections/CoffeeSelections';
 import { FirestoreDocument } from '../firestore';
 import { Label } from './Label';
+import Stripe from 'stripe';
 
 export interface IOrder {
   bagColor: 'white' | 'black' | 'brown';
   labelLinks: string[];
   selections: ICoffeeSelections;
+  paymentIntent: Stripe.PaymentIntent;
 }
 
 export const isIOrder = (data: unknown): data is IOrder => {
@@ -48,9 +50,21 @@ export class Order implements FirestoreDocument {
     return this.getLabelLinks().map(l => new Label(l));
   }
 
+  getShippingDetails(): Stripe.Charge.Shipping {
+    if (this.order.paymentIntent.charges.data.length === 0) {
+      throw new Error('No charges in payment intent');
+    }
+
+    const { shipping } = this.order.paymentIntent.charges.data[0];
+    if (!shipping) throw new Error('No address available!');
+
+    return shipping;
+  }
+
   asHtml(): string {
+    const shipping = this.getShippingDetails();
     return `
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -66,6 +80,14 @@ export class Order implements FirestoreDocument {
       ${this.getSelections().asHtml()}
     </section>
 
+    <section id="customer-details">
+      <h2>Contact information</h2>
+      <p>${shipping.name} (${shipping.phone || 'no phone number provided'})</p>
+      <p>${shipping.address?.line1 || ''}, ${shipping.address?.line2 || ''}</p>
+      <p>${shipping.address?.postal_code}, ${shipping.address?.state || ''}</p>
+      <p>${shipping.address?.country || ''}</p>
+    </section>
+
     <p>
       <small>
         The expected delivery date is 21 business days from now.
@@ -74,9 +96,7 @@ export class Order implements FirestoreDocument {
 
     <p>If you have any questions, do not hesitate to get in touch!</p>
   </body>
-</html>
-    
-    `;
+</html>`;
   }
 
   toFirestore(): IOrder {
