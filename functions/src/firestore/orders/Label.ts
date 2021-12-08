@@ -1,17 +1,18 @@
-import axios from 'axios';
-import { streamToBuffer } from '../../utils/stream_to_buffer';
-import { Stream } from 'stream';
+import { storage } from 'firebase-admin';
+import { config } from '../../config/config';
 
 export class Label {
-  private link: string;
-  constructor(link: string) {
-    if (!link) throw new Error(`Invalid link: ${link}`);
-    this.link = link;
+  private path: string;
+  constructor(path: string) {
+    if (!path) throw new Error(`Invalid link: ${path}`);
+    this.path = path;
   }
 
   async asBuffer(): Promise<Buffer> {
-    const { data } = await axios.get<Stream>(this.link, { responseType: 'stream' });
-    return streamToBuffer(data);
+    const file = storage().bucket(config.storage.bucket).file(this.path);
+    const isEmulators = process.env.FUNCTIONS_EMULATOR === 'true';
+    const [buffer] = await file.download({ validation: !isEmulators });
+    return buffer;
   }
 
   async asMailgunAttachement(n: number): Promise<{ filename: string; data: Buffer }> {

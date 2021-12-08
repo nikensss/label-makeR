@@ -83,7 +83,8 @@ const saveLabels = async (labels: string[]): Promise<string[]> => {
       if (encoding !== 'base64') throw new Error('Image is not base64 encoded!');
 
       const buffer = Buffer.from(image, encoding);
-      const file = labelsBucket.file(`coffee-labels/${now}__${i}.png`);
+      const path = `coffee-labels/${now}__${i}.png`;
+      const file = labelsBucket.file(path);
       await file.save(buffer, {
         gzip: true,
         metadata: {
@@ -92,7 +93,7 @@ const saveLabels = async (labels: string[]): Promise<string[]> => {
         }
       });
 
-      return file.publicUrl();
+      return path;
     })
   );
 };
