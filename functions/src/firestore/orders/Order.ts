@@ -7,6 +7,8 @@ import {
 import { FirestoreDocument } from '../firestore';
 import { Label } from './Label';
 import Stripe from 'stripe';
+import { config } from '../../config/config';
+import axios, { AxiosResponse } from 'axios';
 
 export interface IOrder {
   bagColor: 'white' | 'black' | 'brown';
@@ -61,8 +63,29 @@ export class Order implements FirestoreDocument {
     return shipping;
   }
 
-  asHtml(): string {
+  async getCustomerDetails(): Promise<AxiosResponse<any, any>> {
+    const fetchCustomerDetails = async (
+      customer_id: string | Stripe.Customer | Stripe.DeletedCustomer
+    ) => {
+      const response = await axios.get(`https://api.stripe.com/v1/customers/${customer_id}`, {
+        headers: {
+          'secret-key': config.stripe.api_key
+        }
+      });
+      return response;
+    };
+
+    const customer_id = this.order.paymentIntent.customer;
+    if (!customer_id) throw new Error('No customer in paymet intent');
+    const customerDetails = fetchCustomerDetails(customer_id);
+    return customerDetails;
+  }
+
+  async asHtml(): Promise<string> {
     const shipping = this.getShippingDetails();
+    const customerDetails = this.getCustomerDetails();
+    console.log('CustomerDetails');
+    console.log(customerDetails);
     return `
 <!DOCTYPE html>
 <html lang="en">
