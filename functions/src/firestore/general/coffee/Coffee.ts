@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
-import { ICoffeeOrigin } from './ICoffeeOrigin.interface';
 import { FirestoreDocument } from '../../firestore';
+import { ICoffeeOrigin } from './CoffeeOrigin';
 import { CoffeeOrigins } from './CoffeeOrigins';
 
 export interface ICoffee {

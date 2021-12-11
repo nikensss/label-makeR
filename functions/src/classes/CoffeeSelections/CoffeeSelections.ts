@@ -21,10 +21,28 @@ export class CoffeeSelections {
     return totalPrice;
   }
 
+  getDisplayTotalPrice(coffeeOrigins: CoffeeOrigins): string {
+    const totalPrice = this.getTotalPrice(coffeeOrigins) / 100;
+    const currency = this.selections[0]?.currency;
+
+    return `${totalPrice} ${currency}`;
+  }
+
   *[Symbol.iterator](): IterableIterator<CoffeeSelection> {
     for (const selection of this.selections) {
       yield selection;
     }
+  }
+
+  asHtml(): string {
+    const itemsList = this.selections.map(s => `<li>${s.asHtml()}</li>`);
+    const origins = this.selections.map(s => s.origin);
+    return `<ul>
+      ${itemsList.join('')}
+      <li>
+        Total: ${this.getDisplayTotalPrice(CoffeeOrigins.fromOrigins(origins))}
+      </li>
+      </ul>`;
   }
 
   serialize(): Record<string, unknown> {

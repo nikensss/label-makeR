@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Stripe } from 'stripe';
-import { config } from '../../../config/config';
 import { logger } from 'firebase-functions/v1';
+import { config } from '../../../../config/config';
 
 export const verifySignature = (req: Request, res: Response, next: NextFunction): void => {
   try {

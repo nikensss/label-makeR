@@ -7,8 +7,15 @@ export interface IConfig {
     success_url: string;
     cancel_url: string;
   };
+  mailgun: {
+    api_key: string;
+    domain_name: string;
+  };
   env: {
     is_dev: boolean;
+  };
+  storage: {
+    bucket: string;
   };
 }
 
@@ -20,7 +27,14 @@ export const config: IConfig = {
     success_url: functionsConfig.stripe?.success_url || 'http://localhost:3000/thankyou',
     cancel_url: functionsConfig.stripe?.cancel_url || 'http://localhost:3000/cancel'
   },
+  mailgun: {
+    api_key: functionsConfig.mailgun?.api_key || '',
+    domain_name: functionsConfig.mailgun?.domain_name || ''
+  },
   env: {
     is_dev: functionsConfig.env?.is_dev === 'true'
+  },
+  storage: {
+    bucket: functionsConfig.storage?.bucket || 'label-maker-app.appspot.com'
   }
 };

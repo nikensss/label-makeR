@@ -1,6 +1,5 @@
-import { ICoffeeOrigin } from './ICoffeeOrigin.interface';
-import * as clone from 'clone';
-import { CoffeeOrigin } from './CoffeeOrigin';
+import clone from 'clone';
+import { CoffeeOrigin, ICoffeeOrigin } from './CoffeeOrigin';
 import { CoffeeSelections } from '../../../classes/CoffeeSelections/CoffeeSelections';
 
 export class CoffeeOrigins {
@@ -8,6 +7,12 @@ export class CoffeeOrigins {
 
   constructor(origins: ICoffeeOrigin[]) {
     this.origins = clone(origins).map(o => new CoffeeOrigin(o));
+  }
+
+  static fromOrigins(origins: CoffeeOrigin[]): CoffeeOrigins {
+    const coffeeOrigins = new CoffeeOrigins([]);
+    coffeeOrigins.origins = origins;
+    return coffeeOrigins;
   }
 
   *[Symbol.iterator](): IterableIterator<CoffeeOrigin> {
