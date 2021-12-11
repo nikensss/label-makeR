@@ -8,7 +8,6 @@ import { FirestoreDocument } from '../firestore';
 import { Label } from './Label';
 import Stripe from 'stripe';
 import { config } from '../../config/config';
-import axios, { AxiosResponse } from 'axios';
 
 export interface IOrder {
   bagColor: 'white' | 'black' | 'brown';
@@ -63,29 +62,24 @@ export class Order implements FirestoreDocument {
     return shipping;
   }
 
-  async getCustomerDetails(): Promise<AxiosResponse<any, any>> {
-    const fetchCustomerDetails = async (
-      customer_id: string | Stripe.Customer | Stripe.DeletedCustomer
-    ) => {
-      const response = await axios.get(`https://api.stripe.com/v1/customers/${customer_id}`, {
-        headers: {
-          'secret-key': config.stripe.api_key
-        }
-      });
-      return response;
-    };
+  getCustomerId(): string {
+    const { customer } = this.order.paymentIntent;
+    if (!customer) throw new Error('No customer in payment intent');
+    if (typeof customer === 'string') return customer;
+    return customer.id;
+  }
 
-    const customer_id = this.order.paymentIntent.customer;
-    if (!customer_id) throw new Error('No customer in paymet intent');
-    const customerDetails = fetchCustomerDetails(customer_id);
-    return customerDetails;
+  async getCustomer(): Promise<Stripe.Response<Stripe.Customer>> {
+    const stripe = new Stripe(config.stripe.api_key, { apiVersion: '2020-08-27' });
+    const response = await stripe.customers.retrieve(this.getCustomerId());
+    if (response.deleted) throw new Error('Deleted customer');
+    return response;
   }
 
   async asHtml(): Promise<string> {
     const shipping = this.getShippingDetails();
-    const customerDetails = this.getCustomerDetails();
-    console.log('CustomerDetails');
-    console.log(customerDetails);
+    const customer = await this.getCustomer();
+
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -106,9 +100,11 @@ export class Order implements FirestoreDocument {
 
     <section id="customer-details">
       <h2>Contact information</h2>
-      <p>${shipping.name} (${shipping.phone || 'no phone number provided'})</p>
+      <p>${shipping.name} (${customer.phone || 'no phone number provided'})</p>
       <p>${shipping.address?.line1 || ''}, ${shipping.address?.line2 || ''}</p>
-      <p>${shipping.address?.postal_code}, ${shipping.address?.state || ''}</p>
+      <p>${shipping.address?.city} ${shipping.address?.postal_code}, ${
+      shipping.address?.state || ''
+    }</p>
       <p>${shipping.address?.country || ''}</p>
     </section>
 
