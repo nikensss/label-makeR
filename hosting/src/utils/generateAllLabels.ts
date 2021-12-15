@@ -14,12 +14,12 @@ const generateLabel = async (
   coffee: Order['selections'][number]
 ): Promise<string> => {
   let label = '';
+  const upscale = 10;
   // create new P5 canvas
   new P5((p5: P5) => {
     let img: P5.Element | null = null;
     p5.setup = () => {
-      p5.createCanvas(LABEL_DIMENSIONS.width, LABEL_DIMENSIONS.height);
-      p5.pixelDensity(2);
+      p5.createCanvas(LABEL_DIMENSIONS.width * upscale, LABEL_DIMENSIONS.height * upscale);
       img = p5.createImg(labelDesign.logo, '');
       img.hide();
       p5.imageMode(p5.CENTER);
@@ -32,30 +32,30 @@ const generateLabel = async (
       if (img) {
         const { width, height } = img.elt;
         const { x, y, scale } = labelDesign;
-        p5.image(img, x, y, width * scale, height * scale);
+        p5.image(img, x * upscale, y * upscale, width * scale * upscale, height * scale * upscale);
       }
 
       // draw customer's brand
       p5.fill('black');
-      p5.textSize(18);
+      p5.textSize(18 * upscale);
       p5.textFont(labelDesign.font);
       p5.textAlign(p5.CENTER);
-      p5.text(labelDesign.brand, p5.width / 2, 250);
+      p5.text(labelDesign.brand, p5.width / 2, 250 * upscale);
 
       // show coffee type
-      p5.text(coffee.display('label'), p5.width / 2, 340);
-      p5.textSize(14);
-      p5.text('FILTER COFFEE', p5.width / 2, 370);
+      p5.text(coffee.display('label'), p5.width / 2, 340 * upscale);
+      p5.textSize(14 * upscale);
+      p5.text('FILTER COFFEE', p5.width / 2, 370 * upscale);
       // show website
-      p5.text(labelDesign.website, p5.width / 2, 450);
+      p5.text(labelDesign.website, p5.width / 2, 450 * upscale);
       // show coffee weight
-      p5.text(coffee.display('weight'), p5.width / 2, 490);
+      p5.text(coffee.display('weight'), p5.width / 2, 490 * upscale);
 
       // draw separators
-      p5.strokeWeight(2);
+      p5.strokeWeight(2 * upscale);
       p5.stroke(42);
-      p5.line(25, 280, p5.width - 25, 280);
-      p5.line(25, 420, p5.width - 25, 420);
+      p5.line(25 * upscale, 280 * upscale, p5.width - 25 * upscale, 280 * upscale);
+      p5.line(25 * upscale, 420 * upscale, p5.width - 25 * upscale, 420 * upscale);
 
       const { canvas } = p5.get();
       label = canvas.toDataURL();

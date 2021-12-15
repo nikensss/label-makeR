@@ -62,7 +62,7 @@ export class CoffeeOrigin {
   }
 
   isValidQuantity(quantity: number): boolean {
-    return quantity > this.minQuantity;
+    return quantity >= this.minQuantity;
   }
 
   toString(): string {
