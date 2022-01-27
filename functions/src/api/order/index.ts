@@ -50,7 +50,7 @@ r.post('/check', async (req, res) => {
   }
 });
 
-const getOrderErrors = async (selections: CoffeeSelections) => {
+const getOrderErrors = async (selections: CoffeeSelections): Promise<Error | null> => {
   const coffee = await getCoffee();
   if (!coffee) throw new Error('Cannot retrieve coffee');
   const coffeeOrigins = coffee.getOrigins();
@@ -103,7 +103,7 @@ const saveOrder = async (
   selections: CoffeeSelections,
   bagColor: string,
   labelLinks: string[]
-) => {
+): Promise<void> => {
   const db = admin.firestore();
   const { payment_intent } = session;
   if (payment_intent === null) throw new Error('Payment intent is null! Cannot continue');
