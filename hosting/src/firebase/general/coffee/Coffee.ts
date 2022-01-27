@@ -1,46 +1,38 @@
 import firebase from 'firebase';
 import { FirestoreDocument } from '../../firebase';
-import { CoffeeOrigin } from './CoffeeOrigin';
+import { CoffeeOrigin, ICoffeeOrigin } from './CoffeeOrigin';
 import { CoffeeOrigins } from './CoffeeOrigins';
 
-export interface FirestoreCoffee {
-  origins: CoffeeOrigin[];
+export interface ICoffee {
+  origins: ICoffeeOrigin[];
 }
 
-const isCoffeeOrigin = (data: unknown): data is CoffeeOrigin => {
+const isCoffeeOrigin = (data: unknown): data is ICoffeeOrigin => {
   if (data === undefined || typeof data !== 'object' || data === null) {
     return false;
   }
 
-  const d = data as CoffeeOrigin;
+  const d = data as ICoffeeOrigin;
   if (!d.label || typeof d.label !== 'string') return false;
   if (!d.id || typeof d.id !== 'string') return false;
 
-  if (
-    !d.weight ||
-    typeof d.weight.amount !== 'number' ||
-    typeof d.weight.unit !== 'string'
-  ) {
+  if (!d.weight || typeof d.weight.amount !== 'number' || typeof d.weight.unit !== 'string') {
     return false;
   }
 
-  if (
-    !d.price ||
-    typeof d.price.amount !== 'number' ||
-    typeof d.price.unit !== 'string'
-  ) {
+  if (!d.price || typeof d.price.amount !== 'number' || typeof d.price.unit !== 'string') {
     return false;
   }
 
   return true;
 };
 
-const isFirestoreCoffee = (data: unknown): data is FirestoreCoffee => {
+const isFirestoreCoffee = (data: unknown): data is ICoffee => {
   if (data === undefined || typeof data !== 'object' || data === null) {
     return false;
   }
 
-  const d = data as FirestoreCoffee;
+  const d = data as ICoffee;
   if (!Array.isArray(d.origins)) return false;
   // make sure at least one has the proper format
   if (!d.origins.some(isCoffeeOrigin)) return false;
@@ -49,7 +41,7 @@ const isFirestoreCoffee = (data: unknown): data is FirestoreCoffee => {
 };
 
 export class Coffee implements FirestoreDocument {
-  private data: FirestoreCoffee;
+  private data: ICoffee;
 
   constructor(snapshot: firebase.firestore.QueryDocumentSnapshot) {
     const data = snapshot.data();
@@ -58,10 +50,10 @@ export class Coffee implements FirestoreDocument {
   }
 
   getOrigins(): CoffeeOrigins {
-    return new CoffeeOrigins(this.data.origins);
+    return new CoffeeOrigins(this.data.origins.map(o => new CoffeeOrigin(o)));
   }
 
-  toFirestore(): FirestoreCoffee {
+  toFirestore(): ICoffee {
     return this.data;
   }
 }

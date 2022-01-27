@@ -2,7 +2,10 @@
   "env": {
     "es2021": true
   },
+  "ignorePatterns": ["*.d.ts"],
   "extends": [
+    "react-app",
+    "react-app/jest",
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
@@ -16,11 +19,12 @@
     },
     "project": ["./tsconfig.json"]
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
     "@typescript-eslint/no-floating-promises": 2,
     "react/jsx-uses-react": "off",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "react-hooks/exhaustive-deps": "off"
   },
   "settings": {
     "react": {

@@ -1,0 +1,7 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": { "project": "./tsconfig.json" },
+  "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "prettier"],
+  "plugins": ["@typescript-eslint", "prettier"],
+  "rules": { "@typescript-eslint/no-floating-promises": ["error"] }
+}

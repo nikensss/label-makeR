@@ -7,16 +7,21 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import capitalize from '@material-ui/core/utils/capitalize';
+import Alert from '@mui/material/Alert';
+import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
 import { CoffeeOrigin } from './CoffeeOrigin';
+import { CoffeeSelection, DisplayableCoffeeOriginKeys } from './CoffeeSelection';
 
-interface GetRowsInput {
+export interface GetRowsProps {
+  selections: CoffeeSelections;
   onSelection: (id: string) => (amount: number) => void;
 }
 
-export interface GetTableInput extends GetRowsInput {
+export interface GetTableProps extends GetRowsProps {
   tableClass: string;
 }
+
 export class CoffeeOrigins {
   constructor(private readonly coffeeOrigins: CoffeeOrigin[]) {}
 
@@ -24,14 +29,22 @@ export class CoffeeOrigins {
     return this.coffeeOrigins.find(co => co.id === id) || null;
   }
 
-  getTable({ onSelection, tableClass }: GetTableInput): JSX.Element | null {
+  getTable({ selections, onSelection, tableClass }: GetTableProps): JSX.Element | null {
+    if (!this.isReady()) return null;
+
     return (
-      <TableContainer className={tableClass} component={Paper}>
-        <Table stickyHeader>
-          <TableHead>{this.getColumns()}</TableHead>
-          <TableBody>{this.getRows({ onSelection })}</TableBody>
-        </Table>
-      </TableContainer>
+      <div className={tableClass}>
+        <Alert severity='info'>
+          Minimum order per product is 30 kg, ie: 30 bags of 1 kg, 60 bags of 0.5 kg, 120 bags of
+          0.25 kg.
+        </Alert>
+        <TableContainer component={Paper}>
+          <Table stickyHeader>
+            <TableHead>{this.getColumns()}</TableHead>
+            <TableBody>{this.getRows({ selections, onSelection })}</TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     );
   }
 
@@ -39,67 +52,70 @@ export class CoffeeOrigins {
     return typeof this.coffeeOrigins[0] !== 'undefined';
   }
 
-  private getKeys(): (keyof CoffeeOrigin)[] {
+  private getKeys(): DisplayableCoffeeOriginKeys[] {
     if (!this.isReady()) return [];
-
-    const [coffeeOrigin] = this.coffeeOrigins;
-    return Object.keys(coffeeOrigin)
-      .sort()
-      .filter(l => !['value', 'id'].includes(l)) as (keyof CoffeeOrigin)[];
+    return ['label', 'price', 'weight'];
   }
 
-  private getColumns(): JSX.Element {
-    const isReady = this.isReady();
+  private getColumns(): JSX.Element | null {
+    if (!this.isReady()) return null;
+
     return (
       <TableRow>
-        {isReady && <TableCell padding='checkbox'></TableCell>}
-        {isReady &&
-          this.getKeys().map((c, i) => {
-            return (
-              <TableCell key={i}>
-                <Typography style={{ fontWeight: 'bold' }}>
-                  {capitalize(c)}
-                </Typography>
-              </TableCell>
-            );
-          })}
+        <TableCell padding='checkbox'></TableCell>
+        {this.getKeys().map((c, i) => {
+          return (
+            <TableCell key={i}>
+              <Typography style={{ fontWeight: 'bold' }}>{capitalize(c)}</Typography>
+            </TableCell>
+          );
+        })}
       </TableRow>
     );
   }
 
-  private getRows({ onSelection }: GetRowsInput): JSX.Element[] {
+  private getRows({ selections, onSelection }: GetRowsProps): JSX.Element[] | null {
+    if (!this.isReady()) return null;
+
     const keys = this.getKeys();
-    const isReady = this.isReady();
 
     return this.coffeeOrigins.map((coffeeOrigin, i) => {
       const { id } = coffeeOrigin;
 
       return (
-        <TableRow hover role='checkbox' key={i} style={{ cursor: 'pointer' }}>
-          <TableCell padding='checkbox'>
-            <CoffeeCounter onCoffeeAmountChange={onSelection(id)} />
-          </TableCell>
-          {isReady &&
-            keys.map((k, i) => {
-              const value = coffeeOrigin[k as keyof CoffeeOrigin];
-              if (typeof value === 'string') {
-                return (
-                  <TableCell key={i}>
-                    <Typography>{value}</Typography>
-                  </TableCell>
-                );
-              }
-
-              return (
-                <TableCell key={i}>
-                  <Typography>
-                    {value.amount}&nbsp;{value.unit}
-                  </Typography>
-                </TableCell>
-              );
-            })}
-        </TableRow>
+        <CoffeeRow
+          keys={keys}
+          key={i}
+          coffeeSelection={selections[id] || new CoffeeSelection(coffeeOrigin)}
+          onCoffeeQuantityChange={onSelection(id)}
+        />
       );
     });
   }
 }
+
+interface CoffeeRowProps {
+  keys: DisplayableCoffeeOriginKeys[];
+  coffeeSelection: Exclude<CoffeeSelections[string], undefined>;
+  onCoffeeQuantityChange: ReturnType<GetRowsProps['onSelection']>;
+}
+
+const CoffeeRow = ({ keys, coffeeSelection, onCoffeeQuantityChange }: CoffeeRowProps) => {
+  return (
+    <TableRow hover style={coffeeSelection.style()}>
+      <TableCell padding='checkbox'>
+        <CoffeeCounter
+          coffeeSelection={coffeeSelection}
+          onCoffeeQuantityChange={onCoffeeQuantityChange}
+        />
+      </TableCell>
+      {keys.map((k, i) => {
+        return (
+          <TableCell key={i}>
+            <Typography>{coffeeSelection?.display(k) ?? ''}</Typography>
+          </TableCell>
+        );
+      })}
+    </TableRow>
+  );
+};

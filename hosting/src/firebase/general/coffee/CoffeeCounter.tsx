@@ -1,11 +1,13 @@
 import { Button, createStyles, TextField, Theme } from '@material-ui/core';
 import withStyles, { ClassNameMap } from '@material-ui/styles/withStyles';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
+import { GetRowsProps } from './CoffeeOrigins';
 
 const styles = ({ spacing }: Theme) => {
   return createStyles({
     numberInput: {
-      'width': '4ch',
+      width: '7ch',
       '& *': {
         textAlign: 'center'
       }
@@ -23,12 +25,13 @@ const styles = ({ spacing }: Theme) => {
 
 type CoffeeCounterProps = {
   classes: ClassNameMap<string>;
-  onCoffeeAmountChange: (amount: number) => void;
+  onCoffeeQuantityChange: ReturnType<GetRowsProps['onSelection']>;
+  coffeeSelection: Exclude<CoffeeSelections[string], undefined>;
 };
 
 export const CoffeeCounter = withStyles(styles)(
-  ({ classes, onCoffeeAmountChange }: CoffeeCounterProps) => {
-    const [units, setUnits] = useState(0);
+  ({ classes, onCoffeeQuantityChange, coffeeSelection }: CoffeeCounterProps) => {
+    const [qty, setQty] = useState(coffeeSelection.getQuantity());
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
       const isNumber = /^[0-9\b]+$/;
@@ -36,13 +39,14 @@ export const CoffeeCounter = withStyles(styles)(
       if (value === '' || !isNumber.test(value)) return;
 
       const amount = parseInt(value, 10);
-      setUnits(amount < 0 ? 0 : amount);
+      setQty(amount < 0 ? 0 : amount);
+      setQty(amount > 999 ? 999 : amount);
     };
 
-    const onSubtractUnit = () => setUnits(units <= 0 ? 0 : units - 1);
-    const onAddUnit = () => setUnits(units + 1);
+    const onSubtractUnit = () => setQty(qty <= 0 ? 0 : qty - 1);
+    const onAddUnit = () => setQty(qty + 1);
 
-    useEffect(() => onCoffeeAmountChange(units), [units]);
+    useEffect(() => onCoffeeQuantityChange(qty), [qty]);
 
     return (
       <div className={classes.container}>
@@ -52,8 +56,10 @@ export const CoffeeCounter = withStyles(styles)(
         <TextField
           type='tel'
           className={classes.numberInput}
-          value={units}
+          value={qty}
           onChange={onChange}
+          variant='outlined'
+          size='small'
         />
         <Button className={classes.button} onClick={onAddUnit}>
           +

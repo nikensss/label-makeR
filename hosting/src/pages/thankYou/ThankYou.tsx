@@ -20,17 +20,14 @@ const styles = ({ spacing }: Theme) => {
 };
 
 type ThankYouProps = { classes: ClassNameMap<string> };
-export const ThankYou = withStyles(styles)(
-  ({ classes }: ThankYouProps): JSX.Element => {
-    return (
-      <div className={classes.root}>
-        <Typography variant='h3' className={classes.thankYou}>
-          Thank you for your order!
-        </Typography>
-        <Typography variant='h5'>
-          Check your email for more information!
-        </Typography>
-      </div>
-    );
-  }
-);
+
+export const ThankYou = withStyles(styles)(({ classes }: ThankYouProps): JSX.Element => {
+  return (
+    <div className={classes.root}>
+      <Typography variant='h3' className={classes.thankYou}>
+        Thank you for your order!
+      </Typography>
+      <Typography variant='h5'>Check your email for more information!</Typography>
+    </div>
+  );
+});
