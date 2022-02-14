@@ -122,10 +122,13 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   };
 
   useEffect(() => {
-    order.setCoffeeSelections(selections);
-    order.setCoffeeOrigins(coffeeOrigins);
-    order.setBagColor(labelDesign.bagColor);
-    setOrder(Order.fromOrder(order));
+    setOrder(order => {
+      order.setCoffeeSelections(selections);
+      order.setCoffeeOrigins(coffeeOrigins);
+      order.setBagColor(labelDesign.bagColor);
+
+      return order.clone();
+    });
   }, [selections, coffeeOrigins, labelDesign]);
 
   const LAST_STEP = 2;
