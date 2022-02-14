@@ -123,11 +123,12 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
 
   useEffect(() => {
     setOrder(order => {
-      order.setCoffeeSelections(selections);
-      order.setCoffeeOrigins(coffeeOrigins);
-      order.setBagColor(labelDesign.bagColor);
+      const update = order.clone();
+      update.setCoffeeSelections(selections);
+      update.setCoffeeOrigins(coffeeOrigins);
+      update.setBagColor(labelDesign.bagColor);
 
-      return order.clone();
+      return update;
     });
   }, [selections, coffeeOrigins, labelDesign]);
 
