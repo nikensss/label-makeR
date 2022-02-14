@@ -27,6 +27,10 @@ export class Order {
     return clone;
   }
 
+  clone(): Order {
+    return Order.fromOrder(this);
+  }
+
   setCoffeeSelections(coffeeSelections: CoffeeSelections): void {
     this.coffeeSelections = coffeeSelections;
   }
