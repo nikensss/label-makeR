@@ -247,7 +247,7 @@ export const LabelDesigner = withStyles(styles)(
         p5.line(25, 280, p5.width - 25, 280);
         p5.line(25, 420, p5.width - 25, 420);
 
-        const { canvas } = p5.get();
+        const { canvas } = p5.get() as unknown as { canvas: HTMLCanvasElement };
         setFrontLabel(canvas.toDataURL());
       };
 
@@ -291,7 +291,7 @@ export const LabelDesigner = withStyles(styles)(
         p5.textAlign(p5.CENTER);
         p5.text(labelDesignRef.current.description, p5.width / 2, 250);
 
-        const { canvas } = p5.get();
+        const { canvas } = p5.get() as unknown as { canvas: HTMLCanvasElement };
         setBackLabel(canvas.toDataURL());
       };
     };
