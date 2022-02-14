@@ -69,7 +69,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
 
   const [open, setOpen] = useState(false);
   const [apiErrorMessage, setApiErrorMessage] = useState('');
-  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+  const handleClose = (_event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') return;
     setOpen(false);
   };
