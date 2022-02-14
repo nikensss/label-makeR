@@ -6,6 +6,7 @@ export const generateAllLabels = async (
   labelDesign: LabelDesign,
   order: Order
 ): Promise<string[]> => {
+  // TODO: generate back label (we need to upscale it)
   return await Promise.all(order.selections.map(c => generateLabel(labelDesign, c)));
 };
 
@@ -57,7 +58,7 @@ const generateLabel = async (
       p5.line(25 * upscale, 280 * upscale, p5.width - 25 * upscale, 280 * upscale);
       p5.line(25 * upscale, 420 * upscale, p5.width - 25 * upscale, 420 * upscale);
 
-      const { canvas } = p5.get();
+      const { canvas } = p5.get() as unknown as { canvas: HTMLCanvasElement };
       label = canvas.toDataURL();
       p5.noLoop();
       p5.remove();

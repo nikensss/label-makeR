@@ -72,7 +72,7 @@ const getOrderErrors = async (selections: CoffeeSelections): Promise<Error | nul
 const saveLabels = async (labels: string[]): Promise<string[]> => {
   const labelsBucket = admin.storage().bucket(config.storage.bucket);
   const now = format(new Date(), 'yyyy-MM-dd_HH:mm:ss_xxx');
-  logger.debug('Saving all labels', { labels });
+  logger.debug('Saving all labels');
   return await Promise.all(
     labels.map(async (l, i) => {
       const match = l.match(/data:(.+)?;(.+)?,(.+)/);
