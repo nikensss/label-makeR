@@ -136,7 +136,6 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
   const onBack = () => setStep(step <= 0 ? 0 : step - 1);
   const onPay = async () => {
-    console.log('Requesting payment!', { config });
     try {
       setIsLoading(true);
 
