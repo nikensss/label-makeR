@@ -152,7 +152,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
         body: JSON.stringify({
           selections,
           bagColor: order.getBagColor(),
-          labels: [...(await generateAllLabels(labelDesign, order)), labels.back]
+          labels: await generateAllLabels(labelDesign, order)
         })
       });
       const { url } = await response.json();
