@@ -6,11 +6,13 @@ export const generateAllLabels = async (
   labelDesign: LabelDesign,
   order: Order
 ): Promise<string[]> => {
-  // TODO: generate back label (we need to upscale it)
-  return await Promise.all(order.selections.map(c => generateLabel(labelDesign, c)));
+  return await Promise.all([
+    ...order.selections.map(c => generateFrontLabel(labelDesign, c)),
+    generateBackLabel(labelDesign)
+  ]);
 };
 
-const generateLabel = async (
+const generateFrontLabel = async (
   labelDesign: LabelDesign,
   coffee: Order['selections'][number]
 ): Promise<string> => {
@@ -71,4 +73,38 @@ const generateLabel = async (
   }
 
   throw new Error(`Could not generate label for ${coffee.display('label')}`);
+};
+
+const generateBackLabel = async (labelDesign: LabelDesign): Promise<string> => {
+  let label = '';
+  const upscale = 10;
+
+  new P5((p5: P5) => {
+    p5.setup = () => {
+      p5.createCanvas(LABEL_DIMENSIONS.width * upscale, LABEL_DIMENSIONS.height * upscale);
+      p5.pixelDensity(upscale);
+    };
+
+    p5.draw = () => {
+      p5.background(labelDesign.backgroundColor);
+
+      p5.fill('black');
+      p5.textSize(18 * upscale);
+      p5.textFont(labelDesign.font);
+      p5.textAlign(p5.CENTER);
+      p5.text(labelDesign.description, p5.width / 2, 250 * upscale);
+
+      const { canvas } = p5.get() as unknown as { canvas: HTMLCanvasElement };
+      label = canvas.toDataURL();
+      p5.noLoop();
+      p5.remove();
+    };
+  });
+
+  while (label === '') {
+    await new Promise(res => setTimeout(res, 0));
+    if (label !== '') return label;
+  }
+
+  throw new Error(`Could not generate back label`);
 };
