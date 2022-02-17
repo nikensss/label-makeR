@@ -68,11 +68,11 @@ const generateFrontLabel = (
 
           const { canvas } = p5.get() as unknown as { canvas: HTMLCanvasElement };
           const label = canvas.toDataURL();
-          if (label !== '') {
-            p5.noLoop();
-            p5.remove();
-            res(label);
-          }
+          if (label === '') return;
+
+          p5.noLoop();
+          p5.remove();
+          res(label);
         };
       });
     } catch (ex) {
@@ -102,11 +102,11 @@ const generateBackLabel = async (labelDesign: LabelDesign): Promise<string> => {
 
           const { canvas } = p5.get() as unknown as { canvas: HTMLCanvasElement };
           const label = canvas.toDataURL();
-          if (label !== '') {
-            p5.noLoop();
-            p5.remove();
-            res(label);
-          }
+          if (label === '') return;
+
+          p5.noLoop();
+          p5.remove();
+          res(label);
         };
       });
     } catch (ex) {
