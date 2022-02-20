@@ -16,10 +16,12 @@ r.post('/', verifySignature, async (req, res) => {
 
     if (topic !== 'payment_intent') return res.sendStatus(200).end();
     await updatePaymentIntentInOrder(req);
+
     switch (event) {
       case 'succeeded':
         await onPaymentIntentSucceeded(req);
     }
+
     return res.sendStatus(200).end();
   } catch (ex) {
     logger.error('Could not process webhook', { type: req.body.type });
