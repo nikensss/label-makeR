@@ -12,7 +12,7 @@ r.post('/', verifySignature, async (req, res) => {
   try {
     const { type } = req.body;
     const [topic, event] = type.split('.');
-    logger.info(`Received ${topic}.${event} webhook`, { type, topic, event });
+    logger.info(`Received ${type} webhook`, { type, topic, event });
 
     if (topic !== 'payment_intent') return res.sendStatus(200).end();
     await updatePaymentIntentInOrder(req);
