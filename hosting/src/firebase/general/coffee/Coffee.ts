@@ -5,6 +5,7 @@ import { CoffeeOrigins } from './CoffeeOrigins';
 
 export interface ICoffee {
   origins: ICoffeeOrigin[];
+  variants: ICoffeeOrigin[];
 }
 
 const isCoffeeOrigin = (data: unknown): data is ICoffeeOrigin => {
@@ -33,9 +34,9 @@ const isFirestoreCoffee = (data: unknown): data is ICoffee => {
   }
 
   const d = data as ICoffee;
-  if (!Array.isArray(d.origins)) return false;
+  if (!Array.isArray(d.variants)) return false;
   // make sure at least one has the proper format
-  if (!d.origins.some(isCoffeeOrigin)) return false;
+  if (!d.variants.some(isCoffeeOrigin)) return false;
 
   return true;
 };
@@ -50,7 +51,7 @@ export class Coffee implements FirestoreDocument {
   }
 
   getOrigins(): CoffeeOrigins {
-    return new CoffeeOrigins(this.data.origins.map(o => new CoffeeOrigin(o)));
+    return new CoffeeOrigins(this.data.variants.map(o => new CoffeeOrigin(o)));
   }
 
   toFirestore(): ICoffee {
