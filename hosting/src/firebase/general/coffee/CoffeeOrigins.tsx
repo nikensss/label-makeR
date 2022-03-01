@@ -10,8 +10,8 @@ import capitalize from '@material-ui/core/utils/capitalize';
 import Alert from '@mui/material/Alert';
 import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
 import { CoffeeCounter } from './CoffeeCounter';
-import { CoffeeOrigin } from './CoffeeOrigin';
-import { CoffeeSelection, DisplayableCoffeeOriginKeys } from './CoffeeSelection';
+import { CoffeeVariant } from './CoffeeOrigin';
+import { CoffeeSelection, DisplayableCoffeeVariantKeys } from './CoffeeSelection';
 
 export interface GetRowsProps {
   selections: CoffeeSelections;
@@ -22,11 +22,11 @@ export interface GetTableProps extends GetRowsProps {
   tableClass: string;
 }
 
-export class CoffeeOrigins {
-  constructor(private readonly coffeeOrigins: CoffeeOrigin[]) {}
+export class CoffeeVariants {
+  constructor(private readonly coffeeVariants: CoffeeVariant[]) {}
 
-  find(id: string): CoffeeOrigin | null {
-    return this.coffeeOrigins.find(co => co.id === id) || null;
+  find(id: string): CoffeeVariant | null {
+    return this.coffeeVariants.find(co => co.id === id) || null;
   }
 
   getTable({ selections, onSelection, tableClass }: GetTableProps): JSX.Element | null {
@@ -49,10 +49,10 @@ export class CoffeeOrigins {
   }
 
   private isReady(): boolean {
-    return typeof this.coffeeOrigins[0] !== 'undefined';
+    return typeof this.coffeeVariants[0] !== 'undefined';
   }
 
-  private getKeys(): DisplayableCoffeeOriginKeys[] {
+  private getKeys(): DisplayableCoffeeVariantKeys[] {
     if (!this.isReady()) return [];
     return ['label', 'price', 'weight'];
   }
@@ -79,14 +79,14 @@ export class CoffeeOrigins {
 
     const keys = this.getKeys();
 
-    return this.coffeeOrigins.map((coffeeOrigin, i) => {
-      const { id } = coffeeOrigin;
+    return this.coffeeVariants.map((coffeeVariant, i) => {
+      const { id } = coffeeVariant;
 
       return (
         <CoffeeRow
           keys={keys}
           key={i}
-          coffeeSelection={selections[id] || new CoffeeSelection(coffeeOrigin)}
+          coffeeSelection={selections[id] || new CoffeeSelection(coffeeVariant)}
           onCoffeeQuantityChange={onSelection(id)}
         />
       );
@@ -95,7 +95,7 @@ export class CoffeeOrigins {
 }
 
 interface CoffeeRowProps {
-  keys: DisplayableCoffeeOriginKeys[];
+  keys: DisplayableCoffeeVariantKeys[];
   coffeeSelection: Exclude<CoffeeSelections[string], undefined>;
   onCoffeeQuantityChange: ReturnType<GetRowsProps['onSelection']>;
 }

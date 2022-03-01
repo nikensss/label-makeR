@@ -1,18 +1,18 @@
 import firebase from 'firebase';
 import { FirestoreDocument } from '../../firebase';
-import { CoffeeOrigin, ICoffeeOrigin } from './CoffeeOrigin';
-import { CoffeeOrigins } from './CoffeeOrigins';
+import { CoffeeVariant, ICoffeeVariant } from './CoffeeOrigin';
+import { CoffeeVariants } from './CoffeeOrigins';
 
 export interface ICoffee {
-  origins: ICoffeeOrigin[];
+  variants: ICoffeeVariant[];
 }
 
-const isCoffeeOrigin = (data: unknown): data is ICoffeeOrigin => {
+const isCoffeeVariant = (data: unknown): data is ICoffeeVariant => {
   if (data === undefined || typeof data !== 'object' || data === null) {
     return false;
   }
 
-  const d = data as ICoffeeOrigin;
+  const d = data as ICoffeeVariant;
   if (!d.label || typeof d.label !== 'string') return false;
   if (!d.id || typeof d.id !== 'string') return false;
 
@@ -33,9 +33,9 @@ const isFirestoreCoffee = (data: unknown): data is ICoffee => {
   }
 
   const d = data as ICoffee;
-  if (!Array.isArray(d.origins)) return false;
+  if (!Array.isArray(d.variants)) return false;
   // make sure at least one has the proper format
-  if (!d.origins.some(isCoffeeOrigin)) return false;
+  if (!d.variants.some(isCoffeeVariant)) return false;
 
   return true;
 };
@@ -49,8 +49,8 @@ export class Coffee implements FirestoreDocument {
     this.data = data;
   }
 
-  getOrigins(): CoffeeOrigins {
-    return new CoffeeOrigins(this.data.origins.map(o => new CoffeeOrigin(o)));
+  getVariants(): CoffeeVariants {
+    return new CoffeeVariants(this.data.variants.map(o => new CoffeeVariant(o)));
   }
 
   toFirestore(): ICoffee {

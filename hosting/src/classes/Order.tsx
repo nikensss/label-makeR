@@ -8,19 +8,19 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { LabelDesign } from '../components/LabelDesigner';
 import { Price } from '../firebase/general/coffee/CoffeeOrigin';
-import { CoffeeOrigins } from '../firebase/general/coffee/CoffeeOrigins';
+import { CoffeeVariants } from '../firebase/general/coffee/CoffeeOrigins';
 import { CoffeeSelection, displayPrice } from '../firebase/general/coffee/CoffeeSelection';
 import { CoffeeSelections, onlyCoffeeSelection } from '../pages/coffeeForm/CoffeeForm';
 
 export class Order {
   private coffeeSelections: CoffeeSelections = {};
-  private coffeeOrigins: CoffeeOrigins = new CoffeeOrigins([]);
+  private coffeeVariants: CoffeeVariants = new CoffeeVariants([]);
   private static TAX_RATE = 0.21;
   private bagColor: LabelDesign['bagColor'] = 'white';
 
   static fromOrder(order: Order): Order {
     const clone = new Order();
-    clone.coffeeOrigins = order.coffeeOrigins;
+    clone.coffeeVariants = order.coffeeVariants;
     clone.coffeeSelections = order.coffeeSelections;
     clone.bagColor = order.bagColor || 'white';
 
@@ -35,8 +35,8 @@ export class Order {
     this.coffeeSelections = coffeeSelections;
   }
 
-  setCoffeeOrigins(coffeeOrigins: CoffeeOrigins): void {
-    this.coffeeOrigins = coffeeOrigins;
+  setCoffeeVariants(coffeeVariants: CoffeeVariants): void {
+    this.coffeeVariants = coffeeVariants;
   }
 
   setBagColor(color: LabelDesign['bagColor']): void {
@@ -101,7 +101,7 @@ export class Order {
           <TableHead>
             <TableRow>
               <TableCell>
-                <Typography style={{ fontWeight: 'bold' }}>Origin</Typography>
+                <Typography style={{ fontWeight: 'bold' }}>Variant</Typography>
               </TableCell>
               <TableCell align='right'>
                 <Typography style={{ fontWeight: 'bold' }}>Weight</Typography>

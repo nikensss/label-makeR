@@ -1,30 +1,30 @@
 import getSymbolFromCurrency from 'currency-symbol-map';
-import { CoffeeOrigin, ICoffeeOrigin, Price } from './CoffeeOrigin';
+import { CoffeeVariant, ICoffeeVariant, Price } from './CoffeeOrigin';
 
 export const displayPrice = ({ amount, unit }: Price): string => {
   return `${amount.toFixed(2)} ${getSymbolFromCurrency(unit)}`;
 };
 
-export type DisplayableCoffeeOriginKeys = Parameters<CoffeeSelection['display']>[0];
+export type DisplayableCoffeeVariantKeys = Parameters<CoffeeSelection['display']>[0];
 
 export class CoffeeSelection {
-  private coffeeOrigin: CoffeeOrigin;
+  private coffeeVariant: CoffeeVariant;
   private quantity = 0;
 
-  constructor(coffeeOrigin: CoffeeOrigin) {
-    this.coffeeOrigin = coffeeOrigin;
+  constructor(coffeeVariant: CoffeeVariant) {
+    this.coffeeVariant = coffeeVariant;
   }
 
-  get origin(): CoffeeOrigin {
-    return this.coffeeOrigin;
+  get variant(): CoffeeVariant {
+    return this.coffeeVariant;
   }
 
   get id(): string {
-    return this.coffeeOrigin.id;
+    return this.coffeeVariant.id;
   }
 
   get minQuantity(): number {
-    return this.coffeeOrigin.minQuantity;
+    return this.coffeeVariant.minQuantity;
   }
 
   getQuantity(): number {
@@ -42,19 +42,19 @@ export class CoffeeSelection {
 
   getTotalPrice(): Price {
     return {
-      amount: this.origin.price.amount * this.quantity,
-      unit: this.coffeeOrigin.price.unit
+      amount: this.variant.price.amount * this.quantity,
+      unit: this.coffeeVariant.price.unit
     };
   }
 
-  display(prop: Exclude<keyof ICoffeeOrigin, 'id'> | 'quantity' | 'totalPrice'): string {
+  display(prop: Exclude<keyof ICoffeeVariant, 'id'> | 'quantity' | 'totalPrice'): string {
     switch (prop) {
       case 'label':
-        return this.coffeeOrigin.label;
+        return this.coffeeVariant.label;
       case 'price':
-        return displayPrice(this.coffeeOrigin.price);
+        return displayPrice(this.coffeeVariant.price);
       case 'weight':
-        return `${this.coffeeOrigin.weight.amount} ${this.coffeeOrigin.weight.unit}`;
+        return `${this.coffeeVariant.weight.amount} ${this.coffeeVariant.weight.unit}`;
       case 'quantity':
         return `${this.quantity}`;
       case 'totalPrice':
