@@ -40,7 +40,8 @@ r.post('/check', async (req, res) => {
 
     const session = await createStripeSession(coffeeSelections);
     if (session.url === null) throw new Error('Stripe session URL is null!');
-
+    logger.debug('COFFEE SELECTIONS');
+    logger.debug(coffeeSelections);
     await saveOrder(session, coffeeSelections, bagColor, labelLinks);
     logger.info('Stripe checkout session created', { session });
     return res.status(200).send({ url: session.url }).end();
@@ -53,14 +54,14 @@ r.post('/check', async (req, res) => {
 const getOrderErrors = async (selections: CoffeeSelections): Promise<Error | null> => {
   const coffee = await getCoffee();
   if (!coffee) throw new Error('Cannot retrieve coffee');
-  const coffeeOrigins = coffee.getOrigins();
+  const coffeeVariants = coffee.getVariants();
 
   for (const { id, quantity } of selections) {
-    const origin = coffeeOrigins.find(id);
-    if (!origin) return new Error(`unknown coffee origin: ${id}`);
+    const variant = coffeeVariants.find(id);
+    if (!variant) return new Error(`unknown coffee variant: ${id}`);
 
-    if (!origin.isValidQuantity(quantity)) {
-      const minQty = origin.minQuantity;
+    if (!variant.isValidQuantity(quantity)) {
+      const minQty = variant.minQuantity;
       const qty = quantity;
       return new Error(`Quantity ordered (${qty}) below threshold (${minQty}) for ${id}`);
     }
@@ -130,11 +131,11 @@ const createStripeSession = async (
 
   const coffee = await getCoffee();
   if (!coffee) throw new Error('Cannot retrieve coffee doc');
-  const coffeeOrigins = coffee.getOrigins();
+  const coffeeVariants = coffee.getVariants();
 
   const stripe = new Stripe(config.stripe.api_key, { apiVersion: '2020-08-27' });
   const session = await stripe.checkout.sessions.create({
-    line_items: coffeeOrigins.asLineItems(selections),
+    line_items: coffeeVariants.asLineItems(selections),
     payment_method_types: ['card'],
     mode: 'payment',
     success_url: config.stripe.success_url,
@@ -145,7 +146,7 @@ const createStripeSession = async (
     phone_number_collection: { enabled: true }
   });
 
-  const totalPrice = selections.getTotalPrice(coffeeOrigins);
+  const totalPrice = selections.getTotalPrice(coffeeVariants);
   if (totalPrice !== session.amount_subtotal) {
     throw new Error(`Total price mismatch: ${totalPrice} !== ${session.amount_subtotal}`);
   }

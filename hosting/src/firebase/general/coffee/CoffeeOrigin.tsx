@@ -1,4 +1,4 @@
-export interface ICoffeeOrigin {
+export interface ICoffeeVariant {
   label: string;
   id: string;
   weight: Weight;
@@ -15,27 +15,27 @@ export interface Price {
   unit: string;
 }
 
-export class CoffeeOrigin {
-  private coffeeOrigin: ICoffeeOrigin;
+export class CoffeeVariant {
+  private coffeeVariant: ICoffeeVariant;
 
-  constructor(coffeeOrigin: ICoffeeOrigin) {
-    this.coffeeOrigin = coffeeOrigin;
+  constructor(coffeeVariant: ICoffeeVariant) {
+    this.coffeeVariant = coffeeVariant;
   }
 
   get id(): string {
-    return this.coffeeOrigin.id;
+    return this.coffeeVariant.id;
   }
 
   get label(): string {
-    return this.coffeeOrigin.label;
+    return this.coffeeVariant.label;
   }
 
   get price(): Price {
-    return this.coffeeOrigin.price;
+    return this.coffeeVariant.price;
   }
 
   get weight(): Weight {
-    return this.coffeeOrigin.weight;
+    return this.coffeeVariant.weight;
   }
 
   get minQuantity(): number {
