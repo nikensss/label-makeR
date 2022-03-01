@@ -1,6 +1,6 @@
 import clone from 'clone';
 
-export interface ICoffeeOrigin {
+export interface ICoffeeVariant {
   label: string;
   id: string;
   weight: Weight;
@@ -18,23 +18,23 @@ export interface Price {
   id: string;
 }
 
-export class CoffeeOrigin {
-  private origin: ICoffeeOrigin;
+export class CoffeeVariant {
+  private variant: ICoffeeVariant;
 
-  constructor(origin: ICoffeeOrigin) {
-    this.origin = clone(origin);
+  constructor(variant: ICoffeeVariant) {
+    this.variant = clone(variant);
   }
 
   get id(): string {
-    return this.origin.id;
+    return this.variant.id;
   }
 
   get price(): number {
-    return this.origin.price.amount;
+    return this.variant.price.amount;
   }
 
   get currency(): string {
-    return this.origin.price.unit;
+    return this.variant.price.unit;
   }
 
   getDisplayPrice(): string {
@@ -42,11 +42,11 @@ export class CoffeeOrigin {
   }
 
   get weight(): number {
-    return this.origin.weight.amount;
+    return this.variant.weight.amount;
   }
 
   get weightUnit(): string {
-    return this.origin.weight.unit.toLowerCase();
+    return this.variant.weight.unit.toLowerCase();
   }
 
   get minQuantity(): number {
@@ -54,11 +54,11 @@ export class CoffeeOrigin {
   }
 
   get title(): string {
-    return this.origin.label;
+    return this.variant.label;
   }
 
   getPriceId(): string {
-    return this.origin.price.id;
+    return this.variant.price.id;
   }
 
   isValidQuantity(quantity: number): boolean {

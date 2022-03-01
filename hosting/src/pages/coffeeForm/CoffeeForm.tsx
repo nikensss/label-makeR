@@ -9,7 +9,7 @@ import { Order } from '../../classes/Order';
 import { LabelDesign, LabelDesigner, Labels } from '../../components/LabelDesigner';
 import { OrderSummary } from '../../components/OrderSummary';
 import { config } from '../../config/config';
-import { CoffeeOrigins, GetRowsProps } from '../../firebase/general/coffee/CoffeeOrigins';
+import { CoffeeVariants, GetRowsProps } from '../../firebase/general/coffee/CoffeeOrigins';
 import { CoffeeSelection } from '../../firebase/general/coffee/CoffeeSelection';
 import { getCoffee } from '../../firebase/general/General';
 import { generateAllLabels } from '../../utils/generateAllLabels';
@@ -64,7 +64,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   const [isLoading, setIsLoading] = useState(false);
   const isLastStep = () => step === LAST_STEP;
   const [selections, setSelections] = useState<CoffeeSelections>({});
-  const [coffeeOrigins, setCoffeeOrigins] = useState<CoffeeOrigins>(new CoffeeOrigins([]));
+  const [coffeeVariants, setCoffeeVariants] = useState<CoffeeVariants>(new CoffeeVariants([]));
   const [order, setOrder] = useState(new Order());
 
   const [open, setOpen] = useState(false);
@@ -95,20 +95,20 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
   labelRef.current = labels;
 
   useEffect(() => {
-    const getCoffeeOrigins = async (): Promise<void> => {
+    const getCoffeeVariants = async (): Promise<void> => {
       const coffee = await getCoffee();
-      setCoffeeOrigins(coffee?.getOrigins() || coffeeOrigins);
+      setCoffeeVariants(coffee?.getVariants() || coffeeVariants);
     };
 
-    getCoffeeOrigins().catch(ex => console.error(ex));
+    getCoffeeVariants().catch(ex => console.error(ex));
   }, []);
 
-  // TODO: create CoffeeOrigin class and use it as input type to this func
+  // TODO: create CoffeeVariant class and use it as input type to this func
   const onSelection: GetRowsProps['onSelection'] = (id: string) => {
     return (quantity: number) => {
-      const origin = coffeeOrigins.find(id);
-      if (!origin) throw new Error(`Unknown ${id}`);
-      const selection = selections[id] || new CoffeeSelection(origin);
+      const variant = coffeeVariants.find(id);
+      if (!variant) throw new Error(`Unknown ${id}`);
+      const selection = selections[id] || new CoffeeSelection(variant);
       selection.setQuantity(quantity);
 
       if (quantity === 0) {
@@ -125,12 +125,12 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
     setOrder(order => {
       const update = order.clone();
       update.setCoffeeSelections(selections);
-      update.setCoffeeOrigins(coffeeOrigins);
+      update.setCoffeeVariants(coffeeVariants);
       update.setBagColor(labelDesign.bagColor);
 
       return update;
     });
-  }, [selections, coffeeOrigins, labelDesign]);
+  }, [selections, coffeeVariants, labelDesign]);
 
   const LAST_STEP = 2;
   const onNext = () => setStep(step >= LAST_STEP ? LAST_STEP : step + 1);
@@ -180,7 +180,7 @@ export const CoffeeForm = withStyles(styles)(({ classes }: CoffeeFormProps): JSX
         {(() => {
           switch (step) {
             case 0:
-              return coffeeOrigins.getTable({
+              return coffeeVariants.getTable({
                 selections,
                 onSelection,
                 tableClass: classes.table

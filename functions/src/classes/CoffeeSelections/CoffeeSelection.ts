@@ -1,17 +1,17 @@
 import clone from 'clone';
-import { CoffeeOrigin, ICoffeeOrigin } from '../../firestore/general/coffee/CoffeeOrigin';
+import { CoffeeVariant, ICoffeeVariant } from '../../firestore/general/coffee/CoffeeOrigin';
 
 export class CoffeeSelection {
   private selection: ICoffeeSelection;
-  private _origin: CoffeeOrigin;
+  private _variant: CoffeeVariant;
 
   constructor(selection: ICoffeeSelection) {
     this.selection = clone(selection);
-    this._origin = new CoffeeOrigin(this.selection.coffeeOrigin.coffeeOrigin);
+    this._variant = new CoffeeVariant(this.selection.coffeeVariant.coffeeVariant);
   }
 
   get id(): string {
-    return this.selection.coffeeOrigin.coffeeOrigin.id;
+    return this.selection.coffeeVariant.coffeeVariant.id;
   }
 
   get quantity(): number {
@@ -19,22 +19,22 @@ export class CoffeeSelection {
   }
 
   get currency(): string {
-    return this._origin.currency;
+    return this._variant.currency;
   }
 
   get title(): string {
-    return this._origin.title;
+    return this._variant.title;
   }
 
-  get origin(): CoffeeOrigin {
-    return new CoffeeOrigin(clone(this.selection.coffeeOrigin.coffeeOrigin));
+  get variant(): CoffeeVariant {
+    return new CoffeeVariant(clone(this.selection.coffeeVariant.coffeeVariant));
   }
 
   asHtml(): string {
-    const title = this._origin.toString();
+    const title = this._variant.toString();
     const qty = this.quantity;
-    const unitPrice = this._origin.getDisplayPrice();
-    const subtotal = `${qty * this._origin.price} ${this._origin.currency}`;
+    const unitPrice = this._variant.getDisplayPrice();
+    const subtotal = `${qty * this._variant.price} ${this._variant.currency}`;
     return `${title}: ${qty} &times; ${unitPrice} = ${subtotal}`;
   }
 
@@ -43,11 +43,11 @@ export class CoffeeSelection {
   }
 }
 
-/** In the frontend, the `CoffeeSelection` class wraps a `CoffeeOrigin` object,
- * hence the double 'coffeeOrigin' property
+/** In the frontend, the `CoffeeSelection` class wraps a `CoffeeVariant` object,
+ * hence the double 'coffeeVariant' property
  */
 export interface ICoffeeSelection {
-  coffeeOrigin: { coffeeOrigin: ICoffeeOrigin };
+  coffeeVariant: { coffeeVariant: ICoffeeVariant };
   quantity: number;
 }
 
