@@ -1,5 +1,5 @@
 import clone from 'clone';
-import { CoffeeVariant, ICoffeeVariant } from './CoffeeOrigin';
+import { CoffeeVariant, ICoffeeVariant } from './CoffeeVariant';
 import { CoffeeSelections } from '../../../classes/CoffeeSelections/CoffeeSelections';
 
 export class CoffeeVariants {

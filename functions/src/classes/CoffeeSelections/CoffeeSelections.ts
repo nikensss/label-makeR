@@ -1,5 +1,5 @@
 import { CoffeeSelection, ICoffeeSelection, isICoffeeSelection } from './CoffeeSelection';
-import { CoffeeVariants } from '../../firestore/general/coffee/CoffeeOrigins';
+import { CoffeeVariants } from '../../firestore/general/coffee/CoffeeVariants';
 
 export class CoffeeSelections {
   private selections: CoffeeSelection[];

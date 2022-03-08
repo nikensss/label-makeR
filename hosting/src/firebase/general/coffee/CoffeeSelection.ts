@@ -1,5 +1,5 @@
 import getSymbolFromCurrency from 'currency-symbol-map';
-import { CoffeeVariant, ICoffeeVariant, Price } from './CoffeeOrigin';
+import { CoffeeVariant, ICoffeeVariant, Price } from './CoffeeVariant';
 
 export const displayPrice = ({ amount, unit }: Price): string => {
   return `${amount.toFixed(2)} ${getSymbolFromCurrency(unit)}`;
