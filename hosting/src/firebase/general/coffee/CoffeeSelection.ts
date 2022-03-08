@@ -59,6 +59,8 @@ export class CoffeeSelection {
         return `${this.quantity}`;
       case 'totalPrice':
         return displayPrice(this.getTotalPrice());
+      case 'grind':
+        return `${this.coffeeVariant.grind.label}`;
     }
   }
 

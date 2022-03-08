@@ -104,7 +104,7 @@ export class Order {
                 <Typography style={{ fontWeight: 'bold' }}>Variant</Typography>
               </TableCell>
               <TableCell align='right'>
-                <Typography style={{ fontWeight: 'bold' }}>Weight</Typography>
+                <Typography style={{ fontWeight: 'bold' }}>Grind</Typography>
               </TableCell>
               <TableCell align='right'>
                 <Typography style={{ fontWeight: 'bold' }}>Price</Typography>
@@ -124,7 +124,7 @@ export class Order {
                   <TableCell component='th' scope='row'>
                     {coffee.display('label')}
                   </TableCell>
-                  <TableCell align='right'>{coffee.display('weight')}</TableCell>
+                  <TableCell align='right'>{coffee.display('grind')}</TableCell>
                   <TableCell align='right'>{coffee.display('price')}</TableCell>
                   <TableCell align='right'>{coffee.getQuantity()}</TableCell>
                   <TableCell align='right'>{coffee.display('totalPrice')}</TableCell>
