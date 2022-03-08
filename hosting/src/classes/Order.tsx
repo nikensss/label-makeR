@@ -7,8 +7,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { LabelDesign } from '../components/LabelDesigner';
-import { Price } from '../firebase/general/coffee/CoffeeOrigin';
-import { CoffeeVariants } from '../firebase/general/coffee/CoffeeOrigins';
+import { Price } from '../firebase/general/coffee/CoffeeVariant';
+import { CoffeeVariants } from '../firebase/general/coffee/CoffeeVariants';
 import { CoffeeSelection, displayPrice } from '../firebase/general/coffee/CoffeeSelection';
 import { CoffeeSelections, onlyCoffeeSelection } from '../pages/coffeeForm/CoffeeForm';
 
