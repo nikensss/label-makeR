@@ -54,7 +54,7 @@ export class CoffeeVariants {
 
   private getKeys(): DisplayableCoffeeVariantKeys[] {
     if (!this.isReady()) return [];
-    return ['label', 'price', 'weight'];
+    return ['label', 'price', 'grind'];
   }
 
   private getColumns(): JSX.Element | null {
@@ -81,7 +81,6 @@ export class CoffeeVariants {
 
     return this.coffeeVariants.map((coffeeVariant, i) => {
       const { id } = coffeeVariant;
-
       return (
         <CoffeeRow
           keys={keys}
