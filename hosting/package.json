@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@blueprintjs/core": "^3.53.0",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -11,6 +12,7 @@
     "@material-ui/icons": "^4.11.2",
     "@mui/icons-material": "^5.0.5",
     "@mui/material": "^5.0.1",
+    "blueprint": "^2.1.5",
     "currency-symbol-map": "^5.0.1",
     "firebase": "^8.8.0",
     "global": "^4.4.0",
