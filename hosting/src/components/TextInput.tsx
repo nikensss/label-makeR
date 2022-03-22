@@ -1,8 +1,9 @@
 import { TextField } from '@material-ui/core';
+import { ChangeEvent } from 'react';
 
 type TextInputTypes = {
   defaultValue: string;
-  onChange: (event: any) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   label: string;
 };
 export default function TextInput({ defaultValue, onChange, label }: TextInputTypes) {

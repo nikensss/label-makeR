@@ -24,7 +24,7 @@ const RadioButton = ({ value, groupName, label }: RadioButtonType) => {
 };
 
 type GrindSelectorTypes = {
-  setSelectedGrind: (selectedGrind: string) => void;
+  setSelectedGrind: (selection: string) => void;
 };
 
 export default function GrindSelector({ setSelectedGrind }: GrindSelectorTypes) {

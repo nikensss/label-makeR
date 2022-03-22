@@ -1,10 +1,11 @@
 import { Slider, Typography } from '@material-ui/core';
+import { ChangeEvent } from 'react';
 
 type ScaleSliderTypes = {
   onChangeScale: (value: number) => void;
 };
 export default function ScaleSlider({ onChangeScale }: ScaleSliderTypes) {
-  const onChange = (event: any, value: number | number[]) => {
+  const onChange = (event: ChangeEvent<{ name?: string }>, value: number | number[]) => {
     if (typeof value !== 'number') return;
     const scaledValue = (value + 101) / 415;
     onChangeScale(scaledValue);

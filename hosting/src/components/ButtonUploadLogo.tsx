@@ -1,18 +1,11 @@
-import { Button, createStyles, Theme, Typography } from '@material-ui/core';
-import { ChangeEvent, useRef } from 'react';
-import ImageIcon from '@material-ui/icons/Image';
+import { Button } from '@material-ui/core';
+import { ChangeEvent } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 type ButtonUploadLogoTypes = {
   addLogo: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 export default function ButtonUploadLogo({ addLogo }: ButtonUploadLogoTypes) {
-  const styles = {
-    label: {
-      fontSize: '0.75rem'
-    }
-  };
-
   return (
     <>
       <input

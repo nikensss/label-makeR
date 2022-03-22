@@ -1,13 +1,23 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
-import { SelectChangeEvent } from '@mui/material';
-import { ChangeEvent, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 type FontSelectorTypes = {
-  onFontSelectionChange: (event: SelectChangeEvent) => void;
+  onFontSelectionChange: (
+    event: React.ChangeEvent<{
+      name?: string | undefined;
+      value: unknown;
+    }>
+  ) => void;
   selectedFont: string;
 };
 export default function FontSelector({ onFontSelectionChange, selectedFont }: FontSelectorTypes) {
-  const onChange = (event: any, child: ReactNode) => {
+  const onChange = (
+    event: React.ChangeEvent<{
+      name?: string | undefined;
+      value: unknown;
+    }>,
+    child: ReactNode
+  ) => {
     onFontSelectionChange(event);
   };
   return (

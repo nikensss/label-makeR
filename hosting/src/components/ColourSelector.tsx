@@ -1,8 +1,8 @@
-import { FormControl, InputLabel } from '@material-ui/core';
+import React from 'react';
 
 type ColourSelectorType = {
-  defaultValue: any;
-  onChange: (event: any) => void;
+  defaultValue: string | number | string[] | undefined;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 export default function ColourSelector({ defaultValue, onChange }: ColourSelectorType) {
   return (

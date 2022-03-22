@@ -2,7 +2,7 @@ import { TextField } from '@material-ui/core';
 
 type BrandInputTypes = {
   defaultValue: string;
-  onBrandChange: (event: any) => void;
+  onBrandChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 export default function BrandInput({ defaultValue, onBrandChange }: BrandInputTypes) {
   return (

@@ -1,5 +1,4 @@
-import { Button, createStyles, Theme, Typography } from '@material-ui/core';
-import { ChangeEvent, useRef } from 'react';
+import { Button } from '@material-ui/core';
 import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
 
 type ButtonCenterTypes = {
@@ -7,12 +6,6 @@ type ButtonCenterTypes = {
   centerLogo: () => void;
 };
 export default function ButtonCenter({ hasLogo, centerLogo }: ButtonCenterTypes) {
-  const styles = {
-    label: {
-      fontSize: '0.75rem'
-    }
-  };
-
   return (
     <>
       <Button

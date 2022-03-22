@@ -1,9 +1,11 @@
 import { Theme } from '@material-ui/core/styles/createTheme';
 import withStyles, { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import Typography from '@material-ui/core/Typography';
 import createStyles from '@material-ui/styles/createStyles';
 import Alert from '@mui/material/Alert';
 import { Order } from '../classes/Order';
+import { fluidPage } from '../styles/fluidPage';
+import { fluidRow } from '../styles/fluidRow';
+import { smallLabel } from '../styles/smallLabel';
 import { Labels } from './LabelDesigner';
 
 type OrderSummaryProps = {
@@ -23,7 +25,7 @@ const styles = (theme: Theme) =>
     },
     selectionAndLabel: {
       display: 'flex',
-      flexDirection: 'row',
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       margin: theme.spacing(1),
@@ -33,8 +35,8 @@ const styles = (theme: Theme) =>
     },
     label: {
       borderRadius: '10px',
-      width: '380px',
-      height: '532px',
+      width: '209px',
+      height: '292px',
       boxShadow: '0 0 10px 6px #303030A0'
     }
   });
@@ -45,13 +47,19 @@ export const OrderSummary = withStyles(styles)(
 
     return (
       <div className={classes.root}>
-        <Typography variant='h3'>Your order</Typography>
-        <div className={classes.selectionAndLabel}>
-          <div>{order.toTable()}</div>
-          <img alt={'Designed label'} className={classes.label} src={labels.front} />
-          <img alt={'Designed label'} className={classes.label} src={labels.back} />
+        <h2>Order Summary</h2>
+        <div style={fluidPage}>
+          <div style={fluidRow}>
+            <div>{order.toTable()}</div>
+            <img alt={'Designed label'} style={smallLabel} src={labels.front} />
+            <img alt={'Designed label'} style={smallLabel} src={labels.back} />
+          </div>
+          <div style={fluidRow}>
+            <Alert style={{ float: 'right' }} severity='info'>
+              Products will arrive in about 21 working days.
+            </Alert>
+          </div>
         </div>
-        <Alert severity='info'>Products will arrive in about 21 working days.</Alert>
       </div>
     );
   }
