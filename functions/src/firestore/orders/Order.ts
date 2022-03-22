@@ -87,7 +87,7 @@ export class Order implements FirestoreDocument {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Thank you for your order!</title>
+    <title>Thank you for your order!</title> 
   </head>
   <body>
     <h1 style="text-align:center; margin: 2rem; font-weight: bold;">Thank you for your order</h1>

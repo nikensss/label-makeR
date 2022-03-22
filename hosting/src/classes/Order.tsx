@@ -7,8 +7,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { LabelDesign } from '../components/LabelDesigner';
-import { Price } from '../firebase/general/coffee/CoffeeOrigin';
-import { CoffeeVariants } from '../firebase/general/coffee/CoffeeOrigins';
+import { Price } from '../firebase/general/coffee/CoffeeVariant';
+import { CoffeeVariants } from '../firebase/general/coffee/CoffeeVariants';
 import { CoffeeSelection, displayPrice } from '../firebase/general/coffee/CoffeeSelection';
 import { CoffeeSelections, onlyCoffeeSelection } from '../pages/coffeeForm/CoffeeForm';
 
@@ -104,7 +104,7 @@ export class Order {
                 <Typography style={{ fontWeight: 'bold' }}>Variant</Typography>
               </TableCell>
               <TableCell align='right'>
-                <Typography style={{ fontWeight: 'bold' }}>Weight</Typography>
+                <Typography style={{ fontWeight: 'bold' }}>Grind</Typography>
               </TableCell>
               <TableCell align='right'>
                 <Typography style={{ fontWeight: 'bold' }}>Price</Typography>
@@ -124,7 +124,7 @@ export class Order {
                   <TableCell component='th' scope='row'>
                     {coffee.display('label')}
                   </TableCell>
-                  <TableCell align='right'>{coffee.display('weight')}</TableCell>
+                  <TableCell align='right'>{coffee.display('grind')}</TableCell>
                   <TableCell align='right'>{coffee.display('price')}</TableCell>
                   <TableCell align='right'>{coffee.getQuantity()}</TableCell>
                   <TableCell align='right'>{coffee.display('totalPrice')}</TableCell>

@@ -1,7 +1,7 @@
 import firebase from 'firebase';
 import { FirestoreDocument } from '../../firebase';
-import { CoffeeVariant, ICoffeeVariant } from './CoffeeOrigin';
-import { CoffeeVariants } from './CoffeeOrigins';
+import { CoffeeVariant, ICoffeeVariant } from './CoffeeVariant';
+import { CoffeeVariants } from './CoffeeVariants';
 
 export interface ICoffee {
   variants: ICoffeeVariant[];

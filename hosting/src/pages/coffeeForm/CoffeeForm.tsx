@@ -9,7 +9,7 @@ import { Order } from '../../classes/Order';
 import { LabelDesign, LabelDesigner, Labels } from '../../components/LabelDesigner';
 import { OrderSummary } from '../../components/OrderSummary';
 import { config } from '../../config/config';
-import { CoffeeVariants, GetRowsProps } from '../../firebase/general/coffee/CoffeeOrigins';
+import { CoffeeVariants, GetRowsProps } from '../../firebase/general/coffee/CoffeeVariants';
 import { CoffeeSelection } from '../../firebase/general/coffee/CoffeeSelection';
 import { getCoffee } from '../../firebase/general/General';
 import { generateAllLabels } from '../../utils/generateAllLabels';

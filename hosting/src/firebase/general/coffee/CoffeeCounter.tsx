@@ -2,7 +2,7 @@ import { Button, createStyles, TextField, Theme } from '@material-ui/core';
 import withStyles, { ClassNameMap } from '@material-ui/styles/withStyles';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { CoffeeSelections } from '../../../pages/coffeeForm/CoffeeForm';
-import { GetRowsProps } from './CoffeeOrigins';
+import { GetRowsProps } from './CoffeeVariants';
 
 const styles = ({ spacing }: Theme) => {
   return createStyles({

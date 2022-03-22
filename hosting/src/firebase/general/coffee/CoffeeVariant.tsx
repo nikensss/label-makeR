@@ -3,6 +3,7 @@ export interface ICoffeeVariant {
   id: string;
   weight: Weight;
   price: Price;
+  grind: Grind;
 }
 
 export interface Weight {
@@ -13,6 +14,11 @@ export interface Weight {
 export interface Price {
   amount: number;
   unit: string;
+}
+
+export interface Grind {
+  id: string;
+  label: string;
 }
 
 export class CoffeeVariant {
@@ -36,6 +42,10 @@ export class CoffeeVariant {
 
   get weight(): Weight {
     return this.coffeeVariant.weight;
+  }
+
+  get grind(): Grind {
+    return this.coffeeVariant.grind;
   }
 
   get minQuantity(): number {

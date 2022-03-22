@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import { FirestoreDocument } from '../../firestore';
-import { ICoffeeVariant } from './CoffeeOrigin';
-import { CoffeeVariants } from './CoffeeOrigins';
+import { ICoffeeVariant } from './CoffeeVariant';
+import { CoffeeVariants } from './CoffeeVariants';
 
 export interface ICoffee {
   variants: ICoffeeVariant[];
