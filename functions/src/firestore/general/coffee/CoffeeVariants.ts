@@ -21,14 +21,14 @@ export class CoffeeVariants {
     }
   }
 
-  find(id: string): CoffeeVariant | undefined {
-    return this.variants.find(c => c.id === id);
+  findById(id: string): CoffeeVariant | undefined {
+    return this.variants.find(v => v.id === id);
   }
 
   asLineItems(selections: CoffeeSelections): { price: string; quantity: number }[] {
     const lineItems: { price: string; quantity: number }[] = [];
     for (const { id, quantity } of selections) {
-      const variant = this.find(id);
+      const variant = this.findById(id);
       if (!variant) throw new Error(`Could not find coffee ${id}`);
       lineItems.push({ price: variant.getPriceId(), quantity });
     }
