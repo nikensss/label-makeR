@@ -1,7 +1,4 @@
-import { FormControl, FormLabel, Radio, Typography } from '@material-ui/core';
-import { StylesContext } from '@material-ui/styles';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import RadioGroup from '@mui/material/RadioGroup';
+import { FormControl, FormLabel, Typography } from '@material-ui/core';
 import { ChangeEvent } from 'react';
 
 type RadioButtonType = {
@@ -27,7 +24,7 @@ const RadioButton = ({ value, groupName, label }: RadioButtonType) => {
 };
 
 type GrindSelectorTypes = {
-  setSelectedGrind: Function;
+  setSelectedGrind: (selectedGrind: string) => void;
 };
 
 export default function GrindSelector({ setSelectedGrind }: GrindSelectorTypes) {
