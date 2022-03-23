@@ -2,7 +2,7 @@
   "name": "functions",
   "version": "0.1.0",
   "scripts": {
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint 'src/**/*.ts'",
     "prebuild": "rimraf lib",
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions,firestore,storage --import ./emulators/data --export-on-exit",
@@ -14,8 +14,8 @@
     "deploy": "firebase deploy --only functions",
     "postdeploy": "npm run tag:update",
     "logs": "firebase functions:log",
-    "pretty": "prettier --write src/**/*.ts",
-    "pretty:check": "prettier --check src/**/*.ts",
+    "pretty": "prettier --write 'src/**/*.ts'",
+    "pretty:check": "prettier --check 'src/**/*.ts'",
     "prepareHusky": "husky install"
   },
   "engines": {
