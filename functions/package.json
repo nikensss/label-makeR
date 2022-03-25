@@ -15,8 +15,7 @@
     "postdeploy": "npm run tag:update",
     "logs": "firebase functions:log",
     "pretty": "prettier --write 'src/**/*.ts'",
-    "pretty:check": "prettier --check 'src/**/*.ts'",
-    "prepareHusky": "husky install"
+    "pretty:check": "prettier --check 'src/**/*.ts'"
   },
   "engines": {
     "node": "14"
