@@ -38,8 +38,7 @@
     "tag:update": "npm run tag:delete && npm run tag:add",
     "predeploy": "npm run build",
     "deploy": "firebase deploy --only hosting",
-    "postdeploy": "npm run tag:update",
-    "prepare": "cd .. && husky install hosting/.husky"
+    "postdeploy": "npm run tag:update"
   },
   "browserslist": {
     "production": [
