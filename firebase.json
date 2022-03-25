@@ -2,11 +2,7 @@
   "hosting": {
     "site": "label-maker-app",
     "public": "hosting/build",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
@@ -35,8 +31,5 @@
     "firestore": {
       "port": 8080
     }
-  },
-  "storage": {
-    "rules": "storage.rules"
   }
 }
