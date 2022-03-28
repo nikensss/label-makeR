@@ -31,8 +31,10 @@ r.post('/check', async (req, res) => {
   try {
     const coffeeSelections = new CoffeeSelections(selections);
     const orderErrors = await getOrderErrors(coffeeSelections);
-    if (orderErrors !== null) {
-      return res.status(403).send({ status: 'error', message: orderErrors.message }).end();
+    if (orderErrors.length > 0) {
+      logger.error(`Errors found in order`, { orderErrors });
+      const message = orderErrors.map(e => e.message).join(';');
+      return res.status(403).send({ status: 'error', message }).end();
     }
 
     const labelLinks = await saveLabels(labels);
@@ -40,8 +42,7 @@ r.post('/check', async (req, res) => {
 
     const session = await createStripeSession(coffeeSelections);
     if (session.url === null) throw new Error('Stripe session URL is null!');
-    logger.debug('COFFEE SELECTIONS');
-    logger.debug(coffeeSelections);
+
     await saveOrder(session, coffeeSelections, bagColor, labelLinks);
     logger.info('Stripe checkout session created', { session });
     return res.status(200).send({ url: session.url }).end();
@@ -51,23 +52,27 @@ r.post('/check', async (req, res) => {
   }
 });
 
-const getOrderErrors = async (selections: CoffeeSelections): Promise<Error | null> => {
+const getOrderErrors = async (selections: CoffeeSelections): Promise<Error[]> => {
   const coffee = await getCoffee();
   if (!coffee) throw new Error('Cannot retrieve coffee');
   const coffeeVariants = coffee.getVariants();
 
+  const errors: Error[] = [];
   for (const { id, quantity } of selections) {
-    const variant = coffeeVariants.find(id);
-    if (!variant) return new Error(`unknown coffee variant: ${id}`);
+    const variant = coffeeVariants.findById(id);
+    if (!variant) {
+      errors.push(new Error(`unknown coffee variant: ${id}`));
+      continue;
+    }
 
     if (!variant.isValidQuantity(quantity)) {
       const minQty = variant.minQuantity;
       const qty = quantity;
-      return new Error(`Quantity ordered (${qty}) below threshold (${minQty}) for ${id}`);
+      errors.push(new Error(`Quantity ordered (${qty}) below threshold (${minQty}) for ${id}`));
     }
   }
 
-  return null;
+  return errors;
 };
 
 const saveLabels = async (labels: string[]): Promise<string[]> => {

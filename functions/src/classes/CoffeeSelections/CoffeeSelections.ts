@@ -13,7 +13,7 @@ export class CoffeeSelections {
   getTotalPrice(coffeeVariants: CoffeeVariants): number {
     let totalPrice = 0;
     for (const { id, quantity } of this) {
-      const variant = coffeeVariants.find(id);
+      const variant = coffeeVariants.findById(id);
       if (!variant) throw new Error(`Could not find variant ${id}`);
       totalPrice += variant.price * 100 * quantity;
     }
