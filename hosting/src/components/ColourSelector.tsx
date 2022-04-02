@@ -1,10 +1,11 @@
 import React from 'react';
 
 type ColourSelectorType = {
-  defaultValue: string | number | string[] | undefined;
+  defaultValue: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
-export default function ColourSelector({ defaultValue, onChange }: ColourSelectorType) {
+
+export const ColourSelector = ({ defaultValue, onChange }: ColourSelectorType) => {
   return (
     <>
       <div
@@ -38,4 +39,4 @@ export default function ColourSelector({ defaultValue, onChange }: ColourSelecto
       </div>
     </>
   );
-}
+};

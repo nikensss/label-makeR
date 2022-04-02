@@ -6,7 +6,7 @@ import { Order } from '../classes/Order';
 import { BagColourSelector } from './BagColourSelector';
 import ButtonCenter from './ButtonCenter';
 import ButtonUploadLogo from './ButtonUploadLogo';
-import ColourSelector from './ColourSelector';
+import { ColourSelector } from './ColourSelector';
 import FontSelector from './FontSelector';
 import ScaleSlider from './ScaleSlider';
 import TextInput from './TextInput';
