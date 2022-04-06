@@ -5,7 +5,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 type ButtonUploadLogoTypes = {
   addLogo: (event: ChangeEvent<HTMLInputElement>) => void;
 };
-export default function ButtonUploadLogo({ addLogo }: ButtonUploadLogoTypes) {
+export const ButtonUploadLogo = ({ addLogo }: ButtonUploadLogoTypes) => {
   return (
     <>
       <input
@@ -23,4 +23,4 @@ export default function ButtonUploadLogo({ addLogo }: ButtonUploadLogoTypes) {
       </label>
     </>
   );
-}
+};

@@ -6,10 +6,10 @@ type TextInputTypes = {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   label: string;
 };
-export default function TextInput({ defaultValue, onChange, label }: TextInputTypes) {
+export const TextInput = ({ defaultValue, onChange, label }: TextInputTypes) => {
   return (
     <>
       <TextField fullWidth onChange={onChange} label={label} defaultValue={defaultValue} />
     </>
   );
-}
+};

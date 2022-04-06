@@ -5,7 +5,7 @@ type RadioButtonType = {
   groupName: string;
   label: string;
 };
-export default function RadioButton({ value, groupName, label }: RadioButtonType) {
+export const RadioButton = ({ value, groupName, label }: RadioButtonType) => {
   const [isHover, setIsHover] = useState(false);
   const styles = {
     container: {
@@ -32,4 +32,4 @@ export default function RadioButton({ value, groupName, label }: RadioButtonType
       </label>
     </div>
   );
-}
+};

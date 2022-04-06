@@ -5,7 +5,7 @@ type ButtonCenterTypes = {
   hasLogo: boolean;
   centerLogo: () => void;
 };
-export default function ButtonCenter({ hasLogo, centerLogo }: ButtonCenterTypes) {
+export const ButtonCenter = ({ hasLogo, centerLogo }: ButtonCenterTypes) => {
   return (
     <>
       <Button
@@ -20,4 +20,4 @@ export default function ButtonCenter({ hasLogo, centerLogo }: ButtonCenterTypes)
       </Button>
     </>
   );
-}
+};

@@ -2,7 +2,7 @@ type InputLabelType = {
   value: string;
 };
 
-export default function InputLabel({ value }: InputLabelType) {
+export const InputLabel = ({ value }: InputLabelType) => {
   return (
     <>
       <span
@@ -20,4 +20,4 @@ export default function InputLabel({ value }: InputLabelType) {
       </span>
     </>
   );
-}
+};

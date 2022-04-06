@@ -4,7 +4,7 @@ import { ChangeEvent } from 'react';
 type ScaleSliderTypes = {
   onChangeScale: (value: number) => void;
 };
-export default function ScaleSlider({ onChangeScale }: ScaleSliderTypes) {
+export const ScaleSlider = ({ onChangeScale }: ScaleSliderTypes) => {
   const onChange = (event: ChangeEvent<{ name?: string }>, value: number | number[]) => {
     if (typeof value !== 'number') return;
     const scaledValue = (value + 101) / 415;
@@ -23,4 +23,4 @@ export default function ScaleSlider({ onChangeScale }: ScaleSliderTypes) {
       />
     </>
   );
-}
+};

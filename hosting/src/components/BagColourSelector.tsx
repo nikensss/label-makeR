@@ -1,6 +1,6 @@
 import { FormControl } from '@material-ui/core';
-import InputLabel from './InputLabel';
-import RadioButton from './RadioButton';
+import { InputLabel } from './InputLabel';
+import { RadioButton } from './RadioButton';
 
 type BagColourSelectorTypes = {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;

@@ -10,7 +10,7 @@ type FontSelectorTypes = {
   ) => void;
   selectedFont: string;
 };
-export default function FontSelector({ onFontSelectionChange, selectedFont }: FontSelectorTypes) {
+export const FontSelector = ({ onFontSelectionChange, selectedFont }: FontSelectorTypes) => {
   const onChange = (
     event: React.ChangeEvent<{
       name?: string | undefined;
@@ -51,4 +51,4 @@ export default function FontSelector({ onFontSelectionChange, selectedFont }: Fo
       </FormControl>
     </>
   );
-}
+};

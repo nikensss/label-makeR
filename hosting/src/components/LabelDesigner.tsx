@@ -4,12 +4,12 @@ import P5 from 'p5';
 import { ChangeEvent, createRef, MutableRefObject, useEffect, useState } from 'react';
 import { Order } from '../classes/Order';
 import { BagColourSelector } from './BagColourSelector';
-import ButtonCenter from './ButtonCenter';
-import ButtonUploadLogo from './ButtonUploadLogo';
+import { ButtonCenter } from './ButtonCenter';
+import { ButtonUploadLogo } from './ButtonUploadLogo';
 import { ColourSelector } from './ColourSelector';
-import FontSelector from './FontSelector';
-import ScaleSlider from './ScaleSlider';
-import TextInput from './TextInput';
+import { FontSelector } from './FontSelector';
+import { ScaleSlider } from './ScaleSlider';
+import { TextInput } from './TextInput';
 
 export const BAG_COLORS = ['white', 'black', 'brown'] as const;
 
