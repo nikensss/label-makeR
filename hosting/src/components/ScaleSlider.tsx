@@ -7,9 +7,14 @@ type ScaleSliderTypes = {
 export const ScaleSlider = ({ onChangeScale }: ScaleSliderTypes) => {
   const onChange = (event: ChangeEvent<{ name?: string }>, value: number | number[]) => {
     if (typeof value !== 'number') return;
-    const scaledValue = (value + 101) / 415;
-    onChangeScale(scaledValue);
+    onChangeScale(reScaleValue(value));
   };
+
+  // This is meant to translate a human-friendly number to a tech-ready value
+  const reScaleValue = (value: number): number => {
+    return (value + 101) / 415;
+  };
+
   return (
     <>
       <Typography>Logo Size</Typography>
