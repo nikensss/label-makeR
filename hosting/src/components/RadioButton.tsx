@@ -1,17 +1,25 @@
 import { createStyles, Theme, withStyles } from '@material-ui/core';
-import { useState } from 'react';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import Typography from '@material-ui/core/Typography';
 
 const styles = (theme: Theme) =>
   createStyles({
     container: {
       display: 'flex',
-      flexDirection: 'row' as const,
+      flexDirection: 'row',
       alignItems: 'center',
-      gap: 10
+      gap: 10,
+      '&:hover': {
+        cursor: 'pointer'
+      }
     },
     label: {
       fontFamily: theme.typography.fontFamily
+    },
+    input: {
+      '&:hover': {
+        cursor: 'pointer'
+      }
     }
   });
 
@@ -21,24 +29,14 @@ type RadioButtonType = {
   label: string;
   classes: ClassNameMap<string>;
 };
+
 export const RadioButton = withStyles(styles)(
   ({ value, groupName, label, classes }: RadioButtonType) => {
-    const [isHover, setIsHover] = useState(false);
-
-    const toggleHover = () => {
-      setIsHover(!isHover);
-    };
-
     return (
       <div className={classes.container}>
-        <label
-          className={classes.container}
-          onMouseEnter={toggleHover}
-          onMouseLeave={toggleHover}
-          style={{ cursor: isHover ? 'pointer' : 'auto' }}
-        >
-          <input type='radio' value={value} name={groupName} />
-          <span className={classes.label}>{label}</span>
+        <label className={classes.container}>
+          <input className={classes.input} type='radio' value={value} name={groupName} />
+          <Typography>{label}</Typography>
         </label>
       </div>
     );
