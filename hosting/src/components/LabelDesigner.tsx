@@ -1,24 +1,15 @@
 import { createStyles, Theme, withStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Input from '@material-ui/core/Input';
-import Slider from '@material-ui/core/Slider';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import ImageIcon from '@material-ui/icons/Image';
-import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import P5 from 'p5';
-import { ChangeEvent, createRef, MutableRefObject, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, createRef, MutableRefObject, useEffect, useState } from 'react';
 import { Order } from '../classes/Order';
+import { BagColourSelector } from './BagColourSelector';
+import { ButtonCenter } from './ButtonCenter';
+import { ButtonUploadLogo } from './ButtonUploadLogo';
+import { ColourSelector } from './ColourSelector';
+import { FontSelector } from './FontSelector';
+import { ScaleSlider } from './ScaleSlider';
+import { TextInput } from './TextInput';
 
 export const BAG_COLORS = ['white', 'black', 'brown'] as const;
 
@@ -86,7 +77,8 @@ const styles = (theme: Theme) =>
       height: '100%',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      padding: '10px'
     },
     input: {
       display: 'none'
@@ -106,7 +98,6 @@ export const LABEL_DIMENSIONS = { width: 380, height: 532 } as const;
 
 export const LabelDesigner = withStyles(styles)(
   ({ order, labelDesignRef, setLabelDesign, setLabels, classes }: LabelDesignerInput) => {
-    const labelDesign = labelDesignRef.current;
     const frontLabelCanvasRef = createRef<HTMLDivElement>();
     const backLabelCanvasRef = createRef<HTMLDivElement>();
     const [frontLabelCanvas, setFrontLabelCanvas] = useState<P5 | null>(null);
@@ -118,30 +109,12 @@ export const LabelDesigner = withStyles(styles)(
     const [frontLabel, setFrontLabel] = useState('');
     const [backLabel, setBackLabel] = useState('');
 
-    const centerButton = useRef<HTMLButtonElement | null>(null);
-
-    const onChange = (key: keyof Pick<LabelDesign, 'x' | 'y' | 'scale'>) => {
-      return (...args: unknown[]) => {
-        const [, value] = args;
-        if (typeof value !== 'number') return;
-        setLabelDesign({ ...labelDesignRef.current, [key]: value });
-      };
+    const onChangeScale = (value: number) => {
+      setLabelDesign({ ...labelDesignRef.current, scale: value });
     };
-
-    const onChangeScale = onChange('scale');
     const onBackgroundColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const backgroundColor = event.target.value;
       setLabelDesign({ ...labelDesignRef.current, backgroundColor });
-    };
-
-    const onScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const scale = !event.target.value ? 0.25 : parseFloat(event.target.value);
-      setLabelDesign({ ...labelDesignRef.current, scale });
-    };
-
-    const onBlurChange = () => {
-      if (labelDesign.scale < 0) setLabelDesign({ ...labelDesignRef.current, scale: 0 });
-      if (labelDesign.scale > 5) setLabelDesign({ ...labelDesignRef.current, scale: 5 });
     };
 
     const onBrandChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,8 +129,11 @@ export const LabelDesigner = withStyles(styles)(
       setLabelDesign({ ...labelDesignRef.current, description: event.target.value });
     };
 
-    const onFontSelectionChange = (event: SelectChangeEvent) => {
-      setLabelDesign({ ...labelDesignRef.current, font: event.target.value });
+    const onFontSelectionChange = (
+      event: ChangeEvent<{ name?: string | undefined; value: unknown }>
+    ) => {
+      if (typeof event.target.value === 'string')
+        setLabelDesign({ ...labelDesignRef.current, font: event.target.value });
     };
 
     const onBagColorChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -167,7 +143,7 @@ export const LabelDesigner = withStyles(styles)(
       }
     };
 
-    const onFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const addLogo = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (!file) return;
 
@@ -179,12 +155,12 @@ export const LabelDesigner = withStyles(styles)(
         }
         setLabelDesign({ ...labelDesignRef.current, logo });
         setHasLogo(!!logo);
-        centerButton.current?.click();
+        centerLogo();
       };
       reader.readAsDataURL(file);
     };
 
-    const onCenterLogo = () => {
+    const centerLogo = () => {
       setLabelDesign({ ...labelDesignRef.current, x: LABEL_DIMENSIONS.width / 2, y: 110 });
     };
 
@@ -310,154 +286,34 @@ export const LabelDesigner = withStyles(styles)(
       <div className={classes.container}>
         <div className={classes.controls}>
           <div className={classes.imageButtons}>
-            <input
-              accept='image/*'
-              className={classes.input}
-              id='contained-button-file'
-              multiple
-              type='file'
-              onChange={onFile}
-            />
-            <label htmlFor='contained-button-file'>
-              <Button
-                startIcon={<ImageIcon />}
-                variant='contained'
-                color='primary'
-                component='span'
-              >
-                <Typography>Upload logo</Typography>
-              </Button>
-            </label>
-            <Button
-              startIcon={<FilterCenterFocusIcon />}
-              variant='contained'
-              color='primary'
-              component='span'
-              disabled={!hasLogo}
-              onClick={onCenterLogo}
-              ref={centerButton}
-            >
-              <Typography>Center</Typography>
-            </Button>
+            <ButtonUploadLogo addLogo={addLogo} />
+            <ButtonCenter hasLogo={hasLogo} centerLogo={centerLogo} />
           </div>
-          <Typography>Scale</Typography>
-          <Grid container spacing={2} alignItems='center'>
-            <Grid item xs>
-              <Slider
-                value={labelDesignRef.current.scale}
-                min={0}
-                max={5}
-                step={0.01}
-                onChange={onChangeScale}
-                aria-labelledby='continuous-slider'
-              />
-            </Grid>
-            <Grid item>
-              <Input
-                value={labelDesignRef.current.scale}
-                margin='dense'
-                onChange={onScaleChange}
-                onBlur={onBlurChange}
-                inputProps={{
-                  step: 0.01,
-                  min: 0,
-                  max: 5,
-                  type: 'number',
-                  'aria-labelledby': 'input-slider'
-                }}
-              />
-            </Grid>
-          </Grid>
-          <FormControl fullWidth>
-            <InputLabel>Font</InputLabel>
-            <Select
-              labelId='font-select-label'
-              id='font-select'
-              value={labelDesignRef.current.font}
-              label='Font'
-              onChange={onFontSelectionChange}
-              style={{ fontFamily: labelDesignRef.current.font }}
-            >
-              <MenuItem value={'Source Code Pro'} style={{ fontFamily: 'Source Code Pro' }}>
-                Source Code Pro
-              </MenuItem>
-              <MenuItem value={'Montserrat'} style={{ fontFamily: 'Montserrat' }}>
-                Montserrat
-              </MenuItem>
-              <MenuItem value={'Oswald'} style={{ fontFamily: 'Oswald' }}>
-                Oswald
-              </MenuItem>
-              <MenuItem value={'Roboto Slab'} style={{ fontFamily: 'Roboto Slab' }}>
-                Roboto Slab
-              </MenuItem>
-              <MenuItem value={'Zen Old Mincho'} style={{ fontFamily: 'Zen Old Mincho' }}>
-                Zen Old Mincho
-              </MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            fullWidth
-            onChange={onBrandChange}
-            label='Your brand'
-            variant='outlined'
+          <ScaleSlider onChangeScale={onChangeScale} />
+          <FontSelector
+            onFontSelectionChange={onFontSelectionChange}
+            selectedFont={labelDesignRef.current.font}
+          />
+          <TextInput
             defaultValue={labelDesignRef.current.brand}
+            onChange={onBrandChange}
+            label='Brand name'
           />
-          <TextField
-            fullWidth
-            onChange={onWebsiteChange}
-            label='Your website'
-            variant='outlined'
+          <TextInput
             defaultValue={labelDesignRef.current.website}
+            onChange={onWebsiteChange}
+            label='Website'
           />
-          <TextField
-            fullWidth
-            onChange={onDescriptionChange}
-            label='Your description'
-            variant='outlined'
+          <TextInput
             defaultValue={labelDesignRef.current.description}
+            onChange={onDescriptionChange}
+            label='Description'
           />
-          <Grid container spacing={2} alignItems='center'>
-            <Grid item>
-              <label style={{ cursor: 'pointer' }} htmlFor='background-color-input'>
-                <Typography>Background color</Typography>
-              </label>
-            </Grid>
-            <Grid item xs>
-              <input
-                id='background-color-input'
-                value={labelDesignRef.current.backgroundColor}
-                onChange={onBackgroundColorChange}
-                type={'color'}
-              />
-            </Grid>
-          </Grid>
-          <FormControl fullWidth component='fieldset'>
-            <FormLabel component='legend'>
-              <Typography>Bag Color</Typography>
-            </FormLabel>
-            <RadioGroup
-              onChange={onBagColorChange}
-              row
-              aria-label='bag color'
-              name='row-radio-buttons-group'
-            >
-              <FormControlLabel
-                value='white'
-                control={<Radio checked={labelDesignRef.current.bagColor === 'white'} />}
-                label={<Typography>White</Typography>}
-              />
-              <FormControlLabel
-                value='black'
-                control={<Radio checked={labelDesignRef.current.bagColor === 'black'} />}
-                label={<Typography>Black</Typography>}
-              />
-              <FormControlLabel
-                value='brown'
-                control={<Radio checked={labelDesignRef.current.bagColor === 'brown'} />}
-                label={<Typography>Brown</Typography>}
-              />
-            </RadioGroup>
-          </FormControl>
+          <ColourSelector
+            defaultValue={labelDesignRef.current.backgroundColor}
+            onChange={onBackgroundColorChange}
+          />
+          <BagColourSelector onChange={onBagColorChange} />
         </div>
         <div className={classes.label} ref={frontLabelCanvasRef}></div>
         <div className={classes.label} ref={backLabelCanvasRef}></div>
